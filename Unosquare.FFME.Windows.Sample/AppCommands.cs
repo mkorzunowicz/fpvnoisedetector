@@ -9,6 +9,7 @@
     using System.Diagnostics;
     using System.IO;
     using System.Linq;
+    using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
@@ -30,6 +31,7 @@
         private DelegateCommand m_EncodePlayListCommand;
         private DelegateCommand m_MergeEndFileCommand;
         private DelegateCommand m_PredictNoiseInWholeVideoCommand;
+        private DelegateCommand m_PredictNoiseInPlaylistCommand;
         private DelegateCommand m_CloseCommand;
         private DelegateCommand m_ToggleFullscreenCommand;
         private DelegateCommand m_SaveEntriesCommand;
@@ -391,7 +393,7 @@
         public async Task<MediaOutput> EncodeEntry(CustomPlaylistEntry entry, MediaOutput continuedVideo)
         {
             await this.OpenCommand.ExecuteAsync(entry);
-            await this.PauseCommand.ExecuteAsync();
+            App.ViewModel.MediaElement.MediaReady += MediaElement_MediaReady;
             //App.ViewModel.MediaElement.Stop();
 
             var timeline = entry.NoiseTimeLine;
@@ -448,7 +450,43 @@
                     App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.EndFile}";
                 }
             }));
+        /// <summary>
+        /// Gets the predict noise command.
+        /// </summary>
+        /// <value>
+        /// The stop command.
+        /// </value>
+        public DelegateCommand PredictNoiseInPlaylistCommand => m_PredictNoiseInPlaylistCommand ??
+            (m_PredictNoiseInPlaylistCommand = new DelegateCommand(async o =>
+            {
+                var sorted = App.ViewModel.Playlist.Entries.ToList();
+                sorted.Sort((x, y) => x.Title.CompareTo(y.Title));
 
+                foreach (var entry in sorted)
+                {
+                    if (App.ViewModel.ShouldStopPredicting)
+                    {
+                        App.ViewModel.NotificationMessage = "Aborted playlist detection...";
+                        break;
+                    }
+                    App.ViewModel.MediaElement.MediaReady += PredictOnReady;
+                    await this.OpenCommand.ExecuteAsync(entry);
+                    App.ViewModel.IsPredicting = true;
+                    await Task.Run(() => { while (App.ViewModel.IsPredicting) { Thread.Sleep(300); } });
+                }
+
+                await this.StopCommand.ExecuteAsync();
+                App.ViewModel.ShouldStopPredicting = false;
+                App.ViewModel.IsPredicting = false;
+            }));
+
+        private void PredictOnReady(object sender, EventArgs e)
+        {
+            this.PauseCommand.ExecuteAsync();
+            App.ViewModel.MediaElement.MediaReady -= PredictOnReady;
+            PredictNoiseInWholeVideoCommand.Execute();
+        }
+        bool predictionModelLoaded = false;
         /// <summary>
         /// Gets the predict noise command.
         /// </summary>
@@ -477,13 +515,38 @@
                 App.ViewModel.NoiseTimeLine = good;
 
                 TimeLineEvent lastEvent = null;
-                App.ViewModel.NotificationMessage = "Detecting noise...";
+                if (predictionModelLoaded) App.ViewModel.NotificationMessage = "Detecting noise...";
+                else App.ViewModel.NotificationMessage = "Loading prediction model. It can take a few seconds...";
                 do
                 {
                     await App.ViewModel.MediaElement.Seek(position);
-                    var bitmap = await App.ViewModel.MediaElement.CaptureBitmapAsync();
-                    //var score = NoisePredictorModel.Predict(bitmap).Score.First();
+                    var bitmap = await Task<System.Drawing.Bitmap>.Run(async () =>
+                    {
+
+                        System.Drawing.Bitmap bm = null;
+                        for (int i = 0; i < 10; i++)
+                        {
+                            bm = await App.ViewModel.MediaElement.CaptureBitmapAsync();
+                            if (bm != null) break;
+                            Thread.Sleep(100);
+                        }
+                        return bm;
+                    });
+
+                    if (bitmap == null)
+                    {
+                        App.ViewModel.NotificationMessage = $"File didn't load correctly. Reloading file.";
+
+                        await this.OpenCommand.ExecuteAsync(App.ViewModel.Playlist.OpenMediaSource);
+                        continue;
+                        //await App.ViewModel.MediaElement.Seek(TimeSpan.Zero);
+
+                        //App.ViewModel.IsPredicting = false;
+                        //return;
+                    }
                     var result = await NoisePredictorModel.PredictAsync(bitmap);
+                    if (!predictionModelLoaded) App.ViewModel.NotificationMessage = "Detecting noise...";
+                    predictionModelLoaded = true;
                     var score = result.Score.First();
                     if (dict.Count == 0 || Math.Abs(dict.Last().Value - score) < 0.5)
                     {

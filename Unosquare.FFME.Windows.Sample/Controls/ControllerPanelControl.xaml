@@ -355,6 +355,20 @@
                     </Button>
                     <Button
                         Padding="0"
+                        Command="{Binding Commands.PredictNoiseInPlaylistCommand}"
+                        Foreground="Green"
+                        IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
+                        Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Predict noise in single file"
+                        Visibility="{Binding Controller.PlayButtonVisibility}">
+                        <TextBlock
+                            VerticalAlignment="Stretch"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="25"
+                            Text="&#xE9F5;" />
+                    </Button>
+                    <Button
+                        Padding="0"
                         Command="{Binding Commands.EncodeCommand}"
                         Foreground="White"
                         IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
