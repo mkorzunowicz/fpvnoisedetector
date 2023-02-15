@@ -60,11 +60,14 @@ public partial class TimeLineControl : UserControl
         var ctrl = sender as System.Windows.Shapes.Rectangle;
         if (ctrl == null)
             return;
+        if (movedSliderPeg==null)
+        {
+            Application.Current.MainWindow.MouseMove += MainWindow_MouseMove;
+            Application.Current.MainWindow.MouseUp += ManipulationEnds;
+        }
         movedSliderPeg = ctrl;
         lastEvent = ctrl.DataContext as TimeLineEvent;
         prevX = Mouse.GetPosition(null).X;
-        Application.Current.MainWindow.MouseMove += MainWindow_MouseMove;
-        Application.Current.MainWindow.MouseUp += ManipulationEnds;
     }
 
     private void MainWindow_MouseMove(object sender, MouseEventArgs e)
@@ -89,7 +92,7 @@ public partial class TimeLineControl : UserControl
                 var rightTimeBoundry = lastEvent.End;
 
                 var widthWouldBe = eventGrid.Width - deltaX;
-                if (startTime <= leftTimeBoundry)
+                if (startTime <= leftTimeBoundry) // hit the end of a neighbouring event OR the beginning of the timeline
                 {
                     startTime = leftTimeBoundry;
                     var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, startTime, TimeLineSource.Duration);
@@ -99,7 +102,7 @@ public partial class TimeLineControl : UserControl
                     eventGrid.Width = width;
                     movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
                 }
-                else if (startTime >= rightTimeBoundry || widthWouldBe <= eventGrid.MinWidth)
+                else if (startTime >= rightTimeBoundry || widthWouldBe <= eventGrid.MinWidth) // the right side of the event itself!
                 {
                     startTime = rightTimeBoundry;
                     var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, startTime, TimeLineSource.Duration);
@@ -118,7 +121,7 @@ public partial class TimeLineControl : UserControl
             }
             else // rightPeg
             {
-                if (eventGrid.Width + deltaX < eventGrid.MinWidth)
+                if (eventGrid.Width + deltaX < eventGrid.MinWidth) // hit the left side of the event itself
                 {
                     eventGrid.Width = eventGrid.MinWidth;
                     shouldDelete = true;
@@ -132,11 +135,11 @@ public partial class TimeLineControl : UserControl
                         rightTimeBoundry = laterEvents.Min(ev => ev.Start);
                     movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
 
-                    var widthWouldBe = eventGrid.Width += deltaX;
+                    var widthWouldBe = eventGrid.Width += deltaX; // this makes it shorter already!
                     var endTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left + widthWouldBe, TimeLineSource.Duration);
                     var startTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left, TimeLineSource.Duration);
 
-                    if (endTime >= rightTimeBoundry)
+                    if (endTime >= rightTimeBoundry) // hit the start of a neighbouring event OR the end of the timeline
                     {
                         endTime = rightTimeBoundry;
                         var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, endTime - startTime, TimeLineSource.Duration);
