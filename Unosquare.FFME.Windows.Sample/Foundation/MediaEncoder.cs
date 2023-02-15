@@ -29,8 +29,47 @@ public class MediaEncoder : ObservableObject
         get => encodingProgress;
         set => Set(() => EncodingProgress, ref encodingProgress, value);
     }
+
     /// <summary>
     /// 
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="width"></param>
+    /// <param name="height"></param>
+    /// <param name="framerate"></param>
+    /// <param name="codec"></param>
+    public MediaOutput CreateVideo(string destination, int width, int height, int framerate, VideoCodec codec)
+    {
+        var settings = new VideoEncoderSettings(width: width, height: height, framerate: framerate, codec: codec);
+        settings.EncoderPreset = EncoderPreset.UltraFast;
+        settings.CRF = 23;
+
+        var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).Create();
+        //var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).WithAudio(audioSettings).Create();
+        return fileSaved;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="destination"></param>
+    /// <param name="videoInfo"></param>
+    /// <param name="audioInfo"></param>
+    /// <returns></returns>
+    public MediaOutput CreateVideo(string destination, VideoStreamInfo videoInfo, AudioStreamInfo audioInfo)
+    {
+        var settings = new VideoEncoderSettings(width: videoInfo.FrameSize.Width, height: videoInfo.FrameSize.Height, framerate: Convert.ToInt32(videoInfo.AvgFrameRate), codec: VideoCodec.H264);
+        settings.EncoderPreset = EncoderPreset.UltraFast;
+        settings.CRF = 23;
+
+        var audioSettings = new AudioEncoderSettings(audioInfo.SampleRate, audioInfo.NumChannels, AudioCodec.AAC);
+
+        //var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).Create();
+        var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).WithAudio(audioSettings).Create();
+        return fileSaved;
+    }
+    /// <summary>
+    /// Copies a part of a video.
     /// </summary>
     /// <param name="source"></param>
     /// <param name="destination"></param>
@@ -65,8 +104,6 @@ public class MediaEncoder : ObservableObject
         settings.CRF = 23;
         //settings.CRF = 17;
 
-        // using System.Windows.Media.Imaging;
-        // using System.Windows.Media;
         var audioInfo = fileRead.Audio.Info;
         var audioSettings = new AudioEncoderSettings(audioInfo.SampleRate, audioInfo.NumChannels, AudioCodec.AAC);
 
@@ -95,5 +132,41 @@ public class MediaEncoder : ObservableObject
         EncodingProgress = TimeSpan.Zero;
         var done = DateTime.Now - startEncoding;
         Debug.WriteLine($"Done encoding in: {done.TotalSeconds}s");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="destination"></param>
+    /// <param name="start"></param>
+    /// <param name="duration"></param>
+    public void CopyVideoPart(MediaFile source, MediaOutput destination, TimeSpan start, TimeSpan duration)
+    {
+        try
+        {
+            destination.Video.AddFrame(source.Video.GetFrame(start));
+            do
+            {
+                try
+                {
+                    // fileSaved.Audio.AddFrame(fileRead.Audio.GetNextFrame());
+                    destination.Video.AddFrame(source.Video.GetNextFrame());
+                    EncodingProgress = source.Video.Position;
+                }
+
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Failed to read frames: {ex.Message}");
+                    break;
+                }
+            }
+            while (source.Video.Position <= start + duration && !ShouldStopEncoding);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to read frames: {ex.Message}");
+        }
+        EncodingProgress = TimeSpan.Zero;
     }
 }

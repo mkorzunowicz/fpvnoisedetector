@@ -1,6 +1,7 @@
 ﻿namespace Unosquare.FFME.Windows.Sample
 {
     using FFMediaToolkit.Decoding;
+    using FFMediaToolkit.Encoding;
     using Foundation;
     using Microsoft.Win32;
     using System;
@@ -27,12 +28,14 @@
         private DelegateCommand m_PlayCommand;
         private DelegateCommand m_StopCommand;
         private DelegateCommand m_EncodeCommand;
+        private DelegateCommand m_EncodePlayListCommand;
         private DelegateCommand m_StopEncodingCommand;
         private DelegateCommand m_MergeEndFileCommand;
         private DelegateCommand m_MergeBeginFileCommand;
         private DelegateCommand m_PredictNoiseInWholeVideoCommand;
         private DelegateCommand m_CloseCommand;
         private DelegateCommand m_ToggleFullscreenCommand;
+        private DelegateCommand m_SaveEntriesCommand;
         private DelegateCommand m_RemovePlaylistItemCommand;
 
         #endregion
@@ -49,7 +52,7 @@
 
         #endregion
 
-       private void LoadVideos(string[] filePaths)
+        private void LoadVideos(string[] filePaths)
         {
             foreach (var path in filePaths)
             {
@@ -77,6 +80,12 @@
                 {
                     if (a is string[] filePaths)
                         LoadVideos(filePaths);
+                    else
+                    {
+                        OpenFileDialog openFileDialog = new OpenFileDialog();
+                        if (openFileDialog.ShowDialog() == true)
+                            LoadVideos(openFileDialog.FileNames);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -213,20 +222,117 @@
                 }
             }));
 
-
         /// <summary>
-        /// Gets the encode timelines command.
+        /// Gets the encode playlist command.
         /// </summary>
         /// <value>
-        /// The stop command.
+        /// The encode playlist command.
         /// </value>
+        public DelegateCommand EncodePlaylistCommand => m_EncodePlayListCommand ??
+            (m_EncodePlayListCommand = new DelegateCommand(o =>
+            {
+                CopyPlaylistSortedByName(App.ViewModel.Playlist.Entries);
+                //var done = new List<CustomPlaylistEntry>();
+                //foreach (var entry in App.ViewModel.Playlist.Entries)
+                //{
+                //    if (done.Contains(entry)) continue;
 
+                //    done.Add(entry);
+                //    this.OpenCommand.Execute(entry);
+                //    //if (!string.IsNullOrWhiteSpace(entry.NoiseTimeLine.EndFile))
+
+                //    // add the end of file link
+                //    await this.EncodeCommand.ExecuteAsync();
+                //}
+            }));
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="playlist"></param>
+        public async void CopyPlaylistSortedByName(CustomPlaylistEntryCollection playlist)
+        {
+            var sorted = playlist.ToList();
+            sorted.Sort((x, y) => x.Title.CompareTo(y.Title));
+
+            App.ViewModel.MediaEncoder.ShouldStopEncoding = false;
+
+
+            var done = new List<CustomPlaylistEntry>();
+            foreach (var entry in sorted)
+            {
+                if (App.ViewModel.MediaEncoder.ShouldStopEncoding)
+                    break;
+                if (done.Contains(entry)) continue;
+                MediaOutput continuedVideo = null;
+                CustomPlaylistEntry nextEntry = entry;
+                while (nextEntry != null)
+                {
+                    if (App.ViewModel.MediaEncoder.ShouldStopEncoding)
+                        break;
+                    done.Add(nextEntry);
+                    continuedVideo = await EncodeEntry(nextEntry, continuedVideo);
+                    if (continuedVideo == null)
+                    {
+                        nextEntry = null;
+                        break;
+                    }
+                    nextEntry = App.ViewModel.Playlist.Entries.First(e => Path.GetFullPath(e.MediaSource).Equals(Path.GetFullPath(entry.NoiseTimeLine.EndFile), StringComparison.InvariantCultureIgnoreCase));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <param name="continuedVideo"></param>
+        public async Task<MediaOutput> EncodeEntry(CustomPlaylistEntry entry, MediaOutput continuedVideo)
+        {
+            await this.OpenCommand.ExecuteAsync(entry);
+            await this.PauseCommand.ExecuteAsync();
+            //App.ViewModel.MediaElement.Stop();
+
+            var timeline = entry.NoiseTimeLine;
+            var sourcePath = entry.MediaSource;
+            using var sourceVideo = MediaFile.Open(sourcePath);
+            int i = 0;
+            // what if the continued video should go through the whole video (one TimeLineEvent) and should continue on?
+            if (continuedVideo != null)
+            {
+                var eve = timeline.Events[i];
+                await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideoPart(sourceVideo, continuedVideo, eve.Start, eve.Duration));
+                i++;
+                if (timeline.Events.Count == i && !string.IsNullOrEmpty(timeline.EndFile))
+                    return continuedVideo;
+                else continuedVideo.Dispose();
+            }
+            // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
+            for (; i < timeline.Events.Count; i++)
+            {
+                //var startEncoding = DateTime.Now;
+                if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
+                var eve = timeline.Events[i];
+
+                var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
+                var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
+
+                var destVideo = App.ViewModel.MediaEncoder.CreateVideo(destPath, sourceVideo.Video.Info, sourceVideo.Audio.Info);
+                await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideoPart(sourceVideo, destVideo, eve.Start, eve.Duration));
+
+                if (timeline.Events.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
+                    return destVideo;
+                else destVideo.Dispose();
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Stops the ongoing Encoding
         /// </summary>
         /// <value>
-        /// The stop command.
+        /// The stop encoding command.
         /// </value>
         public DelegateCommand StopEncodingCommand => m_StopEncodingCommand ??
             (m_StopEncodingCommand = new DelegateCommand(o =>
@@ -235,41 +341,41 @@
             }));
 
         /// <summary>
-        /// Adds a link to end file.
+        /// Adds a merge link to end of file.
         /// </summary>
         /// <value>
-        /// The stop command.
+        /// The merge at end command.
         /// </value>
         public DelegateCommand MergeEndFileCommand => m_MergeEndFileCommand ??
             (m_MergeEndFileCommand = new DelegateCommand(o =>
             {
-                //await App.ViewModel.MediaElement.Pause();
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 if (openFileDialog.ShowDialog() == true)
+                {
                     App.ViewModel.NoiseTimeLine.EndFile = openFileDialog.FileName;
-
-                //await App.ViewModel.MediaElement.Play();
-                App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.EndFile}";
+                    OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
+                    SaveEntriesCommand.Execute();
+                    App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.EndFile}";
+                }
             }));
 
         /// <summary>
-        /// Gets the encode timelines command.
+        /// Adds a merge link to beginning of file.
         /// </summary>
         /// <value>
-        /// The stop command.
+        /// The merge at beginning command.
         /// </value>
         public DelegateCommand MergeBeginFileCommand => m_MergeBeginFileCommand ??
             (m_MergeBeginFileCommand = new DelegateCommand(o =>
             {
-                //await App.ViewModel.MediaElement.Pause();
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 if (openFileDialog.ShowDialog() == true)
                 {
-
                     App.ViewModel.NoiseTimeLine.BeginFile = openFileDialog.FileName;
+                    OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
+                    SaveEntriesCommand.Execute();
+                    App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.BeginFile}";
                 }
-                //await App.ViewModel.MediaElement.Play();
-                App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.BeginFile}";
             }));
 
         /// <summary>

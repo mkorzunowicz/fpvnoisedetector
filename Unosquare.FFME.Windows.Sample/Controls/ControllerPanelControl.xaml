@@ -375,6 +375,19 @@
                             FontSize="25"
                             Text="&#xE78C;" />
                     </Button>
+
+                    <Button
+                        Padding="0"
+                        Command="{Binding Commands.EncodePlaylistCommand}"
+                        Foreground="Green"
+                        IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
+                        Style="{DynamicResource ModernButtonStyle}"
+                        Visibility="{Binding Controller.PlayButtonVisibility}">
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="25"
+                            Text="&#xE78C;" />
+                    </Button>
                     <Button
                         Command="{Binding Commands.PauseCommand}"
                         Style="{DynamicResource ModernButtonStyle}"
