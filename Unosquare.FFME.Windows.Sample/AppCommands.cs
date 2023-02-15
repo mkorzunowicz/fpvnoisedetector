@@ -31,7 +31,6 @@
         private DelegateCommand m_EncodePlayListCommand;
         private DelegateCommand m_StopEncodingCommand;
         private DelegateCommand m_MergeEndFileCommand;
-        private DelegateCommand m_MergeBeginFileCommand;
         private DelegateCommand m_PredictNoiseInWholeVideoCommand;
         private DelegateCommand m_CloseCommand;
         private DelegateCommand m_ToggleFullscreenCommand;
@@ -356,25 +355,6 @@
                     OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
                     SaveEntriesCommand.Execute();
                     App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.EndFile}";
-                }
-            }));
-
-        /// <summary>
-        /// Adds a merge link to beginning of file.
-        /// </summary>
-        /// <value>
-        /// The merge at beginning command.
-        /// </value>
-        public DelegateCommand MergeBeginFileCommand => m_MergeBeginFileCommand ??
-            (m_MergeBeginFileCommand = new DelegateCommand(o =>
-            {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    App.ViewModel.NoiseTimeLine.BeginFile = openFileDialog.FileName;
-                    OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
-                    SaveEntriesCommand.Execute();
-                    App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.BeginFile}";
                 }
             }));
 

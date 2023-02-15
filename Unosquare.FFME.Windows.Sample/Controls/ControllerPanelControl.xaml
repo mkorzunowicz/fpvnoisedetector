@@ -34,7 +34,6 @@
                 Grid.Row="0"
                 MinHeight="20"
                 Margin="15,0"
-                MergeBeginFile="{Binding Commands.MergeBeginFileCommand}"
                 MergeEndFile="{Binding Commands.MergeEndFileCommand}"
                 Position="{Binding MediaElement.Position, Mode=OneWayToSource}"
                 ProgressPosition="{Binding MediaEncoder.EncodingProgress}"

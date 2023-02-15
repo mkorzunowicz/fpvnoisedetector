@@ -54,25 +54,6 @@ public partial class TimeLineControl : UserControl
         set { SetValue(MergeEndFileProperty, value); }
     }
     #endregion
-    #region MergeBeginFile
-    /// <summary>
-    /// Adds a file this timeline should merge to
-    /// </summary>
-    public static readonly DependencyProperty MergeBeginFileProperty =
-        DependencyProperty.Register(
-            "MergeBeginFile",
-            typeof(ICommand),
-            typeof(TimeLineControl),
-            new UIPropertyMetadata(null));
-    /// <summary>
-    /// The MergeBeginFile command
-    /// </summary>
-    public ICommand MergeBeginFile
-    {
-        get { return (ICommand)GetValue(MergeBeginFileProperty); }
-        set { SetValue(MergeBeginFileProperty, value); }
-    }
-    #endregion
 
     #region ProgressPegVisibility
     /// <summary>
