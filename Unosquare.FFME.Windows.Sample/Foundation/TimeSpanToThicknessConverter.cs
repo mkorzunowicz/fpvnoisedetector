@@ -25,6 +25,7 @@ public class TimeSpanToThicknessConverter : IMultiValueConverter
             rval = 0;
         else
             rval = ConvertTimeSpanToWidth((double)values[2], (TimeSpan)values[1], (TimeSpan)values[0]);
+        if (rval<=0) rval = 0;
         if (targetType == typeof(Thickness))
         {
             return new Thickness(rval, 0, 0, 0);
