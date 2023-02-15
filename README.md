@@ -3,11 +3,11 @@
 :star: *Please star this project if you like it and show your appreciation via*
 **[PayPal.Me](https://www.paypal.me/mkorzunowicz/10eur)**
 
-![ffmeplay](https://github.com/mkorzunowicz/fpvnoisedetector/raw/master/Support/fpvnoisedetector.png)
+![fpvnoisedetector](https://github.com/mkorzunowicz/fpvnoisedetector/raw/master/Support/fpvnoisedetector.png)
 
 ## What does this even do?
 
-* First and foremost plays videos using FFmpeg, based on an amazing project by [ffmediaelement](https://github.com/unosquare/ffmediaelement) by Mario Divece.
+* First and foremost plays videos using FFmpeg, based on an amazing project [ffmediaelement](https://github.com/unosquare/ffmediaelement) by Mario Divece.
 * Detects analogue video noise seen in analogue FPV videos (and potentially old VHS casettes) and saves a timeline distinguishing noise and actual FPV footage.
 * Splits the videos and merges them together without losing quality. Does that for a whole playlist.
 
@@ -81,7 +81,7 @@ Press the button on the right of the timeline to select a video file which the c
 
 ## Thanks
 
-* *To Marco Divece and the contributors to the FFmpeg powered MediaElement for WPF, which this app is based on, meaning the Unosquare's' [ffmediaelement](https://github.com/unosquare/ffmediaelement).
+* To Mario Divece and the contributors to the FFmpeg powered MediaElement for WPF, which this app is based on, meaning the Unosquare's' [ffmediaelement](https://github.com/unosquare/ffmediaelement).
 * To the <a href="http://ffmpeg.org/">FFmpeg team</a>.
 
 ## License
