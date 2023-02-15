@@ -64,8 +64,8 @@ public class MediaEncoder : ObservableObject
 
         var audioSettings = new AudioEncoderSettings(audioInfo.SampleRate, audioInfo.NumChannels, AudioCodec.AAC);
 
-        //var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).Create();
-        var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).WithAudio(audioSettings).Create();
+        var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).Create();
+        //var fileSaved = MediaBuilder.CreateContainer(destination).WithVideo(settings).WithAudio(audioSettings).Create();
         return fileSaved;
     }
     /// <summary>
