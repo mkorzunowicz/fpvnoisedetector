@@ -28,7 +28,7 @@
             <controls:TimeLineControl
                 Grid.Row="0"
                 MinHeight="20"
-                Margin="10,0"
+                Margin="15,0"
                 TimeLinesSource="{Binding NoiseTimeLines}" />
             <Slider
                 Name="PositionSlider"

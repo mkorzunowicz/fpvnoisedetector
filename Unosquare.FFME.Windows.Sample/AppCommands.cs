@@ -138,49 +138,74 @@
             (m_PredictNoiseInWholeVideoCommand = new DelegateCommand(async o =>
             {
                 var dict = new Dictionary<TimeSpan, float>();
-                var nextPos = TimeSpan.FromSeconds(0);
-                var normalStep = 20000;
+                var position = TimeSpan.Zero;
+                var normalStep = 2000;
+                var minStep = 50;
                 var step = normalStep;
                 var start = DateTime.Now;
                 var hitTheEnd = false;
 
                 TimeLine good = new()
                 {
-                    Duration = App.ViewModel.MediaElement.NaturalDuration.Value
                 };
+                TimeLineEvent lastEvent = null;
                 do
                 {
-                    await App.ViewModel.MediaElement.Seek(nextPos);
+                    await App.ViewModel.MediaElement.Seek(position);
                     var bitmap = await App.ViewModel.MediaElement.CaptureBitmapAsync();
                     var score = NoisePredictorModel.Predict(bitmap).Score.First();
                     if (dict.Count == 0 || Math.Abs(dict.Last().Value - score) < 0.5)
                     {
+                        if (dict.Count == 0)
+                        {
+                            if (score > 0.5)
+                                lastEvent = new TimeLineEvent { Start = TimeSpan.Zero };
+                        }
+
                         dict[App.ViewModel.MediaElement.FramePosition] = score;
                     }
-                    else if (step < 50)
+                    else if (step < minStep)
                     {
+                        if (lastEvent == null)
+                        {
+                            lastEvent = new TimeLineEvent { Start = position };
+                        }
+                        else
+                        {
+                            lastEvent.Duration = position - lastEvent.Start;
+                            good.Events.Add(lastEvent);
+                            lastEvent = null;
+                        }
+
                         dict[App.ViewModel.MediaElement.FramePosition] = score;
                         step = normalStep;
                     }
                     else
                     {
-                        nextPos -= TimeSpan.FromMilliseconds(step);
+                        position -= TimeSpan.FromMilliseconds(step);
                         step /= 2;
                     }
 
-                    nextPos += TimeSpan.FromMilliseconds(step);
-                    if (App.ViewModel.MediaElement.NaturalDuration < nextPos && !hitTheEnd)
+                    position += TimeSpan.FromMilliseconds(step);
+                    if (App.ViewModel.MediaElement.NaturalDuration < position && !hitTheEnd)
                     {
-                        nextPos = App.ViewModel.MediaElement.NaturalDuration.Value;
+                        position = App.ViewModel.MediaElement.NaturalDuration.Value;
                         hitTheEnd = true;
                     }
+
+                    if (App.ViewModel.MediaElement.NaturalDuration.Value < position && hitTheEnd)
+                    {
+                        if (lastEvent != null)
+                        {
+                            lastEvent.Duration = App.ViewModel.MediaElement.NaturalDuration.Value - lastEvent.Start;
+                            good.Events.Add(lastEvent);
+                        }
+                    }
                 }
-                while (App.ViewModel.MediaElement.NaturalDuration >= nextPos);
+                while (App.ViewModel.MediaElement.NaturalDuration.Value >= position);
 
                 var done = DateTime.Now - start;
-                good.Events.Add(new TimeLineEvent() { Start = new TimeSpan(0, 1, 0), Duration = new TimeSpan(0, 1, 0) });
-                good.Events.Add(new TimeLineEvent() { Start = new TimeSpan(0, 3, 0), Duration = new TimeSpan(0, 0, 15) });
-
+                good.Duration = App.ViewModel.MediaElement.NaturalDuration.Value;
                 App.ViewModel.NoiseTimeLines = new ObservableCollection<TimeLine>();
                 App.ViewModel.NoiseTimeLines.Add(good);
                 Debug.WriteLine($"Done the whole movie ({App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}) in: {done.TotalSeconds}");
