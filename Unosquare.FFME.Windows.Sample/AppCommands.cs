@@ -257,6 +257,8 @@
         /// <param name="playlist"></param>
         public async void SplitMergePlaylistSortedByName(CustomPlaylistEntryCollection playlist)
         {
+            var start = DateTime.Now;
+            App.ViewModel.NotificationMessage = $"Splitting the playlist..";
             var sorted = playlist.ToList();
             sorted.Sort((x, y) => x.Title.CompareTo(y.Title));
 
@@ -283,6 +285,8 @@
                     nextEntry = App.ViewModel.Playlist.Entries.First(e => Path.GetFullPath(e.MediaSource).Equals(Path.GetFullPath(entry.NoiseTimeLine.EndFile), StringComparison.InvariantCultureIgnoreCase));
                 }
             }
+            var finish = DateTime.Now - start;
+            App.ViewModel.NotificationMessage = $"Done splitting the playlist in {finish.TotalSeconds.ToString("0.00")}s";
         }
 
         /// <summary>
@@ -302,19 +306,20 @@
             int i = 0;
 
             var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
-            var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
             // what if the continued video should go through the whole video (one TimeLineEvent) and should continue on?
             if (continuedVideo != null)
             {
                 var eve = timeline.Events[i];
 
-
-                App.ViewModel.MediaEncoder.CutVideo(sourcePath, destPath, eve.Start, eve.Duration);
-                if(continuedVideo!=null)
+                var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_merged{Path.GetExtension(sourcePath)}");
+                await Task.Run(() => App.ViewModel.MediaEncoder.CutVideo(sourcePath, destPath, eve.Start, eve.Duration));
+                if (continuedVideo != null)
                 {
-                    var mergedPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_merged{Path.GetExtension(sourcePath)}");
+                    var mergedPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
 
                     await Task.Run(() => App.ViewModel.MediaEncoder.MergeVideos(new[] { continuedVideo, destPath }, mergedPath));
+                    File.Delete(continuedVideo);
+                    File.Delete(destPath);
                 }
                 i++;
                 if (timeline.Events.Count == i && !string.IsNullOrEmpty(timeline.EndFile))
@@ -327,6 +332,7 @@
                 if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
                 var eve = timeline.Events[i];
 
+                var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
                 await Task.Run(() => App.ViewModel.MediaEncoder.CutVideo(sourcePath, destPath, eve.Start, eve.Duration));
 
                 if (timeline.Events.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
