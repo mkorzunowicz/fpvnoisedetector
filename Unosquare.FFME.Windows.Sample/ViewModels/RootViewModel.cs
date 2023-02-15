@@ -16,6 +16,9 @@
     {
         private string m_WindowTitle = string.Empty;
         private string m_NotificationMessage = string.Empty;
+        private bool m_IsPredicting = false; 
+        private bool m_ShouldStopPredicting = false; 
+        private bool m_IsEncoding = false;
         private TimeLine m_NoiseTimeLine;
         private double m_PlaybackProgress;
         private TaskbarItemProgressState m_PlaybackProgressState;
@@ -168,6 +171,31 @@
         {
             get => m_IsPropertiesPanelOpen;
             set => SetProperty(ref m_IsPropertiesPanelOpen, value);
+        }
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is properties panel open.
+        /// </summary>
+        public bool ShouldStopPredicting
+        {
+            get => m_ShouldStopPredicting;
+            set => SetProperty(ref m_ShouldStopPredicting, value);
+        }
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is properties panel open.
+        /// </summary>
+        public bool IsPredicting
+        {
+            get => m_IsPredicting;
+            set => SetProperty(ref m_IsPredicting, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is properties panel open.
+        /// </summary>
+        public bool IsEncoding
+        {
+            get => m_IsEncoding;
+            set => SetProperty(ref m_IsEncoding, value);
         }
 
         /// <summary>

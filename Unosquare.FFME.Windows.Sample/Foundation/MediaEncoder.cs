@@ -145,6 +145,9 @@ public class MediaEncoder : ObservableObject
     {
         try
         {
+            //var frame = source.Video.GetNextFrame();
+            //destination.Video.AddFrame(frame);
+            //destination.Video.AddFrame(source.Video.GetFrame(start));
             destination.Video.AddFrame(source.Video.GetFrame(start));
             do
             {
@@ -165,7 +168,7 @@ public class MediaEncoder : ObservableObject
         }
         catch (Exception ex)
         {
-            Debug.WriteLine($"Failed to read frames: {ex.Message}");
+            Debug.WriteLine($"Failed to read frame: {ex.Message}");
         }
         EncodingProgress = TimeSpan.Zero;
     }

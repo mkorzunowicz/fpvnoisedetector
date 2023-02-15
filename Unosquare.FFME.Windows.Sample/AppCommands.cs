@@ -21,7 +21,6 @@
         #region Private State
 
         private readonly WindowStatus PreviousWindowStatus = new WindowStatus();
-
         private DelegateCommand m_OpenCommand;
         private DelegateCommand m_OpenFilesCommand;
         private DelegateCommand m_PauseCommand;
@@ -29,7 +28,6 @@
         private DelegateCommand m_StopCommand;
         private DelegateCommand m_EncodeCommand;
         private DelegateCommand m_EncodePlayListCommand;
-        private DelegateCommand m_StopEncodingCommand;
         private DelegateCommand m_MergeEndFileCommand;
         private DelegateCommand m_PredictNoiseInWholeVideoCommand;
         private DelegateCommand m_CloseCommand;
@@ -196,7 +194,16 @@
         public DelegateCommand StopCommand => m_StopCommand ??
             (m_StopCommand = new DelegateCommand(async o =>
             {
-                await App.ViewModel.MediaElement.Stop();
+                if (App.ViewModel.IsPredicting)
+                {
+                    App.ViewModel.ShouldStopPredicting = true;
+                }
+                else if (App.ViewModel.IsEncoding)
+                {
+                    App.ViewModel.MediaEncoder.ShouldStopEncoding = true;
+                }
+                else
+                    await App.ViewModel.MediaElement.Stop();
             }));
 
         /// <summary>
@@ -208,6 +215,10 @@
         public DelegateCommand EncodeCommand => m_EncodeCommand ??
             (m_EncodeCommand = new DelegateCommand(async o =>
             {
+                App.ViewModel.MediaEncoder.ShouldStopEncoding = false;
+                App.ViewModel.IsEncoding = true;
+                App.ViewModel.NotificationMessage = $"Single file encoding started";
+
                 // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
                 for (int i = 0; i < App.ViewModel.NoiseTimeLine.Events.Count; i++)
                 {
@@ -219,6 +230,9 @@
                     var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
                     await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideo(sourcePath, destPath, eve.Start, eve.Duration));
                 }
+                App.ViewModel.IsEncoding = false;
+                if (App.ViewModel.MediaEncoder.ShouldStopEncoding)
+                    App.ViewModel.NotificationMessage = $"Encoding cancelled";
             }));
 
         /// <summary>
@@ -230,19 +244,10 @@
         public DelegateCommand EncodePlaylistCommand => m_EncodePlayListCommand ??
             (m_EncodePlayListCommand = new DelegateCommand(o =>
             {
+                App.ViewModel.IsEncoding = true;
                 CopyPlaylistSortedByName(App.ViewModel.Playlist.Entries);
-                //var done = new List<CustomPlaylistEntry>();
-                //foreach (var entry in App.ViewModel.Playlist.Entries)
-                //{
-                //    if (done.Contains(entry)) continue;
+                App.ViewModel.IsEncoding = false;
 
-                //    done.Add(entry);
-                //    this.OpenCommand.Execute(entry);
-                //    //if (!string.IsNullOrWhiteSpace(entry.NoiseTimeLine.EndFile))
-
-                //    // add the end of file link
-                //    await this.EncodeCommand.ExecuteAsync();
-                //}
             }));
 
         /// <summary>
@@ -255,7 +260,6 @@
             sorted.Sort((x, y) => x.Title.CompareTo(y.Title));
 
             App.ViewModel.MediaEncoder.ShouldStopEncoding = false;
-
 
             var done = new List<CustomPlaylistEntry>();
             foreach (var entry in sorted)
@@ -317,6 +321,7 @@
                 var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
 
                 var destVideo = App.ViewModel.MediaEncoder.CreateVideo(destPath, sourceVideo.Video.Info, sourceVideo.Audio.Info);
+
                 await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideoPart(sourceVideo, destVideo, eve.Start, eve.Duration));
 
                 if (timeline.Events.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
@@ -326,18 +331,6 @@
 
             return null;
         }
-
-        /// <summary>
-        /// Stops the ongoing Encoding
-        /// </summary>
-        /// <value>
-        /// The stop encoding command.
-        /// </value>
-        public DelegateCommand StopEncodingCommand => m_StopEncodingCommand ??
-            (m_StopEncodingCommand = new DelegateCommand(o =>
-            {
-                App.ViewModel.MediaEncoder.ShouldStopEncoding = true;
-            }));
 
         /// <summary>
         /// Adds a merge link to end of file.
@@ -367,6 +360,9 @@
         public DelegateCommand PredictNoiseInWholeVideoCommand => m_PredictNoiseInWholeVideoCommand ??
             (m_PredictNoiseInWholeVideoCommand = new DelegateCommand(async o =>
             {
+                App.ViewModel.IsPredicting = true;
+                App.ViewModel.ShouldStopPredicting = false;
+
                 var dict = new Dictionary<TimeSpan, float>();
                 var position = TimeSpan.Zero;
                 var normalStep = 20000;
@@ -377,8 +373,9 @@
 
                 TimeLine good = new()
                 {
+                    Duration = App.ViewModel.MediaElement.NaturalDuration.Value
                 };
-                good.Duration = App.ViewModel.MediaElement.NaturalDuration.Value;
+
                 App.ViewModel.NoiseTimeLine = good;
 
                 TimeLineEvent lastEvent = null;
@@ -440,15 +437,24 @@
                         }
                     }
                 }
-                while (App.ViewModel.MediaElement.NaturalDuration.Value >= position);
+                while (App.ViewModel.MediaElement.NaturalDuration.Value >= position && !App.ViewModel.ShouldStopPredicting);
 
                 var done = DateTime.Now - start;
+                if (App.ViewModel.ShouldStopPredicting)
+                {
+                    App.ViewModel.NoiseTimeLine = new TimeLine();
+                    App.ViewModel.NotificationMessage = $"Prediction cancelled after {done.TotalSeconds.ToString("0.00")}s";
+                }
+                else
+                {
+                    App.ViewModel.NotificationMessage = $"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s";
+                    Debug.WriteLine($"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s");
 
-                App.ViewModel.NotificationMessage = $"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s";
-                Debug.WriteLine($"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s");
+                    App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
+                    App.ViewModel.Playlist.Entries.SaveEntries();
+                }
 
-                App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
-                App.ViewModel.Playlist.Entries.SaveEntries();
+                App.ViewModel.IsPredicting = false;
             }));
 
 

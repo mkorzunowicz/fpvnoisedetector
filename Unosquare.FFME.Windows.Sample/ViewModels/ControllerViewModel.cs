@@ -254,6 +254,18 @@
         {
             base.OnApplicationLoaded();
             var m = App.ViewModel.MediaElement;
+            var vm = App.ViewModel;
+
+            vm.WhenChanged(() => {
+                StopButtonVisibility =
+                    m.IsOpen && m.IsChanging == false && m.IsSeeking == false && (m.HasMediaEnded || (m.IsSeekable && m.MediaState != MediaPlaybackState.Stop)) || vm.IsEncoding || vm.IsPredicting ?
+                    Visibility.Visible : Visibility.Hidden;
+                PlayButtonVisibility =
+                    m.IsOpen && m.IsPlaying == false && m.IsSeeking == false && m.IsChanging == false && !App.ViewModel.IsPredicting && !App.ViewModel.IsEncoding ?
+                    Visibility.Visible : Visibility.Collapsed;
+            },
+                nameof(vm.IsPredicting),
+                nameof(vm.IsEncoding));
 
             m.WhenChanged(() => IsMediaOpenVisibility = m.IsOpen ? Visibility.Visible : Visibility.Hidden,
                 nameof(m.IsOpen));
@@ -268,14 +280,14 @@
             },
             nameof(m.HasAudio));
 
-            m.WhenChanged(() => PauseButtonVisibility = m.CanPause && m.IsPlaying ? Visibility.Visible : Visibility.Collapsed,
+            m.WhenChanged(() => PauseButtonVisibility = m.CanPause && m.IsPlaying && !App.ViewModel.IsPredicting && !App.ViewModel.IsEncoding ? Visibility.Visible : Visibility.Collapsed,
                 nameof(m.CanPause),
                 nameof(m.IsPlaying));
 
             m.WhenChanged(() =>
             {
                 PlayButtonVisibility =
-                    m.IsOpen && m.IsPlaying == false && m.HasMediaEnded == false && m.IsSeeking == false && m.IsChanging == false ?
+                    m.IsOpen && m.IsPlaying == false && m.HasMediaEnded == false && m.IsSeeking == false && m.IsChanging == false && !App.ViewModel.IsPredicting && !App.ViewModel.IsEncoding ?
                     Visibility.Visible : Visibility.Collapsed;
             },
             nameof(m.IsOpen),
@@ -287,7 +299,7 @@
             m.WhenChanged(() =>
             {
                 StopButtonVisibility =
-                    m.IsOpen && m.IsChanging == false && m.IsSeeking == false && (m.HasMediaEnded || (m.IsSeekable && m.MediaState != MediaPlaybackState.Stop)) ?
+                    m.IsOpen && m.IsChanging == false && m.IsSeeking == false && (m.HasMediaEnded || (m.IsSeekable && m.MediaState != MediaPlaybackState.Stop)) || vm.IsEncoding || vm.IsPredicting ?
                     Visibility.Visible : Visibility.Hidden;
             },
             nameof(m.IsOpen),
@@ -297,7 +309,7 @@
             nameof(m.IsChanging),
             nameof(m.IsSeeking));
 
-            m.WhenChanged(() => CloseButtonVisibility = (m.IsOpen || m.IsOpening) ? Visibility.Visible : Visibility.Collapsed,
+            m.WhenChanged(() => CloseButtonVisibility = (m.IsOpen || m.IsOpening) && !App.ViewModel.IsPredicting ? Visibility.Visible : Visibility.Collapsed,
                 nameof(m.IsOpen),
                 nameof(m.IsOpening));
 
@@ -326,7 +338,7 @@
             nameof(m.DownloadProgress),
             nameof(m.IsLiveStream));
 
-            m.WhenChanged(() => OpenButtonVisibility = m.IsOpening == false ? Visibility.Visible : Visibility.Hidden, nameof(m.IsOpening));
+            m.WhenChanged(() => OpenButtonVisibility = m.IsOpening == false && !App.ViewModel.IsPredicting ? Visibility.Visible : Visibility.Hidden, nameof(m.IsOpening));
 
             m.WhenChanged(() => IsSpeedRatioEnabled = m.IsOpening == false, nameof(m.IsOpen), nameof(m.IsSeekable));
         }

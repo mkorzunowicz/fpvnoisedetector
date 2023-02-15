@@ -353,17 +353,6 @@
                     </Button>
                     <Button
                         Padding="0"
-                        Command="{Binding Commands.StopEncodingCommand}"
-                        Foreground="Red"
-                        Style="{DynamicResource ModernButtonStyle}"
-                        Visibility="{Binding Controller.PlayButtonVisibility}">
-                        <TextBlock
-                            FontFamily="Segoe MDL2 Assets"
-                            FontSize="25"
-                            Text="&#xE78C;" />
-                    </Button>
-                    <Button
-                        Padding="0"
                         Command="{Binding Commands.EncodeCommand}"
                         Foreground="White"
                         IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
