@@ -14,6 +14,19 @@ using Unosquare.FFME.Windows.Sample.Foundation;
 /// </summary>
 public partial class TimeLineControl : UserControl
 {
+
+    /// <summary>
+    /// TimeLinesSourceProperty regsitered on the Control.
+    /// </summary>
+    public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(TimeSpan?), typeof(TimeLineControl));
+    /// <summary>
+    /// Position of the currently scrubbed timeline
+    /// </summary>
+    public TimeSpan? Position
+    {
+        get => (TimeSpan?)GetValue(PositionProperty);
+        set => SetValue(PositionProperty, value);
+    }
     /// <summary>
     /// TimeLinesSourceProperty regsitered on the Control.
     /// </summary>
@@ -118,6 +131,7 @@ public partial class TimeLineControl : UserControl
                     movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
                 }
                 lastStartTime = startTime;
+                Position = startTime;
             }
             else // rightPeg
             {
@@ -147,6 +161,7 @@ public partial class TimeLineControl : UserControl
                         movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
                     }
                     lastEndTime = endTime;
+                    Position = endTime;
                 }
             }
 

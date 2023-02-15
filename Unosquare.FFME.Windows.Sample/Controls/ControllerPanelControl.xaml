@@ -29,7 +29,9 @@
                 Grid.Row="0"
                 MinHeight="20"
                 Margin="15,0"
-                TimeLineSource="{Binding NoiseTimeLine}" />
+                Position="{Binding MediaElement.Position, Mode=OneWayToSource}"
+                TimeLineSource="{Binding NoiseTimeLine}"
+                Visibility="{Binding Controller.SeekBarVisibility}" />
             <Slider
                 Name="PositionSlider"
                 Grid.Row="1"
@@ -329,24 +331,27 @@
                     </Button>
 
                     <Button
+                        Padding="0"
                         Command="{Binding Commands.PredictNoiseInWholeVideoCommand}"
-                        Foreground="Purple"
+                        Foreground="White"
                         Style="{DynamicResource ModernButtonStyle}"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
-                        <Path
-                            Data="{Binding Source={StaticResource PlayIcon}, Path=Data}"
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                            Stretch="Uniform" />
+                        <TextBlock
+                            VerticalAlignment="Stretch"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="25"
+                            Text="&#xE9F5;" />
                     </Button>
                     <Button
+                        Padding="0"
                         Command="{Binding Commands.EncodeCommand}"
-                        Foreground="Green"
+                        Foreground="White"
                         Style="{DynamicResource ModernButtonStyle}"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
-                        <Path
-                            Data="{Binding Source={StaticResource PlayIcon}, Path=Data}"
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
-                            Stretch="Uniform" />
+                        <TextBlock
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="25"
+                            Text="&#xE78C;" />
                     </Button>
                     <Button
                         Command="{Binding Commands.PauseCommand}"
