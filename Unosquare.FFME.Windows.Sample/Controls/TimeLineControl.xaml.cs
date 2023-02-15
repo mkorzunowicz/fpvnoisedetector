@@ -18,6 +18,38 @@ public partial class TimeLineControl : UserControl
     /// <summary>
     /// TimeLinesSourceProperty regsitered on the Control.
     /// </summary>
+    public static readonly DependencyProperty ProgressPegVisibilityProperty = DependencyProperty.Register("ProgressPegVisibility", typeof(Visibility), typeof(TimeLineControl));
+    /// <summary>
+    /// Position of the currently scrubbed timeline
+    /// </summary>
+    public Visibility ProgressPegVisibility
+    {
+        get => (Visibility)GetValue(ProgressPegVisibilityProperty);
+        set => SetValue(ProgressPegVisibilityProperty, value);
+    }
+
+    /// <summary>
+    /// TimeLinesSourceProperty regsitered on the Control.
+    /// </summary>
+    public static readonly DependencyProperty ProgressPositionProperty = DependencyProperty.Register("ProgressPosition", typeof(TimeSpan?), typeof(TimeLineControl));
+    /// <summary>
+    /// Position of the currently scrubbed timeline
+    /// </summary>
+    public TimeSpan? ProgressPosition
+    {
+        get => (TimeSpan?)GetValue(ProgressPositionProperty);
+        set
+        {
+            SetValue(ProgressPositionProperty, value);
+            if (value == TimeSpan.Zero) 
+                ProgressPegVisibility = Visibility.Collapsed;
+            else 
+                ProgressPegVisibility = Visibility.Visible;
+        }
+    }
+    /// <summary>
+    /// TimeLinesSourceProperty regsitered on the Control.
+    /// </summary>
     public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(TimeSpan?), typeof(TimeLineControl));
     /// <summary>
     /// Position of the currently scrubbed timeline
@@ -73,7 +105,7 @@ public partial class TimeLineControl : UserControl
         var ctrl = sender as System.Windows.Shapes.Rectangle;
         if (ctrl == null)
             return;
-        if (movedSliderPeg==null)
+        if (movedSliderPeg == null)
         {
             Application.Current.MainWindow.MouseMove += MainWindow_MouseMove;
             Application.Current.MainWindow.MouseUp += ManipulationEnds;
@@ -92,7 +124,8 @@ public partial class TimeLineControl : UserControl
             Double mouseX = Mouse.GetPosition(null).X;
             var eventGrid = movedSliderPeg.Parent as Grid;
             var deltaX = mouseX - prevX;
-            var containerWidth = this.ActualWidth - 10; // not sure why the this.Margin isnt 5 but 15?
+            var containerWidth = this.TimeLine.ActualWidth; // not sure why the this.Margin isnt 5 but 15?
+            //var containerWidth = this.TimeLine.ActualWidth - 10; // not sure why the this.Margin isnt 5 but 15?
             shouldDelete = false;
 
             if (isLeftPeg)

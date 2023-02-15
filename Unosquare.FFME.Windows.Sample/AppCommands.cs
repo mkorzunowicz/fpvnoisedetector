@@ -161,7 +161,7 @@
 
                     var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
                     var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
-                    await Task.Run(() => MediaEncoder.CopyVideo(sourcePath, destPath, eve.Start, eve.Duration));
+                    await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideo(sourcePath, destPath, eve.Start, eve.Duration));
                 }
             }));
 

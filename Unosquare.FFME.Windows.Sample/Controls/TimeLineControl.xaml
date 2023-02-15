@@ -6,21 +6,28 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     x:Name="thisTimeLine"
-    d:DesignHeight="450"
+    d:DesignHeight="50"
     d:DesignWidth="800"
     mc:Ignorable="d">
 
     <UserControl.Resources>
         <conv:TimeSpanToThicknessConverter x:Key="mEventLengthConverter" />
+        <conv:ZeroTimeSpanToVisibilityConverter x:Key="mZeroTimeSpanToVisConverter" />
+        <conv:ZeroTimeSpanToBooleanConverter x:Key="mZeroTimeSpanToBooleanConverter" />
+        <conv:BoolToBrushConverter x:Key="mBoolToBrushConverter" />
     </UserControl.Resources>
-    <Grid DataContext="{Binding Path=TimeLineSource, ElementName=thisTimeLine}">
+    <Grid
+        x:Name="host"
+        Margin="5"
+        DataContext="{Binding Path=TimeLineSource, ElementName=thisTimeLine}"
+        IsEnabled="{Binding ElementName=thisTimeLine, Path=ProgressPosition, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}">
         <ItemsControl x:Name="TimeLine" ItemsSource="{Binding Path=Events}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Grid
                         x:Name="EventContainer"
                         Height="20"
-                        Margin="5"
+                        Margin="0"
                         Background="Gainsboro"
                         MouseLeftButtonDown="EventContainer_MouseLeftButtonDown" />
                 </ItemsPanelTemplate>
@@ -50,7 +57,7 @@
                         <Rectangle
                             Height="20"
                             HorizontalAlignment="Stretch"
-                            Fill="Green" />
+                            Fill="{Binding ElementName=host, Path=IsEnabled, Converter={StaticResource mBoolToBrushConverter}}" />
                         <Rectangle
                             Width="5"
                             Height="25"
@@ -58,7 +65,6 @@
                             VerticalAlignment="Stretch"
                             Fill="Blue"
                             MouseLeftButtonDown="TimeLineStart_MouseLeftButtonDown" />
-
                         <Rectangle
                             Width="5"
                             HorizontalAlignment="Right"
@@ -69,5 +75,20 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+        <Rectangle
+            Width="4"
+            Height="25"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Stretch"
+            Fill="Yellow"
+            Visibility="{Binding ElementName=thisTimeLine, Path=ProgressPosition, Converter={StaticResource mZeroTimeSpanToVisConverter}}">
+            <Rectangle.Margin>
+                <MultiBinding Converter="{StaticResource mEventLengthConverter}">
+                    <Binding ElementName="thisTimeLine" Path="TimeLineSource.Duration" />
+                    <Binding ElementName="thisTimeLine" Path="ProgressPosition" />
+                    <Binding ElementName="TimeLine" Path="ActualWidth" />
+                </MultiBinding>
+            </Rectangle.Margin>
+        </Rectangle>
     </Grid>
 </UserControl>

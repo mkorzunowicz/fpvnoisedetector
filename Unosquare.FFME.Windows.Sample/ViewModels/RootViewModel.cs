@@ -23,6 +23,7 @@
         private bool m_IsPropertiesPanelOpen = App.IsInDesignMode;
         private bool m_IsApplicationLoaded = App.IsInDesignMode;
         private MediaElement m_MediaElement;
+        private MediaEncoder m_MediaEncoder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RootViewModel"/> class.
@@ -39,6 +40,7 @@
             // Attached ViewModel Initialization
             Playlist = new PlaylistViewModel(this);
             Controller = new ControllerViewModel(this);
+            m_MediaEncoder = new MediaEncoder();
         }
 
         /// <summary>
@@ -114,7 +116,18 @@
         {
             get
             {
-                return m_NoiseTimeLine;
+                if (App.IsInDesignMode)
+                {
+                    var tl = new TimeLine()
+                    {
+                        Duration = TimeSpan.FromMinutes(5)
+                    };
+                    tl.Events.Add(new TimeLineEvent() { Start = TimeSpan.FromSeconds(3), Duration = TimeSpan.FromMinutes(1) });
+                    tl.Events.Add(new TimeLineEvent() { Start = TimeSpan.FromMinutes(2), Duration = TimeSpan.FromSeconds(50) });
+                    return tl;
+                }
+                else
+                    return m_NoiseTimeLine;
             }
             set
             {
@@ -183,6 +196,13 @@
 
                 return m_MediaElement;
             }
+        }
+        /// <summary>
+        /// Gets the media encoder.
+        /// </summary>
+        public MediaEncoder MediaEncoder
+        {
+            get => m_MediaEncoder;
         }
 
         /// <summary>
