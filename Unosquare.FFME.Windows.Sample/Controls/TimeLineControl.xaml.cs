@@ -25,21 +25,6 @@ public partial class TimeLineControl : UserControl
     public TimeLineControl()
     {
         InitializeComponent();
-        TimeLine.Loaded += TimeLineLoaded;
-    }
-
-    void TimeLineLoaded(object sender, RoutedEventArgs e)
-    {
-        var x = (ItemsControl)sender;
-
-        var presenter = x.Template.FindName("TimeLineItem", x);
-        //var stackPanel = x.ItemsPanel.FindName("EventContainer", presenter);
-        //var presenter = (ItemsPresenter)this.Template.FindName("PART_Presenter", this);
-        //var stackPanel = (StackPanel)this.ItemsPanel.FindName("PART_StackPanel", presenter);
-
-        //var presenter = (ItemsPresenter)x.ItemsPanel.FindName("EventContainer", x);
-        //var presenter = (ItemsPresenter)this.Template.FindName("EventContainer", this);
-        //var stackPanel = (StackPanel)this.ItemsPanel.FindName("PART_StackPanel", presenter);
     }
 
     /// <summary>
@@ -54,22 +39,21 @@ public partial class TimeLineControl : UserControl
     private Double prevX = 0;
     private System.Windows.Shapes.Rectangle movedSliderPeg;
     private bool shouldDelete = false;
-    private bool isStart = false;
+    private bool isLeftPeg = false;
     private TimeSpan lastStartTime;
     private TimeSpan lastEndTime;
     private TimeLineEvent lastEvent;
 
     private void TimeLineEnd_MouseLeftButtonDown(object sender, MouseEventArgs e)
     {
-        isStart = false;
+        isLeftPeg = false;
         ManipulationBegins(sender);
     }
 
     private void TimeLineStart_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
-        isStart = true;
+        isLeftPeg = true;
         ManipulationBegins(sender);
-
     }
     private void ManipulationBegins(object sender)
     {
@@ -89,28 +73,23 @@ public partial class TimeLineControl : UserControl
 
         try
         {
-            var tlEvent = lastEvent;
-
             Double mouseX = Mouse.GetPosition(null).X;
             var eventGrid = movedSliderPeg.Parent as Grid;
             var deltaX = mouseX - prevX;
-            var containerWidth = this.ActualWidth - 10; // not sure why the margin isnt 5 but 15?
+            var containerWidth = this.ActualWidth - 10; // not sure why the this.Margin isnt 5 but 15?
+            shouldDelete = false;
 
-            var otherEvents = TimeLineSource.Events.Where(ev => ev != tlEvent);
-
-            if (isStart)
+            if (isLeftPeg)
             {
-                var earlierEvents = TimeLineSource.Events.Where(ev => ev.End <= tlEvent.Start);
+                var earlierEvents = TimeLineSource.Events.Where(ev => ev.End <= lastEvent.Start);
                 var leftTimeBoundry = TimeSpan.Zero;
                 if (earlierEvents.Any())
                     leftTimeBoundry = earlierEvents.Max(ev => ev.End);
                 var startTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left + deltaX, TimeLineSource.Duration);
                 var rightTimeBoundry = lastEvent.End;
 
-                shouldDelete = false;
                 var widthWouldBe = eventGrid.Width - deltaX;
-                var marginWouldBe = eventGrid.Margin.Left + deltaX;
-                if (startTime <= leftTimeBoundry || marginWouldBe <= 0)
+                if (startTime <= leftTimeBoundry)
                 {
                     startTime = leftTimeBoundry;
                     var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, startTime, TimeLineSource.Duration);
@@ -123,7 +102,6 @@ public partial class TimeLineControl : UserControl
                 else if (startTime >= rightTimeBoundry || widthWouldBe <= eventGrid.MinWidth)
                 {
                     startTime = rightTimeBoundry;
-
                     var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, startTime, TimeLineSource.Duration);
                     eventGrid.Margin = new Thickness(pos - eventGrid.MinWidth, 0, 0, 0);
                     eventGrid.Width = eventGrid.MinWidth;
@@ -132,13 +110,13 @@ public partial class TimeLineControl : UserControl
                 }
                 else
                 {
-                    eventGrid.Width -= deltaX;  // the width of the bar should be made longer, while the margin left and the other way around
+                    eventGrid.Width -= deltaX;
                     eventGrid.Margin = new Thickness(eventGrid.Margin.Left + deltaX, 0, 0, 0);
                     movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
                 }
                 lastStartTime = startTime;
             }
-            else
+            else // rightPeg
             {
                 if (eventGrid.Width + deltaX < eventGrid.MinWidth)
                 {
@@ -148,14 +126,13 @@ public partial class TimeLineControl : UserControl
                 }
                 else
                 {
-                    shouldDelete = false;
-
-                    var laterEvents = TimeLineSource.Events.Where(ev => ev.Start >= tlEvent.End);
+                    var laterEvents = TimeLineSource.Events.Where(ev => ev.Start >= lastEvent.End);
                     var rightTimeBoundry = TimeLineSource.Duration;
                     if (laterEvents.Any())
                         rightTimeBoundry = laterEvents.Min(ev => ev.Start);
-                    var widthWouldBe = eventGrid.Width += deltaX;
+                    movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
 
+                    var widthWouldBe = eventGrid.Width += deltaX;
                     var endTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left + widthWouldBe, TimeLineSource.Duration);
                     var startTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left, TimeLineSource.Duration);
 
@@ -165,18 +142,6 @@ public partial class TimeLineControl : UserControl
                         var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, endTime - startTime, TimeLineSource.Duration);
                         eventGrid.Width = pos;
                         movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
-                    }
-                    else
-                    {
-                        eventGrid.Width = widthWouldBe;
-                        if (eventGrid.Width > containerWidth - eventGrid.Margin.Left)
-                        {
-                            // hit the right timeline bound
-                            eventGrid.Width = containerWidth - eventGrid.Margin.Left;
-                            movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
-                        }
-                        else
-                            movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
                     }
                     lastEndTime = endTime;
                 }
@@ -200,6 +165,7 @@ public partial class TimeLineControl : UserControl
     {
         Application.Current.MainWindow.MouseMove -= MainWindow_MouseMove;
         Application.Current.MainWindow.MouseUp -= ManipulationEnds;
+        movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
         if (shouldDelete)
             TimeLineSource.Events.Remove(movedSliderPeg.DataContext as TimeLineEvent);
         movedSliderPeg = null;
@@ -225,6 +191,10 @@ public partial class TimeLineControl : UserControl
             Double mouseX = Mouse.GetPosition(this).X;
             var startTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, mouseX, timelineDuration);
             var endTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, mouseX + 10, timelineDuration);
+
+            var conflictingEvents = TimeLineSource.Events.Where(ev => ev.Start <= startTime && ev.End >= startTime);
+            if (conflictingEvents.Any()) return;
+
             TimeLineSource.Events.Add(new TimeLineEvent
             {
                 Start = startTime,
