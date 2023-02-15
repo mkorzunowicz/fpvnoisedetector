@@ -125,7 +125,16 @@
                     </Style>
                 </Grid.Style>
 
-                <Button Grid.Column="1" Command="{Binding Commands.OpenFilesCommand}" />
+                <Button
+                    Grid.Column="1"
+                    Command="{Binding Commands.OpenFilesCommand}"
+                    Style="{DynamicResource ModernButtonStyle}">
+                    <TextBlock
+                        VerticalAlignment="Stretch"
+                        FontFamily="Segoe MDL2 Assets"
+                        FontSize="20"
+                        Text="&#xE8E5;" />
+                </Button>
                 <Border
                     Margin="6"
                     Padding="10,2,10,2"
