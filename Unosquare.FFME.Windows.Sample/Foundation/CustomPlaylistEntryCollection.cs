@@ -64,7 +64,8 @@
         /// </summary>
         /// <param name="mediaSource">The current media source URI.</param>
         /// <param name="info">The media information.</param>
-        public void AddOrUpdateEntry(Uri mediaSource, MediaInfo info)
+        /// <param name="timeLine">Time line of noise vs good video.</param>
+        public void AddOrUpdateEntry(Uri mediaSource, MediaInfo info, TimeLine timeLine)
         {
             if (info == null) throw new ArgumentNullException(nameof(info));
 
@@ -108,6 +109,7 @@
                 entry.Duration = info.Duration == TimeSpan.MinValue ? TimeSpan.FromSeconds(-1) : info.Duration;
                 entry.LastOpenedUtc = DateTime.UtcNow;
                 entry.Format = info.Format;
+                entry.NoiseTimeLine = timeLine;
 
                 foreach (var meta in info.Metadata)
                 {

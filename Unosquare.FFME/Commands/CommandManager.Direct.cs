@@ -299,7 +299,7 @@
                 // Convert the URI object to something the Media Container understands (Uri to String)
                 var mediaSource = source.IsWellFormedOriginalString()
                     ? source.OriginalString
-                    : Uri.EscapeUriString(source.OriginalString);
+                    : Uri.EscapeDataString(source.OriginalString);
 
                 // When opening via URL (and not via custom input stream), fix up the protocols and stuff
                 if (inputStream == null)

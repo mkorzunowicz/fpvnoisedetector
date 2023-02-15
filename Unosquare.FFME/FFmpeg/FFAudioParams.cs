@@ -30,7 +30,9 @@
         /// </summary>
         static FFAudioParams()
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             Output.ChannelLayout = ffmpeg.av_get_default_channel_layout(Output.ChannelCount);
+#pragma warning restore CS0618 // Type or member is obsolete
             Output.SamplesPerChannel = Output.SampleRate;
             Output.BufferLength = ffmpeg.av_samples_get_buffer_size(
                 null, Output.ChannelCount, Output.SamplesPerChannel + Constants.AudioBufferPadding, Output.Format, 1);
@@ -50,8 +52,10 @@
         /// <param name="frame">The frame.</param>
         private FFAudioParams(AVFrame* frame)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             ChannelCount = frame->channels;
             ChannelLayout = unchecked((long)frame->channel_layout);
+#pragma warning restore CS0618 // Type or member is obsolete
             Format = (AVSampleFormat)frame->format;
             SamplesPerChannel = frame->nb_samples;
             BufferLength = ffmpeg.av_samples_get_buffer_size(null, ChannelCount, SamplesPerChannel, Format, 1);
@@ -106,7 +110,9 @@
         {
             var spec = new FFAudioParams(frame);
             if (spec.ChannelLayout == 0)
+#pragma warning disable CS0618 // Type or member is obsolete
                 spec.ChannelLayout = ffmpeg.av_get_default_channel_layout(spec.ChannelCount);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             return spec;
         }

@@ -16,12 +16,17 @@
     {
         private string m_WindowTitle = string.Empty;
         private string m_NotificationMessage = string.Empty;
+        private bool m_IsPredicting = false; 
+        private bool m_ShouldStopPredicting = false; 
+        private bool m_IsEncoding = false;
+        private TimeLine m_NoiseTimeLine;
         private double m_PlaybackProgress;
         private TaskbarItemProgressState m_PlaybackProgressState;
         private bool m_IsPlaylistPanelOpen = App.IsInDesignMode;
         private bool m_IsPropertiesPanelOpen = App.IsInDesignMode;
         private bool m_IsApplicationLoaded = App.IsInDesignMode;
         private MediaElement m_MediaElement;
+        private MediaEncoder m_MediaEncoder;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RootViewModel"/> class.
@@ -38,6 +43,7 @@
             // Attached ViewModel Initialization
             Playlist = new PlaylistViewModel(this);
             Controller = new ControllerViewModel(this);
+            m_MediaEncoder = new MediaEncoder();
         }
 
         /// <summary>
@@ -107,6 +113,33 @@
         }
 
         /// <summary>
+        /// Gets or sets the playback progress.
+        /// </summary>
+        public TimeLine NoiseTimeLine
+        {
+            get
+            {
+                if (App.IsInDesignMode)
+                {
+                    var tl = new TimeLine()
+                    {
+                        Duration = TimeSpan.FromMinutes(5)
+                    };
+                    tl.Events.Add(new TimeLineEvent() { Start = TimeSpan.FromSeconds(3), Duration = TimeSpan.FromMinutes(1) });
+                    tl.Events.Add(new TimeLineEvent() { Start = TimeSpan.FromMinutes(2), Duration = TimeSpan.FromSeconds(50) });
+                    return tl;
+                }
+                else
+                    return m_NoiseTimeLine;
+            }
+            set
+            {
+                m_NoiseTimeLine = value;
+                NotifyPropertyChanged(nameof(NoiseTimeLine));
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the state of the playback progress.
         /// </summary>
         public TaskbarItemProgressState PlaybackProgressState
@@ -139,6 +172,31 @@
             get => m_IsPropertiesPanelOpen;
             set => SetProperty(ref m_IsPropertiesPanelOpen, value);
         }
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is properties panel open.
+        /// </summary>
+        public bool ShouldStopPredicting
+        {
+            get => m_ShouldStopPredicting;
+            set => SetProperty(ref m_ShouldStopPredicting, value);
+        }
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is properties panel open.
+        /// </summary>
+        public bool IsPredicting
+        {
+            get => m_IsPredicting;
+            set => SetProperty(ref m_IsPredicting, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is properties panel open.
+        /// </summary>
+        public bool IsEncoding
+        {
+            get => m_IsEncoding;
+            set => SetProperty(ref m_IsEncoding, value);
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is application loaded.
@@ -166,6 +224,13 @@
 
                 return m_MediaElement;
             }
+        }
+        /// <summary>
+        /// Gets the media encoder.
+        /// </summary>
+        public MediaEncoder MediaEncoder
+        {
+            get => m_MediaEncoder;
         }
 
         /// <summary>

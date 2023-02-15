@@ -236,9 +236,8 @@
                     var result = new Dictionary<string, IReadOnlyList<OptionMetadata>>(DecoderNames.Count);
                     foreach (var c in AllCodecs)
                     {
-                        if (c->decode.Pointer == IntPtr.Zero)
-                            continue;
-
+                        // if (c->decode.Pointer == IntPtr.Zero)
+                        // continue;
                         result[Utilities.PtrToStringUTF8(c->name)] = FFInterop.RetrieveCodecOptions(c);
                     }
 

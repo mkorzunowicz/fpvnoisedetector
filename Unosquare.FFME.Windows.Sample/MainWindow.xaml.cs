@@ -574,5 +574,11 @@
         }
 
         #endregion
+
+        private void OnMouseDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(DataFormats.FileDrop) is string[] filePaths)
+                ViewModel.Commands.OpenFilesCommand.ExecuteAsync(filePaths);
+        }
     }
 }
