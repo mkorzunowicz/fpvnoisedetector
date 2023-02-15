@@ -27,6 +27,7 @@
         private DelegateCommand m_PlayCommand;
         private DelegateCommand m_StopCommand;
         private DelegateCommand m_EncodeCommand;
+        private DelegateCommand m_StopEncodingCommand;
         private DelegateCommand m_MergeEndFileCommand;
         private DelegateCommand m_MergeBeginFileCommand;
         private DelegateCommand m_PredictNoiseInWholeVideoCommand;
@@ -214,6 +215,26 @@
 
         /// <summary>
         /// Gets the encode timelines command.
+        /// </summary>
+        /// <value>
+        /// The stop command.
+        /// </value>
+
+
+        /// <summary>
+        /// Stops the ongoing Encoding
+        /// </summary>
+        /// <value>
+        /// The stop command.
+        /// </value>
+        public DelegateCommand StopEncodingCommand => m_StopEncodingCommand ??
+            (m_StopEncodingCommand = new DelegateCommand(o =>
+            {
+                App.ViewModel.MediaEncoder.ShouldStopEncoding = true;
+            }));
+
+        /// <summary>
+        /// Adds a link to end file.
         /// </summary>
         /// <value>
         /// The stop command.

@@ -9,6 +9,17 @@ using System.Diagnostics;
 /// </summary>
 public class MediaEncoder : ObservableObject
 {
+    private bool m_ShouldStopEncoding;
+
+    /// <summary>
+    /// Gets or sets the playback progress.
+    /// </summary>
+    public bool ShouldStopEncoding
+    {
+        get => m_ShouldStopEncoding;
+        set => Set(() => ShouldStopEncoding, ref m_ShouldStopEncoding, value);
+
+    }
     TimeSpan encodingProgress;
     /// <summary>
     /// Duration of the timeline.
@@ -27,6 +38,7 @@ public class MediaEncoder : ObservableObject
     /// <param name="duration"></param>
     public void CopyVideo(string source, string destination, TimeSpan start, TimeSpan duration)
     {
+        ShouldStopEncoding = false;
         var startEncoding = DateTime.Now;
 
         // Opens a multimedia file.
@@ -49,8 +61,9 @@ public class MediaEncoder : ObservableObject
         // var settings = new VideoEncoderSettings(width: 1920, height: 1080, framerate: 30, codec: VideoCodec.H264);
         // var settings = new VideoEncoderSettings(width: info.FrameSize.Width, height: info.FrameSize.Height, framerate: Convert.ToInt32(info.AvgFrameRate), codec: ffmpeg.avcodec_get_name(info.CodecId));
         var settings = new VideoEncoderSettings(width: info.FrameSize.Width, height: info.FrameSize.Height, framerate: Convert.ToInt32(info.AvgFrameRate), codec: VideoCodec.H264);
-        settings.EncoderPreset = EncoderPreset.SuperFast;
-        settings.CRF = 17;
+        settings.EncoderPreset = EncoderPreset.Slower;
+        settings.CRF = 23;
+        //settings.CRF = 17;
 
         // using System.Windows.Media.Imaging;
         // using System.Windows.Media;
@@ -77,7 +90,7 @@ public class MediaEncoder : ObservableObject
                 break;
             }
         }
-        while (fileRead.Video.Position <= start + duration);
+        while (fileRead.Video.Position <= start + duration && !ShouldStopEncoding);
 
         EncodingProgress = TimeSpan.Zero;
         var done = DateTime.Now - startEncoding;
