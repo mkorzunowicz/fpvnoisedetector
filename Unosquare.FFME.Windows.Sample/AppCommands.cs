@@ -245,11 +245,96 @@
             (m_EncodePlayListCommand = new DelegateCommand(o =>
             {
                 App.ViewModel.IsEncoding = true;
-                CopyPlaylistSortedByName(App.ViewModel.Playlist.Entries);
+                //CopyPlaylistSortedByName(App.ViewModel.Playlist.Entries);
+                SplitMergePlaylistSortedByName(App.ViewModel.Playlist.Entries);
                 App.ViewModel.IsEncoding = false;
 
             }));
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="playlist"></param>
+        public async void SplitMergePlaylistSortedByName(CustomPlaylistEntryCollection playlist)
+        {
+            var sorted = playlist.ToList();
+            sorted.Sort((x, y) => x.Title.CompareTo(y.Title));
+
+            App.ViewModel.MediaEncoder.ShouldStopEncoding = false;
+
+            var done = new List<CustomPlaylistEntry>();
+            foreach (var entry in sorted)
+            {
+                if (App.ViewModel.MediaEncoder.ShouldStopEncoding)
+                    break;
+                if (done.Contains(entry)) continue;
+                string continuedVideo = null;
+                CustomPlaylistEntry nextEntry = entry;
+                while (nextEntry != null)
+                {
+
+                    done.Add(nextEntry);
+                    continuedVideo = await SplitEntry(nextEntry, continuedVideo);
+                    if (continuedVideo == null)
+                    {
+                        nextEntry = null;
+                        break;
+                    }
+                    nextEntry = App.ViewModel.Playlist.Entries.First(e => Path.GetFullPath(e.MediaSource).Equals(Path.GetFullPath(entry.NoiseTimeLine.EndFile), StringComparison.InvariantCultureIgnoreCase));
+                }
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="entry"></param>
+        /// <param name="continuedVideo"></param>
+        public async Task<string> SplitEntry(CustomPlaylistEntry entry, string continuedVideo)
+        {
+            await this.OpenCommand.ExecuteAsync(entry);
+            await this.PauseCommand.ExecuteAsync();
+            //App.ViewModel.MediaElement.Stop();
+
+            var timeline = entry.NoiseTimeLine;
+            var sourcePath = entry.MediaSource;
+
+            int i = 0;
+
+            var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
+            var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
+            // what if the continued video should go through the whole video (one TimeLineEvent) and should continue on?
+            if (continuedVideo != null)
+            {
+                var eve = timeline.Events[i];
+
+
+                App.ViewModel.MediaEncoder.CutVideo(sourcePath, destPath, eve.Start, eve.Duration);
+                if(continuedVideo!=null)
+                {
+                    var mergedPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_merged{Path.GetExtension(sourcePath)}");
+
+                    await Task.Run(() => App.ViewModel.MediaEncoder.MergeVideos(new[] { continuedVideo, destPath }, mergedPath));
+                }
+                i++;
+                if (timeline.Events.Count == i && !string.IsNullOrEmpty(timeline.EndFile))
+                    return continuedVideo;
+            }
+            // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
+            for (; i < timeline.Events.Count; i++)
+            {
+                //var startEncoding = DateTime.Now;
+                if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
+                var eve = timeline.Events[i];
+
+                await Task.Run(() => App.ViewModel.MediaEncoder.CutVideo(sourcePath, destPath, eve.Start, eve.Duration));
+
+                if (timeline.Events.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
+                    return destPath;
+            }
+
+            return null;
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -284,7 +369,6 @@
                 }
             }
         }
-
         /// <summary>
         /// 
         /// </summary>

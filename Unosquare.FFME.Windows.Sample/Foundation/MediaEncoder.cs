@@ -3,6 +3,7 @@ using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Encoding;
 using System;
 using System.Diagnostics;
+using System.IO;
 
 /// <summary>
 /// 
@@ -171,5 +172,82 @@ public class MediaEncoder : ObservableObject
             Debug.WriteLine($"Failed to read frame: {ex.Message}");
         }
         EncodingProgress = TimeSpan.Zero;
+    }
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="output"></param>
+    /// <param name="start"></param>
+    /// <param name="duration"></param>
+    public void CutVideo(string source, string output, TimeSpan start, TimeSpan duration)
+    {
+        var processInfo = new ProcessStartInfo($"{Library.FFmpegDirectory}\\ffmpeg")
+        {
+            Arguments = $"-i {source} -c copy -copyts -ss {start.ToString(@"hh\:mm\:ss")} -to {(start + duration).ToString(@"hh\:mm\:ss")} {output}",
+            CreateNoWindow = true,
+            ErrorDialog = false,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+
+        var proc = Process.Start(processInfo);
+
+        proc.ErrorDataReceived += (sender, errorLine) =>
+        {
+            if (errorLine.Data == null) return;
+            Debug.WriteLine(errorLine.Data + Environment.NewLine);
+        };
+        proc.OutputDataReceived += (sender, outputLine) =>
+        {
+            if (outputLine.Data == null) return;
+            Debug.WriteLine(outputLine.Data + Environment.NewLine);
+        };
+        proc.BeginErrorReadLine();
+        proc.BeginOutputReadLine();
+
+        proc.WaitForExit();
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="mergedFiles"></param>
+    /// <param name="output"></param>
+    public void MergeVideos(string[] mergedFiles, string output)
+    {
+        string path = @$"{Library.FFmpegDirectory}\merge.txt";
+        if (!File.Exists(path))
+        {
+            using (StreamWriter sw = File.CreateText(path))
+                foreach (var file in mergedFiles)
+                    sw.WriteLine($"file '{file}'");
+
+        }
+        var processInfo = new ProcessStartInfo($"{Library.FFmpegDirectory}\\ffmpeg")
+        {
+            Arguments = $"-safe 0 -f concat -i {path} -c copy {output}",
+            CreateNoWindow = true,
+            ErrorDialog = false,
+            UseShellExecute = false,
+            RedirectStandardOutput = true,
+            RedirectStandardError = true
+        };
+        var proc = Process.Start(processInfo);
+        proc.ErrorDataReceived += (sender, errorLine) =>
+        {
+            if (errorLine.Data == null) return;
+            Debug.WriteLine(errorLine.Data + Environment.NewLine);
+        };
+        proc.OutputDataReceived += (sender, outputLine) =>
+        {
+            if (outputLine.Data == null) return;
+            Debug.WriteLine(outputLine.Data + Environment.NewLine);
+        };
+        proc.BeginErrorReadLine();
+        proc.BeginOutputReadLine();
+        proc.WaitForExit();
+        File.Delete(path);
     }
 }
