@@ -54,17 +54,31 @@
             {
                 try
                 {
-                    var playListEntry = a as Unosquare.FFME.Windows.Sample.Foundation.CustomPlaylistEntry;
-                    if (string.IsNullOrWhiteSpace(playListEntry.MediaSource))
-                        return;
+                    Uri target;
+                    if (a is string)
+                    {
+                        var uriString = a as string;
+                        if (string.IsNullOrWhiteSpace(uriString))
+                            return;
+                        target = new Uri(uriString);
+                        App.ViewModel.NoiseTimeLine = null;
+                    }
+                    else
+                    {
+                        var playListEntry = a as Unosquare.FFME.Windows.Sample.Foundation.CustomPlaylistEntry;
+                        if (string.IsNullOrWhiteSpace(playListEntry.MediaSource))
+                            return;
+                        target = new Uri(playListEntry.MediaSource);
+
+                        App.ViewModel.NoiseTimeLine = playListEntry.NoiseTimeLine;
+                    }
 
                     var m = App.ViewModel.MediaElement;
-                    var target = new Uri(playListEntry.MediaSource);
+                    
                     if (target.ToString().StartsWith(FileInputStream.Scheme, StringComparison.OrdinalIgnoreCase))
                         await m.Open(new FileInputStream(target.LocalPath));
                     else
                         await m.Open(target);
-                    App.ViewModel.NoiseTimeLine = playListEntry.NoiseTimeLine;
                 }
                 catch (Exception ex)
                 {
