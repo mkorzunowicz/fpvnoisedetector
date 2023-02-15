@@ -14,6 +14,27 @@ using Unosquare.FFME.Windows.Sample.Foundation;
 /// </summary>
 public partial class TimeLineControl : UserControl
 {
+    #region TimeLineConfirmed
+    /// <summary>
+    /// Command to fire on timeline manipulation end
+    /// </summary>
+    public static readonly DependencyProperty TimeLineConfirmedProperty =
+        DependencyProperty.Register(
+            "TimeLineConfirmed",
+            typeof(ICommand),
+            typeof(TimeLineControl),
+            new UIPropertyMetadata(null));
+
+    /// <summary>
+    /// The TimeLineConfirmed command
+    /// </summary>
+    public ICommand TimeLineConfirmed
+    {
+        get { return (ICommand)GetValue(TimeLineConfirmedProperty); }
+        set { SetValue(TimeLineConfirmedProperty, value); }
+    }
+    #endregion
+
     #region MergeEndFile
     /// <summary>
     /// Adds a file this timeline should merge to
@@ -277,6 +298,7 @@ public partial class TimeLineControl : UserControl
             lastEvent.Start = lastStartTime;
             lastStartTime = default(TimeSpan);
         }
+        TimeLineConfirmed?.Execute(this);
     }
     private void EventContainer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
