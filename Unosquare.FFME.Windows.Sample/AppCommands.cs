@@ -297,7 +297,8 @@
         public async Task<string> SplitEntry(CustomPlaylistEntry entry, string continuedVideo)
         {
             await this.OpenCommand.ExecuteAsync(entry);
-            await this.PauseCommand.ExecuteAsync();
+            App.ViewModel.MediaElement.MediaReady += MediaElement_MediaReady;
+
             //App.ViewModel.MediaElement.Stop();
 
             var timeline = entry.NoiseTimeLine;
@@ -341,6 +342,13 @@
 
             return null;
         }
+
+        private void MediaElement_MediaReady(object sender, EventArgs e)
+        {
+            this.PauseCommand.ExecuteAsync();
+            App.ViewModel.MediaElement.MediaReady -= MediaElement_MediaReady;
+        }
+
         /// <summary>
         /// 
         /// </summary>
