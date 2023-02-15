@@ -14,7 +14,46 @@ using Unosquare.FFME.Windows.Sample.Foundation;
 /// </summary>
 public partial class TimeLineControl : UserControl
 {
+    #region MergeEndFile
+    /// <summary>
+    /// Adds a file this timeline should merge to
+    /// </summary>
+    public static readonly DependencyProperty MergeEndFileProperty =
+        DependencyProperty.Register(
+            "MergeEndFile",
+            typeof(ICommand),
+            typeof(TimeLineControl),
+            new UIPropertyMetadata(null));
+    /// <summary>
+    /// The AddBeginFile command
+    /// </summary>
+    public ICommand MergeEndFile
+    {
+        get { return (ICommand)GetValue(MergeEndFileProperty); }
+        set { SetValue(MergeEndFileProperty, value); }
+    }
+    #endregion
+    #region MergeBeginFile
+    /// <summary>
+    /// Adds a file this timeline should merge to
+    /// </summary>
+    public static readonly DependencyProperty MergeBeginFileProperty =
+        DependencyProperty.Register(
+            "MergeBeginFile",
+            typeof(ICommand),
+            typeof(TimeLineControl),
+            new UIPropertyMetadata(null));
+    /// <summary>
+    /// The MergeBeginFile command
+    /// </summary>
+    public ICommand MergeBeginFile
+    {
+        get { return (ICommand)GetValue(MergeBeginFileProperty); }
+        set { SetValue(MergeBeginFileProperty, value); }
+    }
+    #endregion
 
+    #region ProgressPegVisibility
     /// <summary>
     /// TimeLinesSourceProperty regsitered on the Control.
     /// </summary>
@@ -27,7 +66,8 @@ public partial class TimeLineControl : UserControl
         get => (Visibility)GetValue(ProgressPegVisibilityProperty);
         set => SetValue(ProgressPegVisibilityProperty, value);
     }
-
+    #endregion
+    #region ProgressPosition
     /// <summary>
     /// TimeLinesSourceProperty regsitered on the Control.
     /// </summary>
@@ -47,6 +87,9 @@ public partial class TimeLineControl : UserControl
                 ProgressPegVisibility = Visibility.Visible;
         }
     }
+    #endregion
+
+    #region Position
     /// <summary>
     /// TimeLinesSourceProperty regsitered on the Control.
     /// </summary>
@@ -59,18 +102,12 @@ public partial class TimeLineControl : UserControl
         get => (TimeSpan?)GetValue(PositionProperty);
         set => SetValue(PositionProperty, value);
     }
+    #endregion
+    #region TimeLineSource
     /// <summary>
     /// TimeLinesSourceProperty regsitered on the Control.
     /// </summary>
     public static readonly DependencyProperty TimeLineSourceProperty = DependencyProperty.Register("TimeLineSource", typeof(TimeLine), typeof(TimeLineControl));
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="TimeLineControl"/> class.
-    /// </summary>
-    public TimeLineControl()
-    {
-        InitializeComponent();
-    }
 
     /// <summary>
     /// TimeLines to display.
@@ -80,6 +117,15 @@ public partial class TimeLineControl : UserControl
         get => (TimeLine)GetValue(TimeLineSourceProperty);
         set => SetValue(TimeLineSourceProperty, value);
     }
+    #endregion
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TimeLineControl"/> class.
+    /// </summary>
+    public TimeLineControl()
+    {
+        InitializeComponent();
+    }
+
 
     private Double prevX = 0;
     private System.Windows.Shapes.Rectangle movedSliderPeg;

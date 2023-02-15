@@ -8,8 +8,39 @@ using System.Collections.ObjectModel;
 public class TimeLine : ObservableObject
 {
     private TimeSpan duration;
+    private string endFile;
+    private string beginFile;
     private ObservableCollection<TimeLineEvent> events = new ObservableCollection<TimeLineEvent>();
 
+
+    /// <summary>
+    /// File to merge the beginning of the timeline to.
+    /// </summary>
+    public string BeginFile
+    {
+        get
+        {
+            return beginFile;
+        }
+        set
+        {
+            Set(() => BeginFile, ref beginFile, value);
+        }
+    }
+    /// <summary>
+    /// File to merge the end of the timeline to.
+    /// </summary>
+    public string EndFile
+    {
+        get
+        {
+            return endFile;
+        }
+        set
+        {
+            Set(() => EndFile, ref endFile, value);
+        }
+    }
     /// <summary>
     /// Duration of the timeline.
     /// </summary>

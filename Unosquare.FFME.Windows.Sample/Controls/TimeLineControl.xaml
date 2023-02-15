@@ -90,5 +90,25 @@
                 </MultiBinding>
             </Rectangle.Margin>
         </Rectangle>
+        <Button
+            Width="4"
+            Height="25"
+            Margin="-10"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Stretch"
+            Background="Orange"
+            BorderThickness="1"
+            Command="{Binding MergeBeginFile, ElementName=thisTimeLine}"
+            ToolTip="Select file to merge to the beginning" />
+        <Button
+            Width="4"
+            Height="25"
+            Margin="-10"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Stretch"
+            Background="Orange"
+            BorderThickness="1"
+            Command="{Binding MergeEndFile, ElementName=thisTimeLine}"
+            ToolTip="Select file to merge to the end" />
     </Grid>
 </UserControl>
