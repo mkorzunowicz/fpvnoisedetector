@@ -226,12 +226,18 @@
                 TimeLine good = new()
                 {
                 };
+                good.Duration = App.ViewModel.MediaElement.NaturalDuration.Value;
+                App.ViewModel.NoiseTimeLine = good;
+
                 TimeLineEvent lastEvent = null;
+                App.ViewModel.NotificationMessage = "Detecting noise...";
                 do
                 {
                     await App.ViewModel.MediaElement.Seek(position);
                     var bitmap = await App.ViewModel.MediaElement.CaptureBitmapAsync();
-                    var score = NoisePredictorModel.Predict(bitmap).Score.First();
+                    //var score = NoisePredictorModel.Predict(bitmap).Score.First();
+                    var result = await NoisePredictorModel.PredictAsync(bitmap);
+                    var score = result.Score.First();
                     if (dict.Count == 0 || Math.Abs(dict.Last().Value - score) < 0.5)
                     {
                         if (dict.Count == 0)
@@ -253,6 +259,8 @@
                             lastEvent.Duration = position - lastEvent.Start;
                             good.Events.Add(lastEvent);
                             lastEvent = null;
+
+                            App.ViewModel.NotificationMessage = $"Found a no noise video part";
                         }
 
                         dict[App.ViewModel.MediaElement.FramePosition] = score;
@@ -283,9 +291,9 @@
                 while (App.ViewModel.MediaElement.NaturalDuration.Value >= position);
 
                 var done = DateTime.Now - start;
-                good.Duration = App.ViewModel.MediaElement.NaturalDuration.Value;
-                App.ViewModel.NoiseTimeLine = good;
-                Debug.WriteLine($"Noise detected in the whole video ({App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}) in: {done.TotalSeconds}");
+
+                App.ViewModel.NotificationMessage = $"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s";
+                Debug.WriteLine($"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s");
                 
                 App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
                 App.ViewModel.Playlist.Entries.SaveEntries();

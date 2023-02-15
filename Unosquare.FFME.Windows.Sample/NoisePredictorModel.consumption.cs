@@ -4,6 +4,7 @@ using Microsoft.ML.Data;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 
 /// <summary>
 /// Noise predictor model trained to detect 2 kinds of pictures: Good and Noise
@@ -103,6 +104,15 @@ public partial class NoisePredictorModel
 
         // Make a single prediction on the sample data and print results.
         return Predict(sampleData);
+    }
+    /// <summary>
+    /// Predicts asynchronously?
+    /// </summary>
+    /// <param name="bitmap"></param>
+    /// <returns></returns>
+    public static async Task<ModelOutput> PredictAsync(Bitmap bitmap)
+    {
+        return await Task.Run(() => Predict(bitmap));
     }
 
     private static PredictionEngine<ModelInput, ModelOutput> CreatePredictEngine()
