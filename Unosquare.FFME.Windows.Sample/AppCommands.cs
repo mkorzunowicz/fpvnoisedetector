@@ -24,6 +24,8 @@
         private DelegateCommand m_PlayCommand;
         private DelegateCommand m_StopCommand;
         private DelegateCommand m_EncodeCommand;
+        private DelegateCommand m_MergeEndFileCommand;
+        private DelegateCommand m_MergeBeginFileCommand;
         private DelegateCommand m_PredictNoiseInWholeVideoCommand;
         private DelegateCommand m_CloseCommand;
         private DelegateCommand m_ToggleFullscreenCommand;
