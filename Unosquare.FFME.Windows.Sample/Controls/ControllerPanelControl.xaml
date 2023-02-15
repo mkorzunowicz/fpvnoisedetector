@@ -35,7 +35,7 @@
                 MinHeight="20"
                 Margin="15,0"
                 MergeEndFile="{Binding Commands.MergeEndFileCommand}"
-                Position="{Binding MediaElement.Position, Mode=OneWayToSource}"
+                Position="{Binding MediaElement.Position, Mode=OneWayToSource, FallbackValue=0}"
                 ProgressPosition="{Binding MediaEncoder.EncodingProgress}"
                 TimeLineConfirmed="{Binding Commands.SaveEntriesCommand}"
                 TimeLineSource="{Binding NoiseTimeLine}"
