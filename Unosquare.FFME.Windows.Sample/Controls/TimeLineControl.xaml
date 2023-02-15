@@ -21,31 +21,51 @@
                         x:Name="EventContainer"
                         Height="20"
                         Margin="5"
-                        Background="Gainsboro" />
+                        Background="Gainsboro"
+                        MouseLeftButtonDown="EventContainer_MouseLeftButtonDown" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <Rectangle
+                    <Grid
+                        x:Name="TimeLineItem"
                         Grid.Column="1"
+                        MinWidth="10"
                         HorizontalAlignment="Left"
-                        VerticalAlignment="Stretch"
-                        Fill="Green">
-                        <Rectangle.Margin>
+                        VerticalAlignment="Stretch">
+                        <Grid.Margin>
                             <MultiBinding Converter="{StaticResource mEventLengthConverter}">
                                 <Binding ElementName="TimeLine" Path="DataContext.Duration" />
                                 <Binding Path="Start" />
                                 <Binding ElementName="EventContainer" Path="ActualWidth" />
                             </MultiBinding>
-                        </Rectangle.Margin>
-                        <Rectangle.Width>
+                        </Grid.Margin>
+                        <Grid.Width>
                             <MultiBinding Converter="{StaticResource mEventLengthConverter}">
                                 <Binding ElementName="TimeLine" Path="DataContext.Duration" />
                                 <Binding Path="Duration" />
                                 <Binding ElementName="EventContainer" Path="ActualWidth" />
                             </MultiBinding>
-                        </Rectangle.Width>
-                    </Rectangle>
+                        </Grid.Width>
+                        <Rectangle
+                            Height="20"
+                            HorizontalAlignment="Stretch"
+                            Fill="Green" />
+                        <Rectangle
+                            Width="5"
+                            Height="25"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Stretch"
+                            Fill="Blue"
+                            MouseLeftButtonDown="TimeLineStart_MouseLeftButtonDown" />
+
+                        <Rectangle
+                            Width="5"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Stretch"
+                            Fill="Blue"
+                            MouseLeftButtonDown="TimeLineEnd_MouseLeftButtonDown" />
+                    </Grid>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

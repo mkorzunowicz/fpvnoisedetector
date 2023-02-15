@@ -18,11 +18,12 @@ public class TimeSpanToThicknessConverter : IMultiValueConverter
     /// <returns>Sie tickness.</returns>
     public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
     {
-        TimeSpan timelineDuration = (TimeSpan)values[0];
-        TimeSpan relativeTime = (TimeSpan)values[1];
-        double containerWidth = (double)values[2];
-        double factor = relativeTime.TotalSeconds / timelineDuration.TotalSeconds;
-        double rval = factor * containerWidth;
+        //TimeSpan timelineDuration = (TimeSpan)values[0];
+        //TimeSpan relativeTime = (TimeSpan)values[1];
+        //double containerWidth = (double)values[2];
+        //double factor = relativeTime.TotalSeconds / timelineDuration.TotalSeconds;
+        //double rval = factor * containerWidth;
+        var rval = ConvertTimeSpanToWidth((double)values[2], (TimeSpan)values[1], (TimeSpan)values[0]);
 
         if (targetType == typeof(Thickness))
         {
@@ -33,7 +34,35 @@ public class TimeSpanToThicknessConverter : IMultiValueConverter
             return rval;
         }
     }
-
+    /// <summary>
+    /// Converts TimeSpan to Width, based on the container's Width, max timeline Duration and relative time from the timeline.
+    /// </summary>
+    /// <param name="containerWidth"></param>
+    /// <param name="relativeTime"></param>
+    /// <param name="timelineDuration"></param>
+    /// <returns></returns>
+    public static double ConvertTimeSpanToWidth(double containerWidth, TimeSpan relativeTime, TimeSpan timelineDuration)
+    {
+        //TimeSpan timelineDuration = (TimeSpan)values[0];
+        //TimeSpan relativeTime = (TimeSpan)values[1];
+        //double containerWidth = (double)values[2];
+        double factor = relativeTime.TotalSeconds / timelineDuration.TotalSeconds;
+        return factor * containerWidth;
+    }
+    /// <summary>
+    ///  Convert the given width based on the container width and max timeline duration.
+    /// </summary>
+    /// <param name="containerWidth"></param>
+    /// <param name="position"></param>
+    /// <param name="timelineDuration"></param>
+    /// <returns></returns>
+    public static TimeSpan ConvertWidthToTimeSpan(double containerWidth, double position, TimeSpan timelineDuration)
+    {
+        double factor = position / containerWidth;
+        var end = TimeSpan.FromMicroseconds(timelineDuration.TotalMicroseconds * factor);
+        if (end > timelineDuration) end = timelineDuration;
+        return end;
+    }
     /// <summary>
     /// Converts back, but it's not implemented.
     /// </summary>

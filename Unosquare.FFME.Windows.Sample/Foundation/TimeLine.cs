@@ -48,6 +48,7 @@ public class TimeLineEvent : ObservableObject
 {
     private TimeSpan start;
     private TimeSpan duration;
+    private TimeSpan end;
 
     /// <summary>
     /// Beginning of the TimeLine.
@@ -76,6 +77,24 @@ public class TimeLineEvent : ObservableObject
         set
         {
             Set(() => Duration, ref duration, value);
+            end = Start + Duration;
+        }
+    }
+
+    /// <summary>
+    /// End of the TimeLine.
+    /// </summary>
+    public TimeSpan End
+    {
+        get
+        {
+            return end;
+        }
+        set
+        {
+            Set(() => End, ref end, value);
+            duration = End - Start;
+
         }
     }
 }
