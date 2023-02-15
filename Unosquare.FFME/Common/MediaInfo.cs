@@ -117,8 +117,7 @@
 
 #pragma warning disable CS0618 // Type or member is obsolete
 
-                // ffmpeg.avcodec_parameters_to_context(codecContext, s->codecpar);
-                ffmpeg.avcodec_copy_context(codecContext, s->codec);
+                ffmpeg.avcodec_parameters_to_context(codecContext, s->codecpar);
 #pragma warning restore CS0618 // Type or member is obsolete
 
                 var bitsPerSample = codecContext->codec_type == AVMediaType.AVMEDIA_TYPE_AUDIO ?
@@ -145,12 +144,15 @@
                     PixelHeight = codecContext->height,
                     HasClosedCaptions = (codecContext->properties & ffmpeg.FF_CODEC_PROPERTY_CLOSED_CAPTIONS) != 0,
                     IsLossless = (codecContext->properties & ffmpeg.FF_CODEC_PROPERTY_LOSSLESS) != 0,
+
+#pragma warning disable CS0618 // Type or member is obsolete
                     Channels = codecContext->channels,
                     BitRate = bitsPerSample > 0 ?
                         bitsPerSample * codecContext->channels * codecContext->sample_rate :
+#pragma warning restore CS0618 // Type or member is obsolete
                         codecContext->bit_rate,
                     MaxBitRate = codecContext->rc_max_rate,
-                    InfoFrameCount = s->codec_info_nb_frames,
+                    InfoFrameCount = (int)s->nb_frames,
                     TimeBase = s->time_base,
                     SampleFormat = codecContext->sample_fmt,
                     SampleRate = codecContext->sample_rate,
@@ -258,7 +260,7 @@
                     StartTime = c->start.ToTimeSpan(c->time_base),
                     EndTime = c->end.ToTimeSpan(c->time_base),
                     Index = i,
-                    ChapterId = c->id,
+                    ChapterId = (int)c->id,
                     Metadata = FFDictionary.ToDictionary(c->metadata)
                 };
 

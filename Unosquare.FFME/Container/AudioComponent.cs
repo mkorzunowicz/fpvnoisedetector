@@ -47,7 +47,9 @@
         internal AudioComponent(MediaContainer container, int streamIndex)
             : base(container, streamIndex)
         {
+#pragma warning disable CS0618 // Type or member is obsolete
             Channels = CodecContext->channels;
+#pragma warning restore CS0618 // Type or member is obsolete
             SampleRate = CodecContext->sample_rate;
             BitsPerSample = ffmpeg.av_samples_get_buffer_size(null, 1, 1, CodecContext->sample_fmt, 1) * 8;
         }
@@ -98,6 +100,7 @@
             // Initialize or update the audio scaler if required
             if (Scaler == null || LastSourceSpec == null || FFAudioParams.AreCompatible(LastSourceSpec, sourceSpec) == false)
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 Scaler = ffmpeg.swr_alloc_set_opts(
                     Scaler,
                     targetSpec.ChannelLayout,
@@ -108,6 +111,7 @@
                     sourceSpec.SampleRate,
                     0,
                     null);
+#pragma warning restore CS0618 // Type or member is obsolete
 
                 RC.Current.Add(Scaler);
                 ffmpeg.swr_init(Scaler);
@@ -177,7 +181,7 @@
         {
             // Validate the audio frame
             var frame = (AVFrame*)framePointer;
-            if (framePointer == IntPtr.Zero || frame->channels <= 0 || frame->nb_samples <= 0 || frame->sample_rate <= 0)
+            if (framePointer == IntPtr.Zero || frame->ch_layout.nb_channels <= 0 || frame->nb_samples <= 0 || frame->sample_rate <= 0)
                 return null;
 
             // Init the filter graph for the frame
@@ -278,8 +282,9 @@
         private string ComputeFilterArguments(AVFrame* frame)
         {
             var hexChannelLayout = BitConverter.ToString(
+#pragma warning disable CS0618 // Type or member is obsolete
                 BitConverter.GetBytes(frame->channel_layout).Reverse().ToArray()).ReplaceOrdinal("-", string.Empty);
-
+#pragma warning restore CS0618 // Type or member is obsolete
             var channelLayout = $"0x{hexChannelLayout}";
 
             var arguments =
