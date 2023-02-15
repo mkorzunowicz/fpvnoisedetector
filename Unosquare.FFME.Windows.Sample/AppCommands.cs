@@ -2,7 +2,13 @@
 {
     using Foundation;
     using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Diagnostics;
+    using System.Linq;
     using System.Windows;
+    using System.Windows.Controls;
+    using Unosquare.FFME.Windows.Sample.Controls;
 
     /// <summary>
     /// Represents the Application-Wide Commands.
@@ -17,6 +23,7 @@
         private DelegateCommand m_PauseCommand;
         private DelegateCommand m_PlayCommand;
         private DelegateCommand m_StopCommand;
+        private DelegateCommand m_PredictNoiseInWholeVideoCommand;
         private DelegateCommand m_CloseCommand;
         private DelegateCommand m_ToggleFullscreenCommand;
         private DelegateCommand m_RemovePlaylistItemCommand;
@@ -119,6 +126,64 @@
             (m_StopCommand = new DelegateCommand(async o =>
             {
                 await App.ViewModel.MediaElement.Stop();
+            }));
+
+        /// <summary>
+        /// Gets the predict noise command.
+        /// </summary>
+        /// <value>
+        /// The stop command.
+        /// </value>
+        public DelegateCommand PredictNoiseInWholeVideoCommand => m_PredictNoiseInWholeVideoCommand ??
+            (m_PredictNoiseInWholeVideoCommand = new DelegateCommand(async o =>
+            {
+                var dict = new Dictionary<TimeSpan, float>();
+                var nextPos = TimeSpan.FromSeconds(0);
+                var normalStep = 20000;
+                var step = normalStep;
+                var start = DateTime.Now;
+                var hitTheEnd = false;
+
+                TimeLine good = new()
+                {
+                    Duration = App.ViewModel.MediaElement.NaturalDuration.Value
+                };
+                do
+                {
+                    await App.ViewModel.MediaElement.Seek(nextPos);
+                    var bitmap = await App.ViewModel.MediaElement.CaptureBitmapAsync();
+                    var score = NoisePredictorModel.Predict(bitmap).Score.First();
+                    if (dict.Count == 0 || Math.Abs(dict.Last().Value - score) < 0.5)
+                    {
+                        dict[App.ViewModel.MediaElement.FramePosition] = score;
+                    }
+                    else if (step < 50)
+                    {
+                        dict[App.ViewModel.MediaElement.FramePosition] = score;
+                        step = normalStep;
+                    }
+                    else
+                    {
+                        nextPos -= TimeSpan.FromMilliseconds(step);
+                        step /= 2;
+                    }
+
+                    nextPos += TimeSpan.FromMilliseconds(step);
+                    if (App.ViewModel.MediaElement.NaturalDuration < nextPos && !hitTheEnd)
+                    {
+                        nextPos = App.ViewModel.MediaElement.NaturalDuration.Value;
+                        hitTheEnd = true;
+                    }
+                }
+                while (App.ViewModel.MediaElement.NaturalDuration >= nextPos);
+
+                var done = DateTime.Now - start;
+                good.Events.Add(new TimeLineEvent() { Start = new TimeSpan(0, 1, 0), Duration = new TimeSpan(0, 1, 0) });
+                good.Events.Add(new TimeLineEvent() { Start = new TimeSpan(0, 3, 0), Duration = new TimeSpan(0, 0, 15) });
+
+                App.ViewModel.NoiseTimeLines = new ObservableCollection<TimeLine>();
+                App.ViewModel.NoiseTimeLines.Add(good);
+                Debug.WriteLine($"Done the whole movie ({App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}) in: {done.TotalSeconds}");
             }));
 
         /// <summary>

@@ -20,6 +20,8 @@
         {
             // Change the default location of the ffmpeg binaries (same directory as application)
             // You can get the 64-bit binaries here: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full-shared.7z
+            // Working x86: ffmpeg.Shared nuget package
+            // Working x64: https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2021-02-28-12-32/ffmpeg-n4.3.2-160-gfbb9368226-win64-gpl-shared-4.3.zip
             Library.FFmpegDirectory = @"c:\ffmpeg" + (Environment.Is64BitProcess ? @"\x64" : string.Empty);
 
             // You can pick which FFmpeg binaries are loaded. See issue #28
