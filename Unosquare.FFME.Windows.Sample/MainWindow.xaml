@@ -7,7 +7,8 @@
         xmlns:controls="clr-namespace:Unosquare.FFME.Windows.Sample.Controls"
         mc:Ignorable="d" DataContext="{StaticResource ViewModel}"
         WindowStartupLocation="Manual" MinHeight="720" Height="0" MinWidth="1280" Width="0"
-        Title="{Binding WindowTitle}" Background="Black">
+        AllowDrop="True"
+        Title="{Binding WindowTitle}" Background="Black" Drop="OnMouseDrop" >
     <Window.Resources>
         <Storyboard x:Key="ShowControlOpacity" Storyboard.TargetProperty="(UIElement.Opacity)">
             <DoubleAnimation To="1" Duration="0:0:0.100" FillBehavior="HoldEnd" />

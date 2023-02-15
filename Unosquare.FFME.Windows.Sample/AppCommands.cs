@@ -1,6 +1,8 @@
 ﻿namespace Unosquare.FFME.Windows.Sample
 {
+    using FFMediaToolkit.Decoding;
     using Foundation;
+    using Microsoft.Win32;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
@@ -20,6 +22,7 @@
         private readonly WindowStatus PreviousWindowStatus = new WindowStatus();
 
         private DelegateCommand m_OpenCommand;
+        private DelegateCommand m_OpenFilesCommand;
         private DelegateCommand m_PauseCommand;
         private DelegateCommand m_PlayCommand;
         private DelegateCommand m_StopCommand;
@@ -44,6 +47,47 @@
         }
 
         #endregion
+
+       private void LoadVideos(string[] filePaths)
+        {
+            foreach (var path in filePaths)
+            {
+                if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+                {
+                    LoadVideos(Directory.GetFiles(path));
+                }
+                else if (!App.ViewModel.Playlist.Entries.Any(e => Path.GetFullPath(e.MediaSource).Equals(Path.GetFullPath(path), StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    using var fileRead = MediaFile.Open(path);
+                    App.ViewModel.Playlist.Entries.Add(Path.GetFileNameWithoutExtension(path), fileRead.Info.Duration, path);
+                }
+            }
+        }
+        /// <summary>
+        /// Gets the open command.
+        /// </summary>
+        /// <value>
+        /// The open command.
+        /// </value>
+        public DelegateCommand OpenFilesCommand => m_OpenFilesCommand ??
+            (m_OpenFilesCommand = new DelegateCommand(a =>
+            {
+                try
+                {
+                    if (a is string[] filePaths)
+                        LoadVideos(filePaths);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(
+                        Application.Current.MainWindow,
+                        $"Media Failed: {ex.GetType()}\r\n{ex.Message}",
+                        $"{nameof(MediaElement)} Error",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Error,
+                        MessageBoxResult.OK);
+                }
+            }));
 
         /// <summary>
         /// Gets the open command.
@@ -76,7 +120,7 @@
                     }
 
                     var m = App.ViewModel.MediaElement;
-                    
+
                     if (target.ToString().StartsWith(FileInputStream.Scheme, StringComparison.OrdinalIgnoreCase))
                         await m.Open(new FileInputStream(target.LocalPath));
                     else
@@ -294,7 +338,7 @@
 
                 App.ViewModel.NotificationMessage = $"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s";
                 Debug.WriteLine($"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s");
-                
+
                 App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
                 App.ViewModel.Playlist.Entries.SaveEntries();
             }));
