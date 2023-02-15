@@ -1,7 +1,6 @@
 ﻿namespace Unosquare.FFME.Windows.Sample.Controls;
 
 using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -56,6 +55,9 @@ public partial class TimeLineControl : UserControl
     private System.Windows.Shapes.Rectangle movedSliderPeg;
     private bool shouldDelete = false;
     private bool isStart = false;
+    private TimeSpan lastStartTime;
+    private TimeSpan lastEndTime;
+    private TimeLineEvent lastEvent;
 
     private void TimeLineEnd_MouseLeftButtonDown(object sender, MouseEventArgs e)
     {
@@ -75,6 +77,7 @@ public partial class TimeLineControl : UserControl
         if (ctrl == null)
             return;
         movedSliderPeg = ctrl;
+        lastEvent = ctrl.DataContext as TimeLineEvent;
         prevX = Mouse.GetPosition(null).X;
         Application.Current.MainWindow.MouseMove += MainWindow_MouseMove;
         Application.Current.MainWindow.MouseUp += ManipulationEnds;
@@ -86,38 +89,54 @@ public partial class TimeLineControl : UserControl
 
         try
         {
-
-            var tlEvent = movedSliderPeg.DataContext as TimeLineEvent;
+            var tlEvent = lastEvent;
 
             Double mouseX = Mouse.GetPosition(null).X;
             var eventGrid = movedSliderPeg.Parent as Grid;
             var deltaX = mouseX - prevX;
             var containerWidth = this.ActualWidth - 10; // not sure why the margin isnt 5 but 15?
 
+            var otherEvents = TimeLineSource.Events.Where(ev => ev != tlEvent);
+
             if (isStart)
             {
-                if (eventGrid.Width - deltaX < eventGrid.MinWidth)
+                var earlierEvents = TimeLineSource.Events.Where(ev => ev.End <= tlEvent.Start);
+                var leftTimeBoundry = TimeSpan.Zero;
+                if (earlierEvents.Any())
+                    leftTimeBoundry = earlierEvents.Max(ev => ev.End);
+                var startTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left + deltaX, TimeLineSource.Duration);
+                var rightTimeBoundry = lastEvent.End;
+
+                shouldDelete = false;
+                var widthWouldBe = eventGrid.Width - deltaX;
+                var marginWouldBe = eventGrid.Margin.Left + deltaX;
+                if (startTime <= leftTimeBoundry || marginWouldBe <= 0)
                 {
+                    startTime = leftTimeBoundry;
+                    var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, startTime, TimeLineSource.Duration);
+                    eventGrid.Margin = new Thickness(pos, 0, 0, 0);
+                    var width = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, rightTimeBoundry - startTime, TimeLineSource.Duration);
+
+                    eventGrid.Width = width;
+                    movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
+                }
+                else if (startTime >= rightTimeBoundry || widthWouldBe <= eventGrid.MinWidth)
+                {
+                    startTime = rightTimeBoundry;
+
+                    var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, startTime, TimeLineSource.Duration);
+                    eventGrid.Margin = new Thickness(pos - eventGrid.MinWidth, 0, 0, 0);
                     eventGrid.Width = eventGrid.MinWidth;
                     shouldDelete = true;
                     movedSliderPeg.Fill = new SolidColorBrush(Colors.Red);
                 }
                 else
                 {
-                    shouldDelete = false;
-                    eventGrid.Width -= deltaX;
+                    eventGrid.Width -= deltaX;  // the width of the bar should be made longer, while the margin left and the other way around
+                    eventGrid.Margin = new Thickness(eventGrid.Margin.Left + deltaX, 0, 0, 0);
                     movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
-
-                    // TODO: BUG still sometimes Width jumps backwards on sharp mouse movements ahead of time
-                    if (eventGrid.Margin.Left + deltaX < 0)
-                    {
-                        // hit the left bound
-                        eventGrid.Margin = new Thickness(0, 0, 0, 0);
-                        movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
-                    }
-                    else
-                        eventGrid.Margin = new Thickness(eventGrid.Margin.Left + deltaX, 0, 0, 0);
                 }
+                lastStartTime = startTime;
             }
             else
             {
@@ -130,50 +149,40 @@ public partial class TimeLineControl : UserControl
                 else
                 {
                     shouldDelete = false;
-                    eventGrid.Width += deltaX;
-                    if (eventGrid.Width > containerWidth - eventGrid.Margin.Left)
+
+                    var laterEvents = TimeLineSource.Events.Where(ev => ev.Start >= tlEvent.End);
+                    var rightTimeBoundry = TimeLineSource.Duration;
+                    if (laterEvents.Any())
+                        rightTimeBoundry = laterEvents.Min(ev => ev.Start);
+                    var widthWouldBe = eventGrid.Width += deltaX;
+
+                    var endTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left + widthWouldBe, TimeLineSource.Duration);
+                    var startTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left, TimeLineSource.Duration);
+
+                    if (endTime >= rightTimeBoundry)
                     {
-                        // hit the right bound
-                        eventGrid.Width = containerWidth - eventGrid.Margin.Left;
+                        endTime = rightTimeBoundry;
+                        var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, endTime - startTime, TimeLineSource.Duration);
+                        eventGrid.Width = pos;
                         movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
                     }
                     else
-                        movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
+                    {
+                        eventGrid.Width = widthWouldBe;
+                        if (eventGrid.Width > containerWidth - eventGrid.Margin.Left)
+                        {
+                            // hit the right timeline bound
+                            eventGrid.Width = containerWidth - eventGrid.Margin.Left;
+                            movedSliderPeg.Fill = new SolidColorBrush(Colors.Purple);
+                        }
+                        else
+                            movedSliderPeg.Fill = new SolidColorBrush(Colors.Blue);
+                    }
+                    lastEndTime = endTime;
                 }
             }
 
-            // protect based on other events - either base everything on the timeline, so calculate the possible start/end time first, check with timeline events
-            // then update the position if ok, or based on width of the other eventGrids.. but i need to iterate them and first of all find them - do i have access to the items?
-            var otherEvents = TimeLineSource.Events.Where(ev => ev != tlEvent);
-            var earlierEvents = TimeLineSource.Events.Where(ev => ev.End <= tlEvent.Start);
-            var laterEvents = TimeLineSource.Events.Where(ev => ev.Start >= tlEvent.End);
-            var leftTimeBoundry = TimeSpan.Zero;
-            var rightTimeBoundry = TimeLineSource.Duration;
-            if (earlierEvents.Any())
-                leftTimeBoundry = earlierEvents.Max(ev => ev.End);
-            if (laterEvents.Any())
-                rightTimeBoundry = laterEvents.Min(ev => ev.Start);
-
-            var startTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left, TimeLineSource.Duration);
-            var endTime = TimeSpanToThicknessConverter.ConvertWidthToTimeSpan(containerWidth, eventGrid.Margin.Left + eventGrid.ActualWidth, TimeLineSource.Duration);
-            Debug.WriteLine($"{startTime}....{endTime}");
-            if (startTime <= leftTimeBoundry)
-            {
-                startTime = leftTimeBoundry;
-                var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, startTime, TimeLineSource.Duration);
-                eventGrid.Margin = new Thickness(pos, 0, 0, 0);
-            }
-            if (endTime >= rightTimeBoundry) {
-                endTime = rightTimeBoundry;
-                var pos = TimeSpanToThicknessConverter.ConvertTimeSpanToWidth(containerWidth, endTime, TimeLineSource.Duration);
-                eventGrid.Width = pos;
-
-            }
-            tlEvent.Start = startTime;
-            tlEvent.Duration = endTime - startTime;
-
             prevX = mouseX;
-
         }
         catch (Exception ex)
         {
@@ -194,6 +203,17 @@ public partial class TimeLineControl : UserControl
         if (shouldDelete)
             TimeLineSource.Events.Remove(movedSliderPeg.DataContext as TimeLineEvent);
         movedSliderPeg = null;
+
+        if (lastEndTime != default(TimeSpan))
+        {
+            lastEvent.End = lastEndTime;
+            lastEndTime = default(TimeSpan);
+        }
+        if (lastStartTime != default(TimeSpan))
+        {
+            lastEvent.Start = lastStartTime;
+            lastStartTime = default(TimeSpan);
+        }
     }
     private void EventContainer_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
