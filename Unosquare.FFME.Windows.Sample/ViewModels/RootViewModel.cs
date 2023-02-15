@@ -3,12 +3,10 @@
     using Common;
     using Foundation;
     using System;
-    using System.Collections.ObjectModel;
     using System.Diagnostics;
     using System.IO;
     using System.Windows;
     using System.Windows.Shell;
-    using Unosquare.FFME.Windows.Sample.Controls;
 
     /// <summary>
     /// Represents the application-wide view model.
@@ -18,7 +16,7 @@
     {
         private string m_WindowTitle = string.Empty;
         private string m_NotificationMessage = string.Empty;
-        private ObservableCollection<TimeLine> m_NoiseTimeLines;
+        private TimeLine m_NoiseTimeLine;
         private double m_PlaybackProgress;
         private TaskbarItemProgressState m_PlaybackProgressState;
         private bool m_IsPlaylistPanelOpen = App.IsInDesignMode;
@@ -112,16 +110,16 @@
         /// <summary>
         /// Gets or sets the playback progress.
         /// </summary>
-        public ObservableCollection<TimeLine> NoiseTimeLines
+        public TimeLine NoiseTimeLine
         {
             get
             {
-                return m_NoiseTimeLines;
+                return m_NoiseTimeLine;
             }
             set
             {
-                m_NoiseTimeLines = value;
-                NotifyPropertyChanged(nameof(NoiseTimeLines));
+                m_NoiseTimeLine = value;
+                NotifyPropertyChanged(nameof(NoiseTimeLine));
             }
         }
 

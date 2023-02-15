@@ -29,7 +29,7 @@
                 Grid.Row="0"
                 MinHeight="20"
                 Margin="15,0"
-                TimeLinesSource="{Binding NoiseTimeLines}" />
+                TimeLineSource="{Binding NoiseTimeLine}" />
             <Slider
                 Name="PositionSlider"
                 Grid.Row="1"
@@ -331,6 +331,16 @@
                     <Button
                         Command="{Binding Commands.PredictNoiseInWholeVideoCommand}"
                         Foreground="Purple"
+                        Style="{DynamicResource ModernButtonStyle}"
+                        Visibility="{Binding Controller.PlayButtonVisibility}">
+                        <Path
+                            Data="{Binding Source={StaticResource PlayIcon}, Path=Data}"
+                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                            Stretch="Uniform" />
+                    </Button>
+                    <Button
+                        Command="{Binding Commands.EncodeCommand}"
+                        Foreground="Green"
                         Style="{DynamicResource ModernButtonStyle}"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
                         <Path

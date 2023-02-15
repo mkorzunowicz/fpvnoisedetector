@@ -4,7 +4,9 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Linq;
     using System.Runtime.CompilerServices;
+    using System.Text;
 
     /// <summary>
     /// A custom playlist entry with notification properties backed by Attributes.
@@ -16,7 +18,8 @@
         {
             { nameof(Thumbnail), "ffme-thumbnail" },
             { nameof(Format), "info-format" },
-            { nameof(LastOpenedUtc), "ffme-lastopened" }
+            { nameof(LastOpenedUtc), "ffme-lastopened" },
+            { nameof(NoiseTimeLine), "noise-timeline" }
         };
 
         /// <summary>
@@ -35,6 +38,45 @@
         {
             get => GetMappedAttributeValue();
             set => SetMappedAttributeValue(value);
+        }
+
+        /// <summary>
+        /// Gets or sets the duration.
+        /// </summary>
+        public TimeLine NoiseTimeLine
+        {
+            get
+            {
+                var currentValue = GetMappedAttributeValue();
+                if (string.IsNullOrEmpty(currentValue)) { 
+                    return null;
+                }
+                var tl = new TimeLine();
+                var split = currentValue.Split('|');
+
+
+                tl.Duration = TimeSpan.FromTicks(Convert.ToInt64(split.First()));
+                foreach(var eve in split.Last().Split(';'))
+                {
+                    if (string.IsNullOrWhiteSpace(eve)) continue;
+                    var kvp = eve.Split(':');
+                    tl.Events.Add(new TimeLineEvent { Start = TimeSpan.FromTicks(Convert.ToInt64(kvp.First())), Duration = TimeSpan.FromTicks(Convert.ToInt64(kvp.Last())) });
+                }
+                return tl;
+            }
+            set
+            {
+                if (value != null)
+                {
+                    var sb = new StringBuilder();
+                    sb.Append($"{value.Duration.Ticks}|");
+
+                    foreach (var eve in value.Events)
+                        sb.Append($"{eve.Start.Ticks}:{eve.Duration.Ticks};");
+
+                    SetMappedAttributeValue(sb.ToString());
+                }
+            }
         }
 
         /// <summary>

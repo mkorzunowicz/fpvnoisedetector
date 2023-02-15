@@ -3,12 +3,12 @@
     using Foundation;
     using System;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
+    using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
-    using Unosquare.FFME.Windows.Sample.Controls;
 
     /// <summary>
     /// Represents the Application-Wide Commands.
@@ -23,6 +23,7 @@
         private DelegateCommand m_PauseCommand;
         private DelegateCommand m_PlayCommand;
         private DelegateCommand m_StopCommand;
+        private DelegateCommand m_EncodeCommand;
         private DelegateCommand m_PredictNoiseInWholeVideoCommand;
         private DelegateCommand m_CloseCommand;
         private DelegateCommand m_ToggleFullscreenCommand;
@@ -53,16 +54,17 @@
             {
                 try
                 {
-                    var uriString = a as string;
-                    if (string.IsNullOrWhiteSpace(uriString))
+                    var playListEntry = a as Unosquare.FFME.Windows.Sample.Foundation.CustomPlaylistEntry;
+                    if (string.IsNullOrWhiteSpace(playListEntry.MediaSource))
                         return;
 
                     var m = App.ViewModel.MediaElement;
-                    var target = new Uri(uriString);
+                    var target = new Uri(playListEntry.MediaSource);
                     if (target.ToString().StartsWith(FileInputStream.Scheme, StringComparison.OrdinalIgnoreCase))
                         await m.Open(new FileInputStream(target.LocalPath));
                     else
                         await m.Open(target);
+                    App.ViewModel.NoiseTimeLine = playListEntry.NoiseTimeLine;
                 }
                 catch (Exception ex)
                 {
@@ -129,6 +131,27 @@
             }));
 
         /// <summary>
+        /// Gets the encode timelines command.
+        /// </summary>
+        /// <value>
+        /// The stop command.
+        /// </value>
+        public DelegateCommand EncodeCommand => m_EncodeCommand ??
+            (m_EncodeCommand = new DelegateCommand(async o =>
+            {
+                // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
+                for (int i = 0; i < App.ViewModel.NoiseTimeLine.Events.Count; i++)
+                {
+                    var eve = App.ViewModel.NoiseTimeLine.Events[i];
+                    var sourcePath = App.ViewModel.MediaElement.Source.AbsolutePath;
+
+                    var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
+                    var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
+                    await Task.Run(() => MediaEncoder.CopyVideo(sourcePath, destPath, eve.Start, eve.Duration));
+                }
+            }));
+
+        /// <summary>
         /// Gets the predict noise command.
         /// </summary>
         /// <value>
@@ -139,7 +162,7 @@
             {
                 var dict = new Dictionary<TimeSpan, float>();
                 var position = TimeSpan.Zero;
-                var normalStep = 2000;
+                var normalStep = 20000;
                 var minStep = 50;
                 var step = normalStep;
                 var start = DateTime.Now;
@@ -206,9 +229,11 @@
 
                 var done = DateTime.Now - start;
                 good.Duration = App.ViewModel.MediaElement.NaturalDuration.Value;
-                App.ViewModel.NoiseTimeLines = new ObservableCollection<TimeLine>();
-                App.ViewModel.NoiseTimeLines.Add(good);
-                Debug.WriteLine($"Done the whole movie ({App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}) in: {done.TotalSeconds}");
+                App.ViewModel.NoiseTimeLine = good;
+                Debug.WriteLine($"Noise detected in the whole video ({App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}) in: {done.TotalSeconds}");
+                
+                App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
+                App.ViewModel.Playlist.Entries.SaveEntries();
             }));
 
         /// <summary>

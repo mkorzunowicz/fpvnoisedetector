@@ -180,7 +180,7 @@
             HasTakenThumbnail = false;
             var m = App.ViewModel.MediaElement;
 
-            Entries.AddOrUpdateEntry(m.Source, m.MediaInfo);
+            Entries.AddOrUpdateEntry(m.Source, m.MediaInfo, App.ViewModel.NoiseTimeLine);
             Entries.SaveEntries();
         }
 
