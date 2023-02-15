@@ -165,6 +165,45 @@
                 }
             }));
 
+
+        /// <summary>
+        /// Gets the encode timelines command.
+        /// </summary>
+        /// <value>
+        /// The stop command.
+        /// </value>
+        public DelegateCommand MergeEndFileCommand => m_MergeEndFileCommand ??
+            (m_MergeEndFileCommand = new DelegateCommand(o =>
+            {
+                //await App.ViewModel.MediaElement.Pause();
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                    App.ViewModel.NoiseTimeLine.EndFile = openFileDialog.FileName;
+
+                //await App.ViewModel.MediaElement.Play();
+                App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.EndFile}";
+            }));
+
+        /// <summary>
+        /// Gets the encode timelines command.
+        /// </summary>
+        /// <value>
+        /// The stop command.
+        /// </value>
+        public DelegateCommand MergeBeginFileCommand => m_MergeBeginFileCommand ??
+            (m_MergeBeginFileCommand = new DelegateCommand(o =>
+            {
+                //await App.ViewModel.MediaElement.Pause();
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                {
+
+                    App.ViewModel.NoiseTimeLine.BeginFile = openFileDialog.FileName;
+                }
+                //await App.ViewModel.MediaElement.Play();
+                App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.BeginFile}";
+            }));
+
         /// <summary>
         /// Gets the predict noise command.
         /// </summary>
