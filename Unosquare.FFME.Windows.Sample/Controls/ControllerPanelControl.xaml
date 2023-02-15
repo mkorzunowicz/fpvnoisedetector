@@ -331,6 +331,7 @@
                     <Button
                         Command="{Binding Commands.PlayCommand}"
                         Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Play"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
                         <Path
                             Data="{Binding Source={StaticResource PlayIcon}, Path=Data}"
@@ -344,6 +345,7 @@
                         Foreground="White"
                         IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
                         Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Predict noise in single file"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
                         <TextBlock
                             VerticalAlignment="Stretch"
@@ -357,6 +359,7 @@
                         Foreground="White"
                         IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
                         Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Split just this file"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
                         <TextBlock
                             FontFamily="Segoe MDL2 Assets"
@@ -370,6 +373,7 @@
                         Foreground="Green"
                         IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
                         Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Split and merge whole playlist"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
                         <TextBlock
                             FontFamily="Segoe MDL2 Assets"
@@ -379,6 +383,7 @@
                     <Button
                         Command="{Binding Commands.PauseCommand}"
                         Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Pause"
                         Visibility="{Binding Controller.PauseButtonVisibility}">
                         <Path
                             Data="{Binding Source={StaticResource PauseIcon}, Path=Data}"
@@ -388,6 +393,7 @@
                     <Button
                         Command="{Binding Commands.StopCommand}"
                         Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Stop"
                         Visibility="{Binding Controller.StopButtonVisibility}">
                         <Path
                             Data="{Binding Source={StaticResource StopIcon}, Path=Data}"
