@@ -38,6 +38,7 @@
                 MergeEndFile="{Binding Commands.MergeEndFileCommand}"
                 Position="{Binding MediaElement.Position, Mode=OneWayToSource}"
                 ProgressPosition="{Binding MediaEncoder.EncodingProgress}"
+                TimeLineConfirmed="{Binding Commands.SaveEntriesCommand}"
                 TimeLineSource="{Binding NoiseTimeLine}"
                 Visibility="{Binding Controller.SeekBarVisibility}" />
             <Slider

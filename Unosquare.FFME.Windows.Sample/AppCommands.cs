@@ -365,6 +365,20 @@
                 App.ViewModel.Playlist.Entries.SaveEntries();
             }));
 
+
+        /// <summary>
+        /// Saves the playlist entries.
+        /// </summary>
+        /// <value>
+        /// The save playlist command.
+        /// </value>
+        public DelegateCommand SaveEntriesCommand => m_SaveEntriesCommand ??
+            (m_SaveEntriesCommand = new DelegateCommand(o =>
+            {
+                App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
+                App.ViewModel.Playlist.Entries.SaveEntries();
+            }));
+
         /// <summary>
         /// Gets the toggle fullscreen command.
         /// </summary>
