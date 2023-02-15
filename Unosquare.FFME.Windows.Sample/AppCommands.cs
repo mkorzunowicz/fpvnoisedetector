@@ -61,7 +61,7 @@
                         if (string.IsNullOrWhiteSpace(uriString))
                             return;
                         target = new Uri(uriString);
-                        App.ViewModel.NoiseTimeLine = null;
+                        App.ViewModel.NoiseTimeLine = new TimeLine();
                     }
                     else
                     {
