@@ -203,6 +203,7 @@
                 // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
                 for (int i = 0; i < App.ViewModel.NoiseTimeLine.Events.Count; i++)
                 {
+                    if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
                     var eve = App.ViewModel.NoiseTimeLine.Events[i];
                     var sourcePath = App.ViewModel.MediaElement.Source.AbsolutePath;
 
