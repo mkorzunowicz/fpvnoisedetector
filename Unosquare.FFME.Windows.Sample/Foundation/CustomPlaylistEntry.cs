@@ -55,13 +55,14 @@
                 var split = currentValue.Split('|');
 
 
-                tl.Duration = TimeSpan.FromTicks(Convert.ToInt64(split.First()));
-                foreach(var eve in split.Last().Split(';'))
+                tl.Duration = TimeSpan.FromTicks(Convert.ToInt64(split[0]));
+                foreach(var eve in split[1].Split(';'))
                 {
                     if (string.IsNullOrWhiteSpace(eve)) continue;
                     var kvp = eve.Split(':');
                     tl.Events.Add(new TimeLineEvent { Start = TimeSpan.FromTicks(Convert.ToInt64(kvp.First())), Duration = TimeSpan.FromTicks(Convert.ToInt64(kvp.Last())) });
                 }
+                tl.EndFile = split[2];
                 return tl;
             }
             set
@@ -73,7 +74,7 @@
 
                     foreach (var eve in value.Events)
                         sb.Append($"{eve.Start.Ticks}:{eve.Duration.Ticks};");
-
+                    sb.Append($"|{value.EndFile}");
                     SetMappedAttributeValue(sb.ToString());
                 }
             }
