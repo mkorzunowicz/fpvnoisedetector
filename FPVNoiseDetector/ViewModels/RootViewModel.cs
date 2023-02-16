@@ -5,6 +5,7 @@
     using System;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Windows;
     using System.Windows.Shell;
 
@@ -278,7 +279,7 @@
         private void UpdateWindowTitle()
         {
             var m = MediaElement;
-            var title = m?.Source?.ToString() ?? "(No media loaded)";
+            var title = m?.Source?.AbsolutePath ?? m?.Source?.ToString() ?? "(No media loaded)";
             var state = m?.MediaState.ToString();
 
             if (m?.IsOpen ?? false)
@@ -302,8 +303,8 @@
                 state = "Ready";
             }
 
-            WindowTitle = $"{title} - {state} - FFME Player v{AppVersion} "
-                + $"FFmpeg {Library.FFmpegVersionInfo} ({(Debugger.IsAttached ? "Debug" : "Release")})";
+            WindowTitle = $"{title} - FPV ND v{AppVersion} "
+                + $"FFmpeg {Library.FFmpegVersionInfo?.Split("-").First()} ({(Debugger.IsAttached ? "Debug" : "")})";
         }
     }
 }
