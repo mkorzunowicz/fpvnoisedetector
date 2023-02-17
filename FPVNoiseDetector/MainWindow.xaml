@@ -10,7 +10,7 @@
     Title="{Binding WindowTitle}"
     Width="0"
     Height="0"
-    MinWidth="850"
+    MinWidth="900"
     MinHeight="600"
     AllowDrop="True"
     Background="Black"
@@ -65,7 +65,8 @@
             <controls:ControllerPanelControl
                 x:Name="ControllerPanel"
                 DockPanel.Dock="Bottom"
-                Visibility="{Binding IsApplicationLoaded, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                Visibility="{Binding IsApplicationLoaded, Converter={StaticResource BooleanToVisibilityConverter}}"
+                />
 
             <controls:PlaylistPanelControl
                 x:Name="PlaylistPanel"
