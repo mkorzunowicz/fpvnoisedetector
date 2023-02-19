@@ -86,4 +86,4 @@ Press the button on the right of the timeline to select a video file which the c
 
 ## License
 
-* Please refer to the <a href="https://github.com/unosquare/ffmediaelement/blob/master/LICENSE">LICENSE</a> file for more information.
+* Please refer to the <a href="https://github.com/mkorzunowicz/fpvnoisedetector/blob/master/FPVNoiseDetector/LICENSE.txt">LICENSE</a> file for more information.
