@@ -1,13 +1,13 @@
 ﻿#pragma warning disable SA1649 // File name must match first type name
 #pragma warning disable CA1812 // Remove classes that are apparently never instantiated
-namespace Unosquare.FFME.Windows.Sample.Foundation
+namespace FPVNoiseDetector.Foundation
 {
-    using ClosedCaptions;
     using System;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Data;
     using System.Windows.Media;
+    using Unosquare.FFME.ClosedCaptions;
 
     /// <inheritdoc />
     internal class TimeSpanToSecondsConverter : IValueConverter

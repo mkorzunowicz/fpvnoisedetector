@@ -1,6 +1,6 @@
-﻿namespace Unosquare.FFME.Windows.Sample.ViewModels
+﻿namespace FPVNoiseDetector.ViewModels
 {
-    using Common;
+    using Unosquare.FFME.Common;
     using Foundation;
     using System;
     using System.ComponentModel;

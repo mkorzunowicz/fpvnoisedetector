@@ -1,8 +1,8 @@
-﻿<Application x:Class="Unosquare.FFME.Windows.Sample.App"
+﻿<Application x:Class="FPVNoiseDetector.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Unosquare.FFME.Windows.Sample.Foundation"
-             xmlns:vm="clr-namespace:Unosquare.FFME.Windows.Sample.ViewModels">
+             xmlns:local="clr-namespace:FPVNoiseDetector.Foundation"
+             xmlns:vm="clr-namespace:FPVNoiseDetector.ViewModels">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

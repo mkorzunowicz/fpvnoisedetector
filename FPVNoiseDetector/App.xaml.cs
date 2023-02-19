@@ -1,4 +1,4 @@
-﻿namespace Unosquare.FFME.Windows.Sample
+namespace FPVNoiseDetector
 {
     using FFmpeg.AutoGen;
     using System;
@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using System.Windows;
     using ViewModels;
+    using Unosquare.FFME;
 
     /// <summary>
     /// Interaction logic for App.xaml.

@@ -1,10 +1,11 @@
-﻿namespace Unosquare.FFME.Windows.Sample
+﻿namespace FPVNoiseDetector
 {
     using System;
     using System.Diagnostics;
     using System.Drawing;
     using System.Drawing.Drawing2D;
     using System.Linq;
+    using Unosquare.FFME;
 
     public partial class MainWindow
     {

@@ -1,4 +1,4 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Converters;
+﻿namespace FPVNoiseDetector.Converters;
 using System;
 using System.Windows.Data;
 using System.Windows;

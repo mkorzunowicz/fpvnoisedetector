@@ -1,4 +1,4 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Controls;
+﻿namespace FPVNoiseDetector.Controls;
 
 using System;
 using System.Linq;
@@ -6,8 +6,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Unosquare.FFME.Windows.Sample.Converters;
-using Unosquare.FFME.Windows.Sample.Foundation;
+using FPVNoiseDetector.Converters;
+using FPVNoiseDetector.Foundation;
 
 /// <summary>
 /// Interaction logic for TimeLine.xaml.

@@ -1,11 +1,11 @@
-﻿namespace Unosquare.FFME.Windows.Sample.ViewModels
+﻿namespace FPVNoiseDetector.ViewModels
 {
-    using Common;
     using Foundation;
     using System;
     using System.Globalization;
     using System.Windows;
     using System.Windows.Media;
+    using Unosquare.FFME.Common;
 
     /// <summary>
     /// Represents a VM for the Controller Control.

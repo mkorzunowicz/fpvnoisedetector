@@ -1,11 +1,11 @@
 ﻿<UserControl
-    x:Class="Unosquare.FFME.Windows.Sample.Controls.PlaylistPanelControl"
+    x:Class="FPVNoiseDetector.Controls.PlaylistPanelControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:ffmepl="clr-namespace:Unosquare.FFME.Windows.Sample.Foundation"
+    xmlns:ffmepl="clr-namespace:FPVNoiseDetector.Foundation"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Unosquare.FFME.Windows.Sample.ViewModels"
+    xmlns:vm="clr-namespace:FPVNoiseDetector.ViewModels"
     Name="LayoutRoot"
     d:DataContext="{d:DesignInstance vm:RootViewModel,
                                      IsDesignTimeCreatable=True}"

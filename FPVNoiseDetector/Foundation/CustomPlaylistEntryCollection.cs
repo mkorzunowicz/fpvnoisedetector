@@ -1,7 +1,7 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Foundation
+﻿namespace FPVNoiseDetector.Foundation
 {
-    using Common;
-    using Playlists;
+    using Unosquare.FFME.Common;
+    using Unosquare.FFME.Playlists;
     using System;
     using System.IO;
     using System.Text;

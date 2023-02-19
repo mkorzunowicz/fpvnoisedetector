@@ -1,6 +1,7 @@
-﻿namespace Unosquare.FFME.Windows.Sample.ViewModels
+﻿using Unosquare.FFME.Common;
+
+namespace FPVNoiseDetector.ViewModels
 {
-    using Common;
 
     /// <summary>
     /// A base class for Root VM-attached view models.

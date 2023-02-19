@@ -1,12 +1,12 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Foundation
+﻿namespace FPVNoiseDetector.Foundation
 {
-    using Playlists;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Text;
+    using Unosquare.FFME.Playlists;
 
     /// <summary>
     /// A custom playlist entry with notification properties backed by Attributes.

@@ -1,4 +1,4 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Controls
+﻿namespace FPVNoiseDetector.Controls
 {
     /// <summary>
     /// Interaction logic for ControllerPanelControl.xaml.

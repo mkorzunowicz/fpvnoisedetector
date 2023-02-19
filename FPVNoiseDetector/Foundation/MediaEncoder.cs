@@ -1,9 +1,10 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Foundation;
+﻿namespace FPVNoiseDetector.Foundation;
 using FFMediaToolkit.Decoding;
 using FFMediaToolkit.Encoding;
 using System;
 using System.Diagnostics;
 using System.IO;
+using Unosquare.FFME;
 
 /// <summary>
 /// 

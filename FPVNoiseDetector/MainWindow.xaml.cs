@@ -1,7 +1,5 @@
-﻿namespace Unosquare.FFME.Windows.Sample
+﻿namespace FPVNoiseDetector
 {
-    using ClosedCaptions;
-    using Common;
     using Foundation;
     using System;
     using System.Linq;
@@ -12,7 +10,11 @@
     using System.Windows.Media;
     using System.Windows.Media.Animation;
     using System.Windows.Threading;
+    using Unosquare.FFME;
+    using Unosquare.FFME.ClosedCaptions;
+    using Unosquare.FFME.Common;
     using ViewModels;
+    using MediaElement = Unosquare.FFME.MediaElement;
     using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
     /// <summary>
@@ -191,7 +193,7 @@
         private void InitializeMediaEvents()
         {
             // Global FFmpeg message handler
-            FFME.MediaElement.FFmpegMessageLogged += OnMediaFFmpegMessageLogged;
+            Unosquare.FFME.MediaElement.FFmpegMessageLogged += OnMediaFFmpegMessageLogged;
 
             // MediaElement event bindings
             Media.PreviewMouseDoubleClick += OnMediaDoubleClick;

@@ -1,4 +1,4 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Foundation;
+﻿namespace FPVNoiseDetector.Foundation;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

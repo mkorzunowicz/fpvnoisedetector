@@ -1,11 +1,12 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Foundation
+﻿namespace FPVNoiseDetector.Foundation
 {
-    using Common;
+    using Unosquare.FFME.Common;
     using FFmpeg.AutoGen;
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using Unosquare.FFME;
 
     /// <summary>
     /// An recorder that simply copies input packets into an output file.

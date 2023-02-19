@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "Unosquare.FFME.Windows.Sample": {
+    "FPVNoiseDetector": {
       "commandName": "Project",
       "nativeDebugging": false
     }

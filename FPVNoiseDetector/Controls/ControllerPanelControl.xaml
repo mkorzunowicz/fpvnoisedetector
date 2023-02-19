@@ -1,13 +1,13 @@
 ﻿<UserControl
-    x:Class="Unosquare.FFME.Windows.Sample.Controls.ControllerPanelControl"
+    x:Class="FPVNoiseDetector.Controls.ControllerPanelControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Unosquare.FFME.Windows.Sample.Controls"
-    xmlns:conv="clr-namespace:Unosquare.FFME.Windows.Sample.Converters"
+    xmlns:controls="clr-namespace:FPVNoiseDetector.Controls"
+    xmlns:conv="clr-namespace:FPVNoiseDetector.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Unosquare.FFME.Windows.Sample"
+    xmlns:local="clr-namespace:FPVNoiseDetector"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:vm="clr-namespace:Unosquare.FFME.Windows.Sample.ViewModels"
+    xmlns:vm="clr-namespace:FPVNoiseDetector.ViewModels"
     d:DataContext="{d:DesignInstance vm:RootViewModel,
                                      IsDesignTimeCreatable=True}"
     mc:Ignorable="d">

@@ -1,6 +1,6 @@
-﻿namespace Unosquare.FFME.Windows.Sample
+﻿namespace FPVNoiseDetector
 {
-    using ClosedCaptions;
+    using Unosquare.FFME.ClosedCaptions;
     using FFmpeg.AutoGen;
     using System;
     using System.Diagnostics;
@@ -10,6 +10,7 @@
     using System.Windows;
     using System.Windows.Shell;
     using Unosquare.FFME.Common;
+    using Unosquare.FFME;
 
     public partial class MainWindow
     {

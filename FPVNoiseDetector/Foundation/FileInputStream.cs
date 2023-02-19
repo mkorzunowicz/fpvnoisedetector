@@ -1,10 +1,11 @@
-﻿namespace Unosquare.FFME.Windows.Sample.Foundation
+﻿namespace FPVNoiseDetector.Foundation
 {
-    using Common;
+    using Unosquare.FFME.Common;
     using FFmpeg.AutoGen;
     using System;
     using System.IO;
     using System.Runtime.InteropServices;
+    using Unosquare.FFME;
 
     /// <inheritdoc />
     /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace Unosquare.FFME.Windows.Sample
+﻿namespace FPVNoiseDetector
 {
     using FFMediaToolkit.Decoding;
     using FFMediaToolkit.Encoding;
@@ -120,7 +120,7 @@
                     }
                     else
                     {
-                        var playListEntry = a as Unosquare.FFME.Windows.Sample.Foundation.CustomPlaylistEntry;
+                        var playListEntry = a as FPVNoiseDetector.Foundation.CustomPlaylistEntry;
                         if (string.IsNullOrWhiteSpace(playListEntry.MediaSource))
                             return;
                         target = new Uri(playListEntry.MediaSource);
