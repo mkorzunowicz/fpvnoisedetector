@@ -1,4 +1,4 @@
-namespace FPVNoiseDetector
+﻿namespace FPVNoiseDetector
 {
     using FFmpeg.AutoGen;
     using System;
@@ -7,6 +7,7 @@ namespace FPVNoiseDetector
     using System.Threading.Tasks;
     using System.Windows;
     using ViewModels;
+    using AutoUpdaterDotNET;
     using Unosquare.FFME;
 
     /// <summary>
@@ -113,6 +114,7 @@ namespace FPVNoiseDetector
                     }
                 }
             });
+            AutoUpdater.Start("https://raw.githubusercontent.com/mkorzunowicz/updater_test/main/Support/update.xml");
         }
     }
 }
