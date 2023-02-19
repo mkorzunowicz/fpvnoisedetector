@@ -13,9 +13,9 @@
 
 ## Why?
 
-As an FPV drone pilot I have generated tons of analogue videos with a lot of static noise in them. Each time you take a battery out, your googles keep recording. If the feed isn't digital, the noise gets recorded. Duh.
+As an FPV drone pilot I have generated tons of analogue videos. I hoard them. I'm sure you do too :D The problem is: there's a lot of static noise recorded - each time you take a battery out, all your goggles see is noise. If the goggles won't recognize there's no signal, it gets recorded. Duh.
 
-Usually FPV videos are split every couple of minutes. So you often end up having battery pack footage split into 2 parts. I hoard them. I'm sure you do too :D Of course I can merge them when editing the video, but why not having them archived properly? :)
+Usually FPV videos are split every couple of minutes. So you often end up having battery pack footage split into 2 parts. Of course I can merge them when editing the video, but why not having them archived properly? :)
 
 And naturally: static video noise is practically a definition of randomness, meaning there's almost no possibility to compress it, or in other words - it takes quite a lot of disk space. Lose it! I tried recompressing the videos before. But by no means I would ever trim them by hand. Hence the app!
 
@@ -30,7 +30,7 @@ FFmpeg is used to decode and play the vidoes as well as to split/merge them. It'
 
 1. Download the FPV Noise detector app. It currently supports only Windows as it's a WPF application. (Sorry mac/linux users).
 2. Download the newest 5.1.X FFmpeg **shared** binaries (64 or 32 bit, depending on your app's target architecture). Either from here [FFmpeg Windows Downloads](https://ffmpeg.org/download.html) or here [FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds/releases). This [x64 lib](https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2023-02-12-12-35/ffmpeg-n5.1.2-12-g7268323193-win64-gpl-shared-5.1.zip) is guaranteed to work.
-3. Your FFmpeg build should have a `bin` folder with 3 exe files and some dll files. Copy **all those** files to the folder 'c:\ffmpeg' or 'c:\ffmpeg\x64'. The app uses both the libraries and binaries for now.
+3. Your FFmpeg build should have a `bin` folder with 3 exe files and some dll files. Copy **all those** files to the folder 'c:\ffmpeg\x64' (or 'c:\ffmpeg'). The app uses both the libraries and binaries for now.
 4. The FFmpeg are GPL, I don't want to be forced to use this license, therefore you need to fetch them yourself.
 
 ### Usage
