@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FPVNoiseDetector": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}
