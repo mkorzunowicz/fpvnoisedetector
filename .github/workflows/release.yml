@@ -1,0 +1,50 @@
+name: Tag a repo on closed pull request
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - master
+      - cicd
+
+jobs:
+  tag-on-closed-pull-request:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+
+      - name: Install Node dependencies
+        run: npm install @semantic-release/changelog @semantic-release/exec
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        # run: npx semantic-release --branches master
+        run: npx semantic-release --branches cicd
+    
+      - name: Run bump_update.sh
+        run: |
+          cd Support
+          chmod +x bump_update.sh
+          ./bump_update.sh ${{ env.VERSION }}
+
+      - name: Commit changes
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "ci: auto-bumped the update file"
+          git push
+
+#       steps:
+# - name: push code to master
+#   run: git push origin HEAD:master
