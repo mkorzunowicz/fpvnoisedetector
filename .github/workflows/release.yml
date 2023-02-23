@@ -1,8 +1,7 @@
 name: Tag a repo on closed pull request
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - master
       - cicd
