@@ -32,7 +32,7 @@ jobs:
         # run: npx semantic-release --branches master
         run: npx semantic-release --branches cicd
     
-      - name: Run bump_update.sh
+      - name: Run bump_update.sh ${{ env.VERSION }}
         run: |
           cd Support
           chmod +x bump_update.sh
@@ -55,25 +55,34 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "7.0.x"
-
       - name: Run publish
-        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${GITHUB_REF##*/} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
-        # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ env.VERSION }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
+        # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${GITHUB_REF##*/} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
+        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ env.VERSION }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
 
       - name: ZIP full app
-        run: zip -r fpvnoise-${GITHUB_REF##*/}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt 
+        # run: zip -r fpvnoise-${GITHUB_REF##*/}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt
+        # run: zip -r fpvnoise-${{ env.VERSION }}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt        
+        # Compress-Archive -Path ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"  -DestinationPath "compressed.zip"
 
+        run: |
+          $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
+          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}.zip"
       - name: ZIP update
-        run: zip -r fpvnoise-${GITHUB_REF##*/}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
+        # run: zip -r fpvnoise-${GITHUB_REF##*/}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
+        # run: zip -r fpvnoise-${{ env.VERSION }}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
+        run: |
+          $files = ".out_win/fpvnoise.exe", ".out_win/LICENSE.txt"
+          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}-update.zip"
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          # name: fpvnoise-${GITHUB_REF##*/}
+          name: fpvnoise-${{ env.VERSION }}.zip
+          path: fpvnoise-${{ env.VERSION }}.zip
+          # path: fpvnoise-${GITHUB_REF##*/}.zip
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: fpvnoise-${GITHUB_REF##*/}
-          path: fpvnoise-${GITHUB_REF##*/}.zip
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: fpvnoise-${GITHUB_REF##*/}-update
-          path: fpvnoise-${GITHUB_REF##*/}-update.zip
+          name: fpvnoise-${{ env.VERSION }}-update
+          path: fpvnoise-${{ env.VERSION }}-update.zip
