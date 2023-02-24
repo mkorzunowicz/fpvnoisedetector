@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>1.0.0</version>
-  <url>https://github.com/mkorzunowicz/fpvnoisedetector/releases/download/1.0.0/fpvnoise-1.0.0.zip</url>
-  <changelog>https://github.com/mkorzunowicz/fpvnoisedetector/releases/tag/1.0.0</changelog>
+  <version>1.0.1</version>
+  <url>https://github.com/mkorzunowicz/fpvnoisedetector/releases/download/1.0.1/fpvnoise-1.0.1.zip</url>
+  <changelog>https://github.com/mkorzunowicz/fpvnoisedetector/releases/tag/1.0.1</changelog>
   <mandatory>false</mandatory>
 </item>
