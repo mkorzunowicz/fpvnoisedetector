@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.0.0...1.0.1) (2023-02-24)
+
+
+### Bug Fixes
+
+* wow it worked ([c6ad35b](https://github.com/mkorzunowicz/sem-rel-test/commit/c6ad35be90b5b1cc78bd45b5c8918c9e006a6625))
+
 # 1.0.0 (2023-02-24)
 
 
