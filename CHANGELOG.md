@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.1.0...1.1.1) (2023-02-24)
+
+
+### Bug Fixes
+
+* runs on windows? ([24e43d1](https://github.com/mkorzunowicz/sem-rel-test/commit/24e43d1d005b831d27b67a8d016e69940a8ff91a))
+
 # [1.1.0](https://github.com/mkorzunowicz/sem-rel-test/compare/1.0.1...1.1.0) (2023-02-24)
 
 
