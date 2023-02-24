@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/mkorzunowicz/sem-rel-test/compare/1.0.1...1.1.0) (2023-02-24)
+
+
+### Features
+
+* publish dotnet ([b9c41ea](https://github.com/mkorzunowicz/sem-rel-test/commit/b9c41eac888bf990ddb08de1a4a5eca24382e718))
+
 ## [1.0.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.0.0...1.0.1) (2023-02-24)
 
 
