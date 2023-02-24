@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.5...1.2.6) (2023-02-24)
+
+
+### Bug Fixes
+
+* jeszcze raz ([acf078d](https://github.com/mkorzunowicz/sem-rel-test/commit/acf078d1e4ca4b3ec8ce1725b47339b66a971cce))
+
 ## [1.2.5](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.4...1.2.5) (2023-02-24)
 
 
