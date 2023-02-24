@@ -1,3 +1,10 @@
+## [1.2.4](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.3...1.2.4) (2023-02-24)
+
+
+### Bug Fixes
+
+* token for latest release ([bd2832b](https://github.com/mkorzunowicz/sem-rel-test/commit/bd2832bf16e9ed56d43923d32cbffd1ceb35ef63))
+
 ## [1.2.3](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.2...1.2.3) (2023-02-24)
 
 
