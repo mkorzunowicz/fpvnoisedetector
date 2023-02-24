@@ -56,7 +56,9 @@ jobs:
 
       - name: ZIP full app
         # run: zip -r fpvnoise-${GITHUB_REF##*/}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt
-        run: zip -r fpvnoise-${{ env.VERSION }}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt        
+        run: |
+          cd .out_win 
+          zip -r ../fpvnoise-${{ env.VERSION }}.zip fpvnoise.exe NoisePredictorModel.zip tensorflow.dll LICENSE.txt        
         # Compress-Archive -Path ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"  -DestinationPath "compressed.zip"
 
         # run: |
@@ -64,20 +66,51 @@ jobs:
         #   Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}.zip"
       - name: ZIP update
         # run: zip -r fpvnoise-${GITHUB_REF##*/}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
-        run: zip -r fpvnoise-${{ env.VERSION }}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
+        run: |
+          cd .out_win 
+          zip -r ../fpvnoise-${{ env.VERSION }}-update.zip fpvnoise.exe LICENSE.txt 
         # run: |
         #   $files = ".out_win/fpvnoise.exe", ".out_win/LICENSE.txt"
         #   Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}-update.zip"
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          # name: fpvnoise-${GITHUB_REF##*/}
-          name: fpvnoise-${{ env.VERSION }}.zip
-          path: fpvnoise-${{ env.VERSION }}.zip
-          # path: fpvnoise-${GITHUB_REF##*/}.zip
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     # name: fpvnoise-${GITHUB_REF##*/}
+      #     name: fpvnoise-${{ env.VERSION }}.zip
+      #     path: fpvnoise-${{ env.VERSION }}.zip
+      #     # path: fpvnoise-${GITHUB_REF##*/}.zip
+
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: fpvnoise-${{ env.VERSION }}-update
+      #     path: fpvnoise-${{ env.VERSION }}-update.zip
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: fpvnoise-${{ env.VERSION }}-update
-          path: fpvnoise-${{ env.VERSION }}-update.zip
+          name: fpvnoise-${{ env.VERSION }}.zip
+          path: .out_win/fpvnoise.exe
+          
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: fpvnoise-${{ env.VERSION }}.zip
+          path: .out_win/LICENSE.txt 
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: fpvnoise-${{ env.VERSION }}-x.zip
+          path: fpvnoise-${{ env.VERSION }}.zip
+
+      - name: Upload Release Asset
+        id: upload-release-asset 
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./my-artifact.zip
+          asset_name: my-artifact.zip
+          asset_content_type: application/zip
