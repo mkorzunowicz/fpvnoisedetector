@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.2...1.2.3) (2023-02-24)
+
+
+### Bug Fixes
+
+* assets again ([44354da](https://github.com/mkorzunowicz/sem-rel-test/commit/44354da4f7e7da8dff6c8e5d696f7d6657c02438))
+
 ## [1.2.2](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.1...1.2.2) (2023-02-24)
 
 
