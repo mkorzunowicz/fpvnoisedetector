@@ -25,16 +25,9 @@ jobs:
       - name: Install Node dependencies
         run: npm install @semantic-release/changelog @semantic-release/exec
 
-      - name: Fuck this noise
-        run: echo ${{ secrets.GH_TOKEN }}
-
-      - name: Fuck this noise2
-        run: echo $GH_TOKEN
-
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         # run: npx semantic-release --branches master
         run: npx semantic-release --branches cicd
     
