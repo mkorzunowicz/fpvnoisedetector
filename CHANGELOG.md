@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/mkorzunowicz/sem-rel-test/compare/1.1.1...1.2.0) (2023-02-24)
+
+
+### Features
+
+* back to windows ([ee8db67](https://github.com/mkorzunowicz/sem-rel-test/commit/ee8db67947b16ac100fc4d635bb15858692dc5ab))
+* windows compress and env ([280c955](https://github.com/mkorzunowicz/sem-rel-test/commit/280c9556fe2e6778490ee9fb0cf88dd06cc7b7a7))
+
 ## [1.1.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.1.0...1.1.1) (2023-02-24)
 
 
