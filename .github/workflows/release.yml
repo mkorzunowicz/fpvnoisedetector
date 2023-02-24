@@ -107,6 +107,8 @@ jobs:
       - name: Gets latest created release info
         id: latest_release_info
         uses: jossef/action-latest-release-info@v1.2.2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Upload Release Asset
         id: upload-release-asset
