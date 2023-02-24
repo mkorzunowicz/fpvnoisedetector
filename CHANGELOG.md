@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.1...1.2.2) (2023-02-24)
+
+
+### Bug Fixes
+
+* some more artifacts tests ([c8d3be7](https://github.com/mkorzunowicz/sem-rel-test/commit/c8d3be7026c246951a310a8bb7d5a997d5ca3477))
+
 ## [1.2.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.0...1.2.1) (2023-02-24)
 
 
