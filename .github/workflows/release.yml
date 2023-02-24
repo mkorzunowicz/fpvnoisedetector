@@ -8,6 +8,7 @@ on:
 
 jobs:
   tag-on-closed-pull-request:
+    environment: release
     runs-on: ubuntu-latest
 
     steps:
