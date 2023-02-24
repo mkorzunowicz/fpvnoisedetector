@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.4...1.2.5) (2023-02-24)
+
+
+### Bug Fixes
+
+* downgrade latest ([2e49aff](https://github.com/mkorzunowicz/sem-rel-test/commit/2e49aff00eb9e96de887a1091e70761dd5476be2))
+
 ## [1.2.4](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.3...1.2.4) (2023-02-24)
 
 
