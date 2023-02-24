@@ -25,15 +25,9 @@ jobs:
         run: npm install @semantic-release/changelog @semantic-release/exec
 
       - name: Fuck this noise
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: echo $GITHUB_TOKEN
 
       - name: Fuck this noise2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: echo $GH_TOKEN
 
       - name: Release
