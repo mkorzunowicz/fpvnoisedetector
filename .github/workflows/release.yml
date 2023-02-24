@@ -24,6 +24,12 @@ jobs:
       - name: Install Node dependencies
         run: npm install @semantic-release/changelog @semantic-release/exec
 
+      - name: Fuck this noise
+        run: source .env && node -p process.env.GITHUB_TOKEN
+
+      - name: Fuck this noise2
+        run: source ~/.bashrc
+
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
