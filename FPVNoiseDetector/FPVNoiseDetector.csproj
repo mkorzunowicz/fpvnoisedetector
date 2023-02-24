@@ -16,6 +16,7 @@
   
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <Title>FPV Noise Detector</Title>

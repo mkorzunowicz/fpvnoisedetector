@@ -9,8 +9,8 @@ on:
 jobs:
   tag-on-closed-pull-request:
     environment: release
-    runs-on: windows-latest
-    # runs-on: ubuntu-latest
+    # runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
@@ -46,11 +46,6 @@ jobs:
           git commit -m "ci: auto-bumped the ${{ env.VERSION }} update file"
           git push
 
-#       steps:
-# - name: push code to master
-#   run: git push origin HEAD:master
-
-
       - name: Setup .Net
         uses: actions/setup-dotnet@v1
         with:
@@ -61,18 +56,18 @@ jobs:
 
       - name: ZIP full app
         # run: zip -r fpvnoise-${GITHUB_REF##*/}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt
-        # run: zip -r fpvnoise-${{ env.VERSION }}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt        
+        run: zip -r fpvnoise-${{ env.VERSION }}.zip .out_win/fpvnoise.exe .out_win/NoisePredictorModel.zip .out_win/tensorflow.dll .out_win/LICENSE.txt        
         # Compress-Archive -Path ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"  -DestinationPath "compressed.zip"
 
-        run: |
-          $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
-          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}.zip"
+        # run: |
+        #   $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
+        #   Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}.zip"
       - name: ZIP update
         # run: zip -r fpvnoise-${GITHUB_REF##*/}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
-        # run: zip -r fpvnoise-${{ env.VERSION }}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
-        run: |
-          $files = ".out_win/fpvnoise.exe", ".out_win/LICENSE.txt"
-          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}-update.zip"
+        run: zip -r fpvnoise-${{ env.VERSION }}-update.zip .out_win/fpvnoise.exe .out_win/LICENSE.txt 
+        # run: |
+        #   $files = ".out_win/fpvnoise.exe", ".out_win/LICENSE.txt"
+        #   Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ env.VERSION }}-update.zip"
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
