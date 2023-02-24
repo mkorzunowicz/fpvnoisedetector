@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.0...1.2.1) (2023-02-24)
+
+
+### Bug Fixes
+
+* <EnableWindowsTargeting>true</EnableWindowsTargeting> ([33ac6b6](https://github.com/mkorzunowicz/sem-rel-test/commit/33ac6b65e56e685f1206ba14bdf01de4f67058be))
+
 # [1.2.0](https://github.com/mkorzunowicz/sem-rel-test/compare/1.1.1...1.2.0) (2023-02-24)
 
 
