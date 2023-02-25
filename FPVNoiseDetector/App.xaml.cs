@@ -133,9 +133,10 @@
                 // If an update is available, display a message box
                 if (args != null && args.IsUpdateAvailable)
                 {
-                    UpdateViewModel updateViewModel = new UpdateViewModel(args);
-                    UpdateWindow updateWindow = new UpdateWindow();
-                    updateWindow.DataContext = updateViewModel;
+                    var updateWindow = new UpdateWindow()
+                    {
+                        DataContext = new UpdateViewModel(args)
+                    };
                     var result = updateWindow.ShowDialog();
 
                     // If the user clicked Yes, start the update process
@@ -160,6 +161,9 @@
                 }
                 else
                 {
+                    if (args == null)
+                        MessageBox.Show("Args came back as null ;(", "Args null", MessageBoxButton.OK, MessageBoxImage.Error);
+
                     if (args.Error is System.Net.WebException)
                     {
                         // MessageBox.Show(

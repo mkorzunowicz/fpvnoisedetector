@@ -30,14 +30,14 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npx semantic-release
 
-      - name: Run bump_update.sh ${{ env.VERSION }}
+      - name: Bump the update file to ${{ env.VERSION }}
         if: ${{ env.VERSION }} != ""
         run: |
           cd Support
           chmod +x bump_update.sh
           ./bump_update.sh ${{ env.VERSION }}
 
-      - name: Commit changes
+      - name: Commit the update file
         run: |
           git config --global user.email "github-actions@github.com"
           git config --global user.name "GitHub Actions"
@@ -62,27 +62,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Print release info
-        run: echo ${{ steps.latest_release_info.outputs.html_url }}
+      # - name: Print release info
+      #   run: echo ${{ steps.latest_release_info.outputs.html_url }}
 
       - name: Setup .Net
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "7.0.x"
 
-      - name: Run publish with version ${{ steps.latest_release_info.outputs.tag_name }}
+      - name: Publish the app with version ${{ steps.latest_release_info.outputs.tag_name }}
         run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
         # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet --configuration Release --framework net7.0-windows
 
-      # - name: ZIP full app
-      #   run: |
-      #     $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
-      #     Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+      - name: Zip the archive
+        run: |
+          $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt", ".out_win/WebView2Loader.dll"
+          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
 
-      - name: ZIP full app
-        run: Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+      # - name: Zip the archive
+      #   run: Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
 
-      - name: Upload Release Asset
+      - name: Upload the fpvnoise binary to assets
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
