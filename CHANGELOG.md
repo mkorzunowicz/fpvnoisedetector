@@ -1,3 +1,10 @@
+## [1.2.9](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.8...1.2.9) (2023-02-25)
+
+
+### Bug Fixes
+
+* zip name ([718588b](https://github.com/mkorzunowicz/sem-rel-test/commit/718588be79511fa4fb469abd6301c8216664a62b))
+
 ## [1.2.8](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.7...1.2.8) (2023-02-25)
 
 
