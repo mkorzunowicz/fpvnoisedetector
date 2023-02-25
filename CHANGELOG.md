@@ -1,6 +1,5 @@
 # [1.4.0](https://github.com/mkorzunowicz/sem-rel-test/compare/1.3.2...1.4.0) (2023-02-25)
 
-
 ### Features
 
 * pull request ([190e932](https://github.com/mkorzunowicz/sem-rel-test/commit/190e932b3845bdbe9536c3f21403a1d1dcfd0eb4))
