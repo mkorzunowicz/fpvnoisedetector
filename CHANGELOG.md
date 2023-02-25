@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/mkorzunowicz/sem-rel-test/compare/1.3.1...1.3.2) (2023-02-25)
+
+
+### Bug Fixes
+
+* upl name ([7f0c0a6](https://github.com/mkorzunowicz/sem-rel-test/commit/7f0c0a676195f286e1fab43769f3e95e8df0a91e))
+
 ## [1.3.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.3.0...1.3.1) (2023-02-25)
 
 
