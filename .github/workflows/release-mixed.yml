@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - cicd
 
 jobs:
   bump-and-tag:
@@ -29,7 +28,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npx semantic-release
-        # run: npx semantic-release --branches cicd
 
       - name: Run bump_update.sh ${{ env.VERSION }}
         if: ${{ env.VERSION }} != ""
