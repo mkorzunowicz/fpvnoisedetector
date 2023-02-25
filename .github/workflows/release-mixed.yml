@@ -7,9 +7,8 @@ on:
       - cicd
 
 jobs:
-  tag-on-closed-pull-request:
+  bump-and-tag:
     environment: release
-    # runs-on: windows-latest
     runs-on: ubuntu-latest
 
     steps:
@@ -33,6 +32,7 @@ jobs:
         run: npx semantic-release --branches cicd
 
       - name: Run bump_update.sh ${{ env.VERSION }}
+        if: ${{ env.VERSION }} != ""
         run: |
           cd Support
           chmod +x bump_update.sh
@@ -46,10 +46,16 @@ jobs:
           git commit -m "ci: auto-bumped the ${{ env.VERSION }} update file"
           git push
 
+  publish:
+    environment: release
+    runs-on: windows-latest
+
+    steps: 
       - name: Setup .Net
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: "7.0.x"
+
       - name: Run publish
         # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${GITHUB_REF##*/} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
         run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ env.VERSION }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows

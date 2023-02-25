@@ -255,3 +255,7 @@ paket-files/
 .idea/
 *.sln.iml
 _site/
+.out_win/
+$GITHUB_ENV
+package.json
+package-lock.json

@@ -15,7 +15,7 @@ CHANGELOG="$REPO/releases/tag/$1"
 cat > update.xml <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-  <version>$1</version>
+  <version>$1.0</version>
   <url>$URL</url>
   <changelog>$CHANGELOG</changelog>
   <mandatory>false</mandatory>
