@@ -114,7 +114,83 @@
                     }
                 }
             });
+            AutoUpdater.RunUpdateAsAdmin = false;
+            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
             AutoUpdater.Start("https://raw.githubusercontent.com/mkorzunowicz/sem-rel-test/main/Support/update.xml");
+        }
+
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+
+            // If an update is available, display a message box
+            if (args != null && args.IsUpdateAvailable)
+            {
+                UpdateViewModel updateViewModel = new UpdateViewModel(args);
+                UpdateWindow updateWindow = new UpdateWindow();
+                updateWindow.DataContext = updateViewModel;
+                var result = updateWindow.ShowDialog();
+
+                // If the user clicked Yes, start the update process
+                if (result == true)
+                {
+
+                    // Uncomment the following line if you want to show standard update dialog instead.
+                    AutoUpdater.ShowUpdateForm(args);
+                    // Start the AutoUpdater.NET download and installation process            
+                    try
+                    {
+                        var updated = AutoUpdater.DownloadUpdate(args);
+                        if (updated)
+                        {
+                            Current?.Shutdown();
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+            }
+            // // If an update is available, display a message box
+            // if (args != null && args.IsUpdateAvailable)
+            // {
+            //     // Display a message box with the update information
+            //     string message = $"A new version of the application ({args.CurrentVersion} to {args.InstalledVersion}) is available. Do you want to download and install it now?";
+            //     string caption = "Update Available";
+            //     MessageBoxButton button = MessageBoxButton.YesNo;
+            //     MessageBoxImage icon = MessageBoxImage.Question;
+
+            //     MessageBoxResult result = MessageBox.Show(message, caption, button, icon);
+
+            //     // If the user clicked Yes, start the update process
+            //     if (result == MessageBoxResult.Yes)
+            //     {
+            //         // Start the AutoUpdater.NET download and installation process            
+            //         try
+            //         {
+            //             AutoUpdater.DownloadUpdate(args);
+
+            //                 // Current?.Shutdown();
+            //         }
+            //         catch (Exception exception)
+            //         {
+            //             MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+            //         }
+            //     }
+            // }
+            else
+            {
+                if (args.Error is System.Net.WebException)
+                {
+                    // MessageBox.Show(
+                    //     @"There is a problem reaching update server. Please check your internet connection and try again later.",
+                    //     @"Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    MessageBox.Show(args.Error.Message, args.Error.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
     }
 }

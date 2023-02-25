@@ -13,12 +13,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: Setup Node
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18.x
 
@@ -71,8 +71,8 @@ jobs:
           dotnet-version: "7.0.x"
 
       - name: Run publish with version ${{ steps.latest_release_info.outputs.tag_name }}
-        # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
-        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet --configuration Release --framework net7.0-windows
+        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
+        # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet --configuration Release --framework net7.0-windows
 
       # - name: ZIP full app
       #   run: |
