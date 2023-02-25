@@ -62,6 +62,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
+      - name: Print release info
+        run: |
+          echo ${{ steps.latest_release_info.outputs.upload_url }}
+          echo ${{ steps.latest_release_info.outputs.html_url }}
+
       - name: Setup .Net
         uses: actions/setup-dotnet@v1
         with:
