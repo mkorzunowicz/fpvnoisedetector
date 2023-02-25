@@ -133,6 +133,7 @@
                 // If an update is available, display a message box
                 if (args != null && args.IsUpdateAvailable)
                 {
+                    MessageBox.Show("Update found", args.CurrentVersion, MessageBoxButton.OK, MessageBoxImage.Error);
                     var updateWindow = new UpdateWindow()
                     {
                         DataContext = new UpdateViewModel(args)
