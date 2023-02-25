@@ -114,7 +114,7 @@
                     }
                 }
             });
-            AutoUpdater.Start("https://raw.githubusercontent.com/mkorzunowicz/updater_test/main/Support/update.xml");
+            AutoUpdater.Start("https://raw.githubusercontent.com/mkorzunowicz/sem-rel-test/main/Support/update.xml");
         }
     }
 }
