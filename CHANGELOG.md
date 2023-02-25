@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/mkorzunowicz/sem-rel-test/compare/1.3.0...1.3.1) (2023-02-25)
+
+
+### Bug Fixes
+
+* links ([89ae132](https://github.com/mkorzunowicz/sem-rel-test/commit/89ae132860b319c495155213479d4b79e69a2c2c))
+
 # [1.3.0](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.9...1.3.0) (2023-02-25)
 
 
