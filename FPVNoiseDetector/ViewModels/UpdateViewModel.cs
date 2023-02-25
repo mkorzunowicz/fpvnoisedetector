@@ -39,25 +39,43 @@ namespace FPVNoiseDetector.ViewModels
                     window.Close();
                 }
             }));
-        private string _updateMessage;
 
+        private string _newVersion;
         /// <summary>
         /// Holds the update message
         /// </summary>
-        public string UpdateMessage
+        public string NewVersion
         {
-            get { return _updateMessage; }
+            get { return _newVersion; }
 
-            set => SetProperty(ref _updateMessage, value);
+            set => SetProperty(ref _newVersion, value);
         }
 
+        private string _oldVersion;
+        /// <summary>
+        /// Holds the update message
+        /// </summary>
+        public string OldVersion
+        {
+            get { return _oldVersion; }
+
+            set => SetProperty(ref _oldVersion, value);
+        }
+        /// <summary>
+        /// Update dialog VM constructor
+        /// </summary>
+        public UpdateViewModel()
+        {
+            NewVersion = "15.10.1.0";
+            OldVersion = "1.0.1.0";
+        }
         /// <summary>
         /// Update dialog VM constructor
         /// </summary>
         public UpdateViewModel(UpdateInfoEventArgs args)
         {
-            // Set the update message
-            UpdateMessage = $"A new version of the application ({args.CurrentVersion} to {args.InstalledVersion}) is available. Do you want to download and install it now?";
+            NewVersion = args.CurrentVersion;
+            OldVersion = args.InstalledVersion.ToString();
         }
     }
 }

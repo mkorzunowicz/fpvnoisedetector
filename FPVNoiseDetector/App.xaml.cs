@@ -163,8 +163,7 @@
                 {
                     if (args == null)
                         MessageBox.Show("Args came back as null ;(", "Args null", MessageBoxButton.OK, MessageBoxImage.Error);
-
-                    if (args.Error is System.Net.WebException)
+                    else if (args.Error is System.Net.WebException)
                     {
                         // MessageBox.Show(
                         //     @"There is a problem reaching update server. Please check your internet connection and try again later.",
