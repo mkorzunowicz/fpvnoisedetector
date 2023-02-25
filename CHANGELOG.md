@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.9...1.3.0) (2023-02-25)
+
+
+### Features
+
+* repo info ([aff0440](https://github.com/mkorzunowicz/sem-rel-test/commit/aff044071b6b20f1756d7f7c432afe6d6bf21592))
+
 ## [1.2.9](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.8...1.2.9) (2023-02-25)
 
 
