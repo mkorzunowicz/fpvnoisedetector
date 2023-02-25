@@ -1,3 +1,10 @@
+## [1.2.7](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.6...1.2.7) (2023-02-25)
+
+
+### Bug Fixes
+
+* mixed runs ([44021b9](https://github.com/mkorzunowicz/sem-rel-test/commit/44021b9c614c1a6735cfd0505234781337af9dfa))
+
 ## [1.2.6](https://github.com/mkorzunowicz/sem-rel-test/compare/1.2.5...1.2.6) (2023-02-24)
 
 
