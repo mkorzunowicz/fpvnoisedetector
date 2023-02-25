@@ -1,4 +1,4 @@
-name: Tag a repo on closed pull request
+name: Bump and tag and pub a bin
 
 on:
   push:
@@ -86,5 +86,5 @@ jobs:
         with:
           upload_url: ${{ steps.latest_release_info.outputs.upload_url }}
           asset_path: ./fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip
-          asset_name: fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}-upl.zip
+          asset_name: fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip
           asset_content_type: application/zip
