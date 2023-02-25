@@ -9,5 +9,5 @@ plugins:
     - changelogFile: CHANGELOG.md
 tagFormat: ${version}
 branches:
-  - "master"
-  - "cicd"
+  - "main"
+  # - "cicd"
