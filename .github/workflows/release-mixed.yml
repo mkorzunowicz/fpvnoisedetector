@@ -3,7 +3,7 @@ name: Bump and tag and pub a bin
 on:
   push:
     branches:
-      - master
+      - main
       - cicd
 
 jobs:
@@ -28,8 +28,8 @@ jobs:
       - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-        # run: npx semantic-release --branches master
-        run: npx semantic-release --branches cicd
+        run: npx semantic-release
+        # run: npx semantic-release --branches cicd
 
       - name: Run bump_update.sh ${{ env.VERSION }}
         if: ${{ env.VERSION }} != ""
