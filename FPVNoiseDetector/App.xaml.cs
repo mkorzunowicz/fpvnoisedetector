@@ -115,7 +115,7 @@
                 }
             });
             AutoUpdater.RunUpdateAsAdmin = false;
-            //AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
             try
             {
                 AutoUpdater.Start("https://raw.githubusercontent.com/mkorzunowicz/sem-rel-test/main/Support/update.xml");
