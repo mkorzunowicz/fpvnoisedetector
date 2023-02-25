@@ -128,6 +128,7 @@
 
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
+            MessageBox.Show($"Update found:{args}", "wtf", MessageBoxButton.OK, MessageBoxImage.Information);
             try
             {
                 // If an update is available, display a message box
