@@ -80,8 +80,8 @@ jobs:
       #     Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
 
       - name: ZIP full app
-        run: |
-          Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+        run: Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
