@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - not-main
 
 jobs:
   bump-and-tag:
