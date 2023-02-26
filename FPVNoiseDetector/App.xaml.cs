@@ -161,20 +161,27 @@
                         }
                     }
                 }
-                else
+                else if (args != null && args.IsUpdateAvailable == false)
                 {
-                    if (args == null)
-                        MessageBox.Show("Args came back as null ;(", "Args null", MessageBoxButton.OK, MessageBoxImage.Error);
-                    else if (args.Error is System.Net.WebException)
+                    MessageBox.Show("No update found", "No update", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else if (args != null && args.Error != null)
+                {
+                    if (args.Error is System.Net.WebException)
                     {
-                        // MessageBox.Show(
-                        //     @"There is a problem reaching update server. Please check your internet connection and try again later.",
-                        //     @"Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show(
+                            @"There is a problem reaching update server. Please check your internet connection and try again later.",
+                            @"Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else
                     {
                         MessageBox.Show("The update failed: " + args.Error.Message, args.Error.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
+                }
+                else
+                {
+                    if (args == null)
+                        MessageBox.Show("Args came back as null ;(", "Args null", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (System.Exception ex)
