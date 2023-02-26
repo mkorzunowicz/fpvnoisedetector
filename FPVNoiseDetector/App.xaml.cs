@@ -179,7 +179,7 @@
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show("The update threw an exception: " + ex.Message, ex.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.StackTrace, "The update threw an exception: " + ex.Message, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
