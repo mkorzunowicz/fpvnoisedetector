@@ -8,4 +8,4 @@ plugins:
     - changelogFile: CHANGELOG.md
 tagFormat: ${version}
 branches:
-  - "main"
+  - "master"
