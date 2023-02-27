@@ -13,6 +13,7 @@ namespace FPVNoiseDetector
         public UpdateWindow()
         {
             InitializeComponent();
+            this.Owner = Application.Current.MainWindow;
         }
     }
 }

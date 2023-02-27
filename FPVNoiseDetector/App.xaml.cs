@@ -128,13 +128,11 @@
 
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
-            MessageBox.Show($"Update found:{args}", "wtf", MessageBoxButton.OK, MessageBoxImage.Information);
             try
             {
                 // If an update is available, display a message box
                 if (args != null && args.IsUpdateAvailable)
                 {
-                    MessageBox.Show("Update found", args.CurrentVersion, MessageBoxButton.OK, MessageBoxImage.Error);
                     var updateWindow = new UpdateWindow()
                     {
                         DataContext = new UpdateViewModel(args)
@@ -144,8 +142,6 @@
                     // If the user clicked Yes, start the update process
                     if (result == true)
                     {
-                        // Uncomment the following line if you want to show standard update dialog instead.
-                        // AutoUpdater.ShowUpdateForm(args);
                         // Start the AutoUpdater.NET download and installation process            
                         try
                         {
@@ -163,30 +159,29 @@
                 }
                 else if (args != null && args.IsUpdateAvailable == false)
                 {
-                    MessageBox.Show("No update found", "No update", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
                 else if (args != null && args.Error != null)
                 {
                     if (args.Error is System.Net.WebException)
                     {
-                        MessageBox.Show(
-                            @"There is a problem reaching update server. Please check your internet connection and try again later.",
-                            @"Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                        //MessageBox.Show(
+                        //    @"There is a problem reaching update server. Please check your internet connection and try again later.",
+                        //    @"Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     else
                     {
-                        MessageBox.Show("The update failed: " + args.Error.Message, args.Error.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                        //MessageBox.Show("The update failed: " + args.Error.Message, args.Error.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
                 else
                 {
-                    if (args == null)
-                        MessageBox.Show("Args came back as null ;(", "Args null", MessageBoxButton.OK, MessageBoxImage.Error);
+                    //if (args == null)
+                    //    MessageBox.Show("Args came back as null ;(", "Args null", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (System.Exception ex)
             {
-                MessageBox.Show(ex.StackTrace, "The update threw an exception: " + ex.Message, MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(ex.StackTrace, "The updater threw an exception: " + ex.Message, MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

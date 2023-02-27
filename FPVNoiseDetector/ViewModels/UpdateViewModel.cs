@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Net.Http;
+using System.Windows;
 using AutoUpdaterDotNET;
 using FPVNoiseDetector.Foundation;
 using Unosquare.FFME.Common;
@@ -51,6 +52,16 @@ namespace FPVNoiseDetector.ViewModels
             set => SetProperty(ref _newVersion, value);
         }
 
+        private string _changelog;
+        /// <summary>
+        /// Holds the changelog message
+        /// </summary>
+        public string Changelog
+        {
+            get { return _changelog; }
+
+            set => SetProperty(ref _changelog, value);
+        }
         private string _oldVersion;
         /// <summary>
         /// Holds the update message
@@ -68,6 +79,8 @@ namespace FPVNoiseDetector.ViewModels
         {
             NewVersion = "15.10.1.0";
             OldVersion = "1.0.1.0";
+            Changelog = "\r\n\t\t# sample title\r\n\t\t* document1\r\n\t\t\t* two\r\n\t\t\t* three\r\n\t\t* document2";
+
         }
         /// <summary>
         /// Update dialog VM constructor
@@ -76,6 +89,7 @@ namespace FPVNoiseDetector.ViewModels
         {
             NewVersion = args.CurrentVersion;
             OldVersion = args.InstalledVersion.ToString();
+            Changelog = new HttpClient().GetStringAsync("https://raw.githubusercontent.com/mkorzunowicz/sem-rel-test/main/CHANGELOG.md").Result;
         }
     }
 }

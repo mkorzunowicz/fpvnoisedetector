@@ -4,27 +4,31 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mdxam="clr-namespace:MdXaml;assembly=MdXaml"
     xmlns:vm="clr-namespace:FPVNoiseDetector.ViewModels"
     Name="updateWindow"
     Title="Update Available"
-    Width="300"
-    Height="150"
+    Width="350"
+    Height="300"
     d:DataContext="{d:DesignInstance vm:UpdateViewModel,
                                      IsDesignTimeCreatable=True}"
+    Background="Gray"
     ResizeMode="NoResize"
+    WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
 
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25" />
             <RowDefinition Height="25" />
+            <RowDefinition Height="*" />
             <RowDefinition Height="25" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <TextBlock
                 Margin="5"
-                Text="New version:"
+                Text="Available version:"
                 TextWrapping="WrapWithOverflow" />
             <TextBlock
                 Margin="5"
@@ -36,7 +40,7 @@
         <StackPanel Grid.Row="0" Orientation="Horizontal">
             <TextBlock
                 Margin="5"
-                Text="Current version:"
+                Text="Running version:"
                 TextWrapping="WrapWithOverflow" />
             <TextBlock
                 Margin="5"
@@ -46,12 +50,26 @@
         </StackPanel>
 
         <TextBlock
-            Grid.Row="2"
+            Grid.Row="3"
             Margin="5"
             Text="Do you want to download and install it now?"
             TextWrapping="WrapWithOverflow" />
+        <Border
+            Grid.Row="2"
+            Margin="5"
+            Background="DarkGray"
+            CornerRadius="5">
+            <mdxam:MarkdownScrollViewer
+                Grid.Row="2"
+                Margin="5"
+                Markdown="{Binding Changelog}">
+                <mdxam:MarkdownScrollViewer.LayoutTransform>
+                    <ScaleTransform CenterX=".5" CenterY=".5" ScaleX="0.7" ScaleY="0.7" />
+                </mdxam:MarkdownScrollViewer.LayoutTransform>
+            </mdxam:MarkdownScrollViewer>
+        </Border>
         <StackPanel
-            Grid.Row="3"
+            Grid.Row="4"
             Width="102"
             Margin="150,0,0,10"
             HorizontalAlignment="Left"
