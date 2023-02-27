@@ -3,7 +3,7 @@ name: Bump and tag and pub a bin
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   bump-and-tag:

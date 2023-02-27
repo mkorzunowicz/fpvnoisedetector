@@ -143,10 +143,8 @@
                     };
                     var result = updateWindow.ShowDialog();
 
-                    // If the user clicked Yes, start the update process
                     if (result == true)
-                    {
-                        // Start the AutoUpdater.NET download and installation process            
+                    {        
                         try
                         {
                             var updated = AutoUpdater.DownloadUpdate(args);
