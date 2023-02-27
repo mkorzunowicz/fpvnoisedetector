@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - not-main
 
 jobs:
   bump-and-tag:
@@ -30,20 +29,20 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         run: npx semantic-release
 
-      # - name: Bump the update file to ${{ env.VERSION }}
-      #   if: ${{ env.VERSION }} != ""
-      #   run: |
-      #     cd Support
-      #     chmod +x bump_update.sh
-      #     ./bump_update.sh ${{ env.VERSION }}
+      - name: Bump the update file to ${{ env.VERSION }}
+        if: ${{ env.VERSION }} != ""
+        run: |
+          cd Support
+          chmod +x bump_update.sh
+          ./bump_update.sh ${{ env.VERSION }}
 
-      # - name: Commit the update file
-      #   run: |
-      #     git config --global user.email "github-actions@github.com"
-      #     git config --global user.name "GitHub Actions"
-      #     git add .
-      #     git commit -m "ci: auto-bumped the ${{ env.VERSION }} update file"
-      #     git push
+      - name: Commit the update file
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "ci: auto-bumped the ${{ env.VERSION }} update file"
+          git push
 
   publish:
     needs: bump-and-tag
@@ -62,25 +61,22 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      # - name: Print release info
-      #   run: echo ${{ steps.latest_release_info.outputs.html_url }}
-
       - name: Setup .Net
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: "7.0.x"
 
       - name: Publish the app with version ${{ steps.latest_release_info.outputs.tag_name }}
-        # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
-        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet --configuration Release --framework net7.0-windows
+        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
+        # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet --configuration Release --framework net7.0-windows
 
-      # - name: Zip the archive
-      #   run: |
-      #     $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt", ".out_win/WebView2Loader.dll"
-      #     Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+      - name: Zip the necessary release files
+        run: |
+          $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
+          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
 
-      - name: Zip the archive
-        run: Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+      # - name: Zip the whole folder
+      #   run: Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
 
       - name: Upload the fpvnoise binary to assets
         id: upload-release-asset
@@ -93,34 +89,33 @@ jobs:
           asset_name: fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip
           asset_content_type: application/zip
 
-  app-cast-update:
-    needs: publish
-    environment: release
-    runs-on: ubuntu-latest
+  # # this won't push the changelog :(
+  # app-cast-update:
+  #   needs: publish
+  #   environment: release
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-        # with:
-        #   fetch-depth: 0
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
 
-      - name: Gets latest created release info
-        id: latest_release_info
-        uses: jossef/action-latest-release-info@v1.2.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+  #     - name: Gets latest created release info
+  #       id: latest_release_info
+  #       uses: jossef/action-latest-release-info@v1.2.1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Bump the update file to ${{ steps.latest_release_info.outputs.tag_name }}
-        if: ${{ steps.latest_release_info.outputs.tag_name }} != ""
-        run: |
-          cd Support
-          chmod +x bump_update.sh
-          ./bump_update.sh ${{ steps.latest_release_info.outputs.tag_name }}
+  #     - name: Bump the update file to ${{ steps.latest_release_info.outputs.tag_name }}
+  #       if: ${{ steps.latest_release_info.outputs.tag_name }} != ""
+  #       run: |
+  #         cd Support
+  #         chmod +x bump_update.sh
+  #         ./bump_update.sh ${{ steps.latest_release_info.outputs.tag_name }}
 
-      - name: Commit the update file
-        run: |
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "GitHub Actions"
-          git add .
-          git commit -m "ci: auto-bumped the ${{ steps.latest_release_info.outputs.tag_name }} update file"
-          git push
+  #     - name: Commit the update file
+  #       run: |
+  #         git config --global user.email "github-actions@github.com"
+  #         git config --global user.name "GitHub Actions"
+  #         git add .
+  #         git commit -m "ci: app-cast auto-bump and changelog update to ${{ steps.latest_release_info.outputs.tag_name }}"
+  #         git push
