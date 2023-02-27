@@ -118,9 +118,9 @@
             AutoUpdater.RunUpdateAsAdmin = false;
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
 
-            AutoUpdater.Start($"{github_baseurl}main/Support/update.xml");
+            AutoUpdater.Start($"{github_baseurl}/Support/update.xml");
         }
-        string github_baseurl = "https://raw.githubusercontent.com/mkorzunowicz/fpvnoisedetector/";
+        string github_baseurl = "https://raw.githubusercontent.com/mkorzunowicz/fpvnoisedetector/master";
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             try
@@ -131,7 +131,7 @@
                     string changelog;
                     try
                     {
-                        changelog = new HttpClient().GetStringAsync($"{github_baseurl}main/CHANGELOG.md").Result;
+                        changelog = new HttpClient().GetStringAsync($"{github_baseurl}/CHANGELOG.md").Result;
                     }
                     catch (System.Exception ex)
                     {
