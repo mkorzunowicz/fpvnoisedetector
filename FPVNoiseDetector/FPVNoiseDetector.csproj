@@ -16,6 +16,7 @@
   
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <Title>FPV Noise Detector</Title>
@@ -79,6 +80,7 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
     <PackageReference Include="FFMediaToolkit" Version="4.4.1" />
 	  <PackageReference Include="FFmpeg.AutoGen" Version="5.1.1" />
+	  <PackageReference Include="MdXaml" Version="1.17.0" />
 	  <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -124,7 +126,7 @@
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
-    <None Update="LICENCE.txt">
+    <None Update="LICENSE.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="NoisePredictorModel.zip">

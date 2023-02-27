@@ -1,0 +1,121 @@
+name: Bump and tag and pub a bin
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  bump-and-tag:
+    environment: release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
+      - name: Install Node dependencies
+        run: npm install @semantic-release/changelog @semantic-release/exec
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        run: npx semantic-release
+
+      - name: Bump the update file to ${{ env.VERSION }}
+        if: ${{ env.VERSION }} != ""
+        run: |
+          cd Support
+          chmod +x bump_update.sh
+          ./bump_update.sh ${{ env.VERSION }}
+
+      - name: Commit the update file
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "GitHub Actions"
+          git add .
+          git commit -m "ci: auto-bumped the ${{ env.VERSION }} update file"
+          git push
+
+  publish:
+    needs: bump-and-tag
+    environment: release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Gets latest created release info
+        id: latest_release_info
+        uses: jossef/action-latest-release-info@v1.2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - name: Setup .Net
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "7.0.x"
+
+      - name: Publish the app with version ${{ steps.latest_release_info.outputs.tag_name }}
+        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
+        # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet --configuration Release --framework net7.0-windows
+
+      - name: Zip the necessary release files
+        run: |
+          $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
+          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+
+      # - name: Zip the whole folder
+      #   run: Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+
+      - name: Upload the fpvnoise binary to assets
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        with:
+          upload_url: ${{ steps.latest_release_info.outputs.upload_url }}
+          asset_path: ./fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip
+          asset_name: fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip
+          asset_content_type: application/zip
+
+  # # this won't push the changelog :(
+  # app-cast-update:
+  #   needs: publish
+  #   environment: release
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+
+  #     - name: Gets latest created release info
+  #       id: latest_release_info
+  #       uses: jossef/action-latest-release-info@v1.2.1
+  #       env:
+  #         GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+  #     - name: Bump the update file to ${{ steps.latest_release_info.outputs.tag_name }}
+  #       if: ${{ steps.latest_release_info.outputs.tag_name }} != ""
+  #       run: |
+  #         cd Support
+  #         chmod +x bump_update.sh
+  #         ./bump_update.sh ${{ steps.latest_release_info.outputs.tag_name }}
+
+  #     - name: Commit the update file
+  #       run: |
+  #         git config --global user.email "github-actions@github.com"
+  #         git config --global user.name "GitHub Actions"
+  #         git add .
+  #         git commit -m "ci: app-cast auto-bump and changelog update to ${{ steps.latest_release_info.outputs.tag_name }}"
+  #         git push

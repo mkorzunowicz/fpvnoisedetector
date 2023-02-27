@@ -9,6 +9,7 @@
     using ViewModels;
     using AutoUpdaterDotNET;
     using Unosquare.FFME;
+    using System.Net.Http;
 
     /// <summary>
     /// Interaction logic for App.xaml.
@@ -114,7 +115,76 @@
                     }
                 }
             });
-            AutoUpdater.Start("https://raw.githubusercontent.com/mkorzunowicz/updater_test/main/Support/update.xml");
+            AutoUpdater.RunUpdateAsAdmin = false;
+            AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
+
+            AutoUpdater.Start($"{github_baseurl}/Support/update.xml");
+        }
+        string github_baseurl = "https://raw.githubusercontent.com/mkorzunowicz/fpvnoisedetector/master";
+        private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
+        {
+            try
+            {
+                // If an update is available, display a message box
+                if (args != null && args.IsUpdateAvailable)
+                {
+                    string changelog;
+                    try
+                    {
+                        changelog = new HttpClient().GetStringAsync($"{github_baseurl}/CHANGELOG.md").Result;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        changelog = $"Unable to retrieve changelog: {ex.Message}";
+                    }
+                    var updateWindow = new UpdateWindow()
+                    {
+                        DataContext = new UpdateViewModel(args, changelog)
+                    };
+                    var result = updateWindow.ShowDialog();
+
+                    if (result == true)
+                    {        
+                        try
+                        {
+                            var updated = AutoUpdater.DownloadUpdate(args);
+                            if (updated)
+                            {
+                                Current?.Shutdown();
+                            }
+                        }
+                        catch (Exception exception)
+                        {
+                            MessageBox.Show(exception.Message, exception.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                        }
+                    }
+                }
+                else if (args != null && args.IsUpdateAvailable == false)
+                {
+                }
+                else if (args != null && args.Error != null)
+                {
+                    if (args.Error is System.Net.WebException)
+                    {
+                        //MessageBox.Show(
+                        //    @"There is a problem reaching update server. Please check your internet connection and try again later.",
+                        //    @"Update Check Failed", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    else
+                    {
+                        //MessageBox.Show("The update failed: " + args.Error.Message, args.Error.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
+                else
+                {
+                    //if (args == null)
+                    //    MessageBox.Show("Args came back as null ;(", "Args null", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                MessageBox.Show(ex.StackTrace, "The updater threw an exception: " + ex.Message, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -20,7 +20,7 @@
         {
             try
             {
-                var entryAssemblyPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) ?? ".";
+                var entryAssemblyPath = Path.GetDirectoryName(System.AppContext.BaseDirectory) ?? ".";
                 FFmpegSearchPath = Path.GetFullPath(entryAssemblyPath);
                 return;
             }
