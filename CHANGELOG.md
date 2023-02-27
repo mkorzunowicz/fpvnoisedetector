@@ -1,0 +1,48 @@
+# 1.0.0 (2023-02-27)
+
+
+### Bug Fixes
+
+* break the encoding loop on stop ([fad7ad7](https://github.com/mkorzunowicz/fpvnoisedetector/commit/fad7ad7dfc6103617265915d89f5e51bca340ee2))
+* button tooltips ([fc9330a](https://github.com/mkorzunowicz/fpvnoisedetector/commit/fc9330a45f662009153ed90933df0d37b4c95d85))
+* correct lib to load ([cbc56bd](https://github.com/mkorzunowicz/fpvnoisedetector/commit/cbc56bd6dbf489992f115610e69e9a394106a3d4))
+* don't play videos while splitting ([96602a8](https://github.com/mkorzunowicz/fpvnoisedetector/commit/96602a8915a30dc5df65f53342f1ff15dfd85b91))
+* folder structure ([74921a0](https://github.com/mkorzunowicz/fpvnoisedetector/commit/74921a08c74254d9114d6a89acac991d206a1085))
+* forgot timeline changes for timeline manipulation ([4ba2d86](https://github.com/mkorzunowicz/fpvnoisedetector/commit/4ba2d8686ee0c523da3d32e6d87601641c12cbd4))
+* licences update ([e2dd88e](https://github.com/mkorzunowicz/fpvnoisedetector/commit/e2dd88efcc68a1079fd67c97fe944c402e602d60))
+* logo and analyzers ([40d6a85](https://github.com/mkorzunowicz/fpvnoisedetector/commit/40d6a855b55bd1da942c735662ce970a58443f8c))
+* minwidth 900 ([428329b](https://github.com/mkorzunowicz/fpvnoisedetector/commit/428329b61a27598a0a86d2e3e5f78ad05907b1ad))
+* open file icon ([c2e1e1c](https://github.com/mkorzunowicz/fpvnoisedetector/commit/c2e1e1c8eb9a915babf6880a9311cfa0e3cf949d))
+* readme changes ([70d1c56](https://github.com/mkorzunowicz/fpvnoisedetector/commit/70d1c569563115218c250022f1c86a06aa836a37))
+* readme update ([d0c2274](https://github.com/mkorzunowicz/fpvnoisedetector/commit/d0c22742e39d9c2a89dbdf24e729cb893c3dc409))
+* readme updates ([cd2726b](https://github.com/mkorzunowicz/fpvnoisedetector/commit/cd2726b48ba1bf21c90269cd9716a2c32122308b))
+* refactored the main window move a bit.. still could use polishing ([bdc9f65](https://github.com/mkorzunowicz/fpvnoisedetector/commit/bdc9f653b7bd94334649051eca97e006cab2e783))
+* removed buffering indicators, spread the buttons and changed the volume slider ([c0c4e83](https://github.com/mkorzunowicz/fpvnoisedetector/commit/c0c4e83eecd6416177cbf6cc65668d778f822bf6))
+* removed the beginfile linking ([9e84e7c](https://github.com/mkorzunowicz/fpvnoisedetector/commit/9e84e7c36f8caeaf5dac54837695af29f244847f))
+* simpler path in title ([1c15e9f](https://github.com/mkorzunowicz/fpvnoisedetector/commit/1c15e9f2e2e490248a4959bd7a5c535aa99e3a5d))
+* split and merge ([60a4ead](https://github.com/mkorzunowicz/fpvnoisedetector/commit/60a4ead9768d36c5991e71ec475dcc0c5d04b972))
+* timeline validation issue red frame ([4b15416](https://github.com/mkorzunowicz/fpvnoisedetector/commit/4b15416d0593d9e4529e8282c7a0cf41ee369025))
+* timespan convert no negative values ([4fa1ab8](https://github.com/mkorzunowicz/fpvnoisedetector/commit/4fa1ab846758e6dee4507a3569ccff57f2469610))
+* Unosquare.FFME.Windows.Sample -> FPVNoiseDetector ([470184a](https://github.com/mkorzunowicz/fpvnoisedetector/commit/470184ab32bce8836b340ff32e810f5edf0ecf80))
+
+
+### Features
+
+* async predict ([00ba72d](https://github.com/mkorzunowicz/fpvnoisedetector/commit/00ba72dac12fb866fd331079d2b40d2e1082e9fa))
+* drag and drop folder/files ([181990f](https://github.com/mkorzunowicz/fpvnoisedetector/commit/181990f47749e1dcfc2c7bccd99906029ca41aa1))
+* encode whole playlist ([09bbd2e](https://github.com/mkorzunowicz/fpvnoisedetector/commit/09bbd2e44f32742613f96855f5aa674365970fa5))
+* encoding progress and controls disabled/visible ([c9acdc5](https://github.com/mkorzunowicz/fpvnoisedetector/commit/c9acdc5103f238c3b76914b4c601dbaf401b62a2))
+* merge commands ([e805273](https://github.com/mkorzunowicz/fpvnoisedetector/commit/e805273165e9b909397be7259c4c1155fc1384ac))
+* playlist prediction ([721838f](https://github.com/mkorzunowicz/fpvnoisedetector/commit/721838fa533768a7c0b0cf15cf31d500c2997cfa))
+* readme and project renames ([eaa192e](https://github.com/mkorzunowicz/fpvnoisedetector/commit/eaa192e353817c068bcc54872b1a9bcdb243e3f3))
+* save endfile to playlist entry ([036df0e](https://github.com/mkorzunowicz/fpvnoisedetector/commit/036df0e0631b19fae3c7c2f2ac9d1411ba3a448d))
+* Save playlist entry on end of timeline manipulation ([de350f4](https://github.com/mkorzunowicz/fpvnoisedetector/commit/de350f47d60d9e3670b4643ba4d49e3558b70c44))
+* split and merge instead of encoding, ran in a process ([0ac6de0](https://github.com/mkorzunowicz/fpvnoisedetector/commit/0ac6de0c14d4e89a74e6895b9284ac1e82ae69f7))
+* stop button on prediction and encoding ([64d4876](https://github.com/mkorzunowicz/fpvnoisedetector/commit/64d4876756071c618e307b250f9c5e95a68e042a))
+* stop encoding command ([a613cc2](https://github.com/mkorzunowicz/fpvnoisedetector/commit/a613cc26782169e19d9721f680171920745fafc6))
+* target net7.0 ([4ecf478](https://github.com/mkorzunowicz/fpvnoisedetector/commit/4ecf4786edcebcd1edf573cfbc6ab2e6bfebaca4))
+* the timeline manipulation works 100% ([2b81d20](https://github.com/mkorzunowicz/fpvnoisedetector/commit/2b81d2092561e4f7e8ac969a4d1c3bd7a8125d6e))
+* timeline seeking ([e82e35d](https://github.com/mkorzunowicz/fpvnoisedetector/commit/e82e35d03828d39305fb902f420ce6581bf09454))
+* updated ([5782b85](https://github.com/mkorzunowicz/fpvnoisedetector/commit/5782b85445f7cb30ddc866384a3e98d9a72f0118))
+* workflows and automated updates ([#9](https://github.com/mkorzunowicz/fpvnoisedetector/issues/9)) ([44de110](https://github.com/mkorzunowicz/fpvnoisedetector/commit/44de1108b6c0f12d651e525ee1940c756b4182a5))
+* working noise detection and timeline ([520fb23](https://github.com/mkorzunowicz/fpvnoisedetector/commit/520fb237ff1feff9c995e86c64fe9a2d33e6869d))
