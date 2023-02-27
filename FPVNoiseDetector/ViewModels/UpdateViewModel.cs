@@ -85,11 +85,11 @@ namespace FPVNoiseDetector.ViewModels
         /// <summary>
         /// Update dialog VM constructor
         /// </summary>
-        public UpdateViewModel(UpdateInfoEventArgs args)
+        public UpdateViewModel(UpdateInfoEventArgs args, string changelog)
         {
             NewVersion = args.CurrentVersion;
             OldVersion = args.InstalledVersion.ToString();
-            Changelog = new HttpClient().GetStringAsync("https://raw.githubusercontent.com/mkorzunowicz/sem-rel-test/main/CHANGELOG.md").Result;
+            Changelog = changelog;
         }
     }
 }

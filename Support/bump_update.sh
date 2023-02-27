@@ -8,8 +8,7 @@ if [ $# -eq 0 ]
 fi
 
 # Create URL with the provided version
-# REPO="https://github.com/mkorzunowicz/fpvnoisedetector"
-REPO="https://github.com/mkorzunowicz/sem-rel-test"
+REPO="https://github.com/mkorzunowicz/fpvnoisedetector"
 URL="$REPO/releases/download/$1/fpvnoise-$1.zip"
 CHANGELOG="$REPO/releases/tag/$1"
 # Create update.xml file

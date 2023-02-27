@@ -9,6 +9,7 @@
     using ViewModels;
     using AutoUpdaterDotNET;
     using Unosquare.FFME;
+    using System.Net.Http;
 
     /// <summary>
     /// Interaction logic for App.xaml.
@@ -116,16 +117,10 @@
             });
             AutoUpdater.RunUpdateAsAdmin = false;
             AutoUpdater.CheckForUpdateEvent += AutoUpdaterOnCheckForUpdateEvent;
-            try
-            {
-                AutoUpdater.Start("https://raw.githubusercontent.com/mkorzunowicz/sem-rel-test/main/Support/update.xml");
-            }
-            catch (System.Exception ex)
-            {
-                MessageBox.Show("The update couldn't start: " + ex.Message, ex.GetType().ToString(), MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
 
+            AutoUpdater.Start($"{github_baseurl}main/Support/update.xml");
+        }
+        string github_baseurl = "https://raw.githubusercontent.com/mkorzunowicz/fpvnoisedetector/";
         private void AutoUpdaterOnCheckForUpdateEvent(UpdateInfoEventArgs args)
         {
             try
@@ -133,9 +128,18 @@
                 // If an update is available, display a message box
                 if (args != null && args.IsUpdateAvailable)
                 {
+                    string changelog;
+                    try
+                    {
+                        changelog = new HttpClient().GetStringAsync($"{github_baseurl}main/CHANGELOG.md").Result;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        changelog = $"Unable to retrieve changelog: {ex.Message}";
+                    }
                     var updateWindow = new UpdateWindow()
                     {
-                        DataContext = new UpdateViewModel(args)
+                        DataContext = new UpdateViewModel(args, changelog)
                     };
                     var result = updateWindow.ShowDialog();
 
