@@ -1,5 +1,7 @@
 # FPV Noise detector: *A video viewer with analogue video noise detector and video splitter*
 
+[![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
+
 :star: *Please star this project if you like it and show your appreciation via*
 **[PayPal.Me](https://www.paypal.me/mkorzunowicz/10eur)**
 
