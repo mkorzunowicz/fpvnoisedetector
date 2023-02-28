@@ -185,7 +185,7 @@ public class MediaEncoder : ObservableObject
     {
         var processInfo = new ProcessStartInfo($"{Library.FFmpegDirectory}\\ffmpeg")
         {
-            Arguments = $"-i {source} -c copy -copyts -ss {start.ToString(@"hh\:mm\:ss")} -to {(start + duration).ToString(@"hh\:mm\:ss")} {output}",
+            Arguments = $"-i \"{source}\" -c copy -copyts -ss {start.ToString(@"hh\:mm\:ss")} -to {(start + duration).ToString(@"hh\:mm\:ss")} \"{output}\"",
             CreateNoWindow = true,
             ErrorDialog = false,
             UseShellExecute = false,
@@ -228,7 +228,7 @@ public class MediaEncoder : ObservableObject
         }
         var processInfo = new ProcessStartInfo($"{Library.FFmpegDirectory}\\ffmpeg")
         {
-            Arguments = $"-safe 0 -f concat -i {path} -c copy {output}",
+            Arguments = $"-safe 0 -f concat -i \"{path}\" -c copy \"{output}\"",
             CreateNoWindow = true,
             ErrorDialog = false,
             UseShellExecute = false,
