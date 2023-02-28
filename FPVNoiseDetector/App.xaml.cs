@@ -10,6 +10,7 @@
     using AutoUpdaterDotNET;
     using Unosquare.FFME;
     using System.Net.Http;
+    using FFMediaToolkit;
 
     /// <summary>
     /// Interaction logic for App.xaml.
@@ -22,10 +23,11 @@
         public App()
         {
             // Change the default location of the ffmpeg binaries (same directory as application)
-            // You can get the 64-bit binaries here: https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-full-shared.7z
-            // Working x86: ffmpeg.Shared nuget package
-            // Working x64: https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2021-02-28-12-32/ffmpeg-n4.3.2-160-gfbb9368226-win64-gpl-shared-4.3.zip
-            Library.FFmpegDirectory = @"c:\ffmpeg" + (Environment.Is64BitProcess ? @"\x64" : string.Empty);
+            // You can get the 64-bit binaries here: https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2023-02-12-12-35/ffmpeg-n5.1.2-12-g7268323193-win64-gpl-shared-5.1.zip
+            if (File.Exists(@$"{System.AppContext.BaseDirectory}\ffmpeg\ffmpeg.exe"))
+                FFmpegLoader.FFmpegPath = Library.FFmpegDirectory = @"{System.AppContext.BaseDirectory}\ffmpeg";
+            else
+                FFmpegLoader.FFmpegPath = Library.FFmpegDirectory = @"c:\ffmpeg" + (Environment.Is64BitProcess ? @"\x64" : string.Empty);
 
             // You can pick which FFmpeg binaries are loaded. See issue #28
             // For more specific control (issue #414) you can set Library.FFmpegLoadModeFlags to:
@@ -144,7 +146,7 @@
                     var result = updateWindow.ShowDialog();
 
                     if (result == true)
-                    {        
+                    {
                         try
                         {
                             var updated = AutoUpdater.DownloadUpdate(args);
