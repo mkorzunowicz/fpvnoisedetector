@@ -25,7 +25,7 @@
             // Change the default location of the ffmpeg binaries (same directory as application)
             // You can get the 64-bit binaries here: https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2023-02-12-12-35/ffmpeg-n5.1.2-12-g7268323193-win64-gpl-shared-5.1.zip
             if (File.Exists(@$"{System.AppContext.BaseDirectory}\ffmpeg\ffmpeg.exe"))
-                FFmpegLoader.FFmpegPath = Library.FFmpegDirectory = @"{System.AppContext.BaseDirectory}\ffmpeg";
+                FFmpegLoader.FFmpegPath = Library.FFmpegDirectory = @$"{System.AppContext.BaseDirectory}\ffmpeg";
             else
                 FFmpegLoader.FFmpegPath = Library.FFmpegDirectory = @"c:\ffmpeg" + (Environment.Is64BitProcess ? @"\x64" : string.Empty);
 

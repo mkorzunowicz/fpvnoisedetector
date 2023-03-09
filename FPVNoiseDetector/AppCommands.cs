@@ -499,7 +499,7 @@
                 App.ViewModel.IsPredicting = true;
                 App.ViewModel.ShouldStopPredicting = false;
 
-                var dict = new Dictionary<TimeSpan, float>();
+                var dict = new Dictionary<TimeSpan, bool>();
                 var position = TimeSpan.Zero;
                 var normalStep = 20000;
                 var minStep = 50;
@@ -539,24 +539,16 @@
 
                         await this.OpenCommand.ExecuteAsync(App.ViewModel.Playlist.OpenMediaSource);
                         continue;
-                        //await App.ViewModel.MediaElement.Seek(TimeSpan.Zero);
-
-                        //App.ViewModel.IsPredicting = false;
-                        //return;
                     }
-                    var result = await NoisePredictorModel.PredictAsync(bitmap);
+                    var isNoise = await PredictionHelper.IsNoiseAsync(bitmap);
                     if (!predictionModelLoaded) App.ViewModel.NotificationMessage = "Detecting noise...";
                     predictionModelLoaded = true;
-                    var score = result.Score.First();
-                    if (dict.Count == 0 || Math.Abs(dict.Last().Value - score) < 0.5)
+                    if (dict.Count == 0 || dict.Last().Value == isNoise)
                     {
-                        if (dict.Count == 0)
-                        {
-                            if (score > 0.5)
-                                lastEvent = new TimeLineEvent { Start = TimeSpan.Zero };
-                        }
+                        if (dict.Count == 0 && !isNoise)
+                            lastEvent = new TimeLineEvent { Start = TimeSpan.Zero };
 
-                        dict[App.ViewModel.MediaElement.FramePosition] = score;
+                        dict[App.ViewModel.MediaElement.FramePosition] = isNoise;
                     }
                     else if (step < minStep)
                     {
@@ -573,7 +565,7 @@
                             App.ViewModel.NotificationMessage = $"Found a no noise video part";
                         }
 
-                        dict[App.ViewModel.MediaElement.FramePosition] = score;
+                        dict[App.ViewModel.MediaElement.FramePosition] = isNoise;
                         step = normalStep;
                     }
                     else

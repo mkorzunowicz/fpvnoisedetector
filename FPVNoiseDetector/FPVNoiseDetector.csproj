@@ -1,6 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop" ToolsVersion="Current">
-
   <Choose>
     <When Condition="'$(Configuration)' == 'debug'">
       <PropertyGroup>
@@ -13,7 +12,6 @@
       </PropertyGroup>
     </Otherwise>
   </Choose>
-  
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
@@ -28,17 +26,15 @@
     <CodeAnalysisRuleSet>..\Analyzers.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <NeutralLanguage>en</NeutralLanguage>
-    
     <RepositoryType>GitHub</RepositoryType>
     <RepositoryUrl>https://github.com/mkorzunowicz/fpvnoisedetector</RepositoryUrl>
-
     <Version>1.0.0.0</Version>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <FileVersion>1.0.0.0</FileVersion>
     <LangVersion>preview</LangVersion>
-
     <Authors>Michał Korzunowicz</Authors>
-    <Company></Company>
+    <Company>
+    </Company>
     <Product>FPV Noise Detector</Product>
     <Description>Detects analogue noise in videos and cuts it out to save disk space.</Description>
     <Copyright>Michał Korzunowicz, (C) 2023</Copyright>
@@ -49,18 +45,15 @@
     <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <DefineConstants>TRACE;DEBUG;HANDLE_RENDERING_EVENTS</DefineConstants>
   </PropertyGroup>
-  
   <ItemGroup>
     <Page Remove="Controls\ControllerPanelControl.xaml" />
     <Page Remove="Controls\PlaylistPanelControl.xaml" />
     <Page Remove="Controls\PropertiesPanelControl.xaml" />
     <Page Remove="MainWindow.xaml" />
   </ItemGroup>
-  
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
@@ -68,25 +61,23 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.6" />
+    <PackageReference Include="Autoupdater.NET.Official" Version="1.7.7" />
     <PackageReference Include="FFMediaToolkit" Version="4.4.1" />
-	  <PackageReference Include="FFmpeg.AutoGen" Version="5.1.1" />
-	  <PackageReference Include="MdXaml" Version="1.17.0" />
-	  <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
+    <PackageReference Include="FFmpeg.AutoGen" Version="5.1.1" />
+    <PackageReference Include="MdXaml" Version="1.17.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="7.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ML" Version="2.0.0" />
-    <PackageReference Include="Microsoft.ML.Vision" Version="2.0.0" />
+    <PackageReference Include="Microsoft.ML" Version="2.0.1" />
+    <PackageReference Include="Microsoft.ML.Vision" Version="2.0.1" />
     <PackageReference Include="SciSharp.TensorFlow.Redist" Version="2.3.1" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.333">
       <PrivateAssets>all</PrivateAssets>
@@ -94,19 +85,14 @@
     </PackageReference>
     <PackageReference Include="System.Collections" Version="4.3.0" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\FFME\Unosquare.FFME.Windows\Unosquare.FFME.Windows.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-
   <ItemGroup>
-
   </ItemGroup>
-
   <ItemGroup>
     <Page Include="Controls\ControllerPanelControl.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -121,7 +107,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="App.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -133,7 +118,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <Page Update="App.Icons.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -142,5 +126,16 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-
+  <ItemGroup Label="NoisePredictorModel">
+    <None Include="NoisePredictorModel.consumption.cs">
+      <DependentUpon>NoisePredictorModel.mbconfig</DependentUpon>
+    </None>
+    <None Include="NoisePredictorModel.mlnet">
+      <DependentUpon>NoisePredictorModel.mbconfig</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="NoisePredictorModel.training.cs">
+      <DependentUpon>NoisePredictorModel.mbconfig</DependentUpon>
+    </None>
+  </ItemGroup>
 </Project>
