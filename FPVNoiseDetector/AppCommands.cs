@@ -7,12 +7,17 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Drawing;
     using System.IO;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
     using System.Windows.Controls;
+    using Emgu.CV.Structure;
+    using Emgu.CV;
+    using System.Drawing.Imaging;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Represents the Application-Wide Commands.
@@ -450,6 +455,52 @@
                     App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.EndFile}";
                 }
             }));
+
+        /// <summary>
+        /// Compare two Bitmaps
+        /// </summary>
+        /// <param name="bmp1"></param>
+        /// <param name="bmp2"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static float CompareBitmaps(Bitmap bmp1, Bitmap bmp2)
+        {
+            if (bmp1.Width != bmp2.Width || bmp1.Height != bmp2.Height)
+                throw new ArgumentException("Bitmaps must be of the same size.");
+            Image<Rgb, byte> img1 = new Image<Rgb, byte>(bmp1.Width, bmp1.Height)
+            {
+                Bytes = GetBitmapData(bmp1)
+            }; Image<Rgb, byte> img2 = new Image<Rgb, byte>(bmp2.Width, bmp2.Height)
+            {
+                Bytes = GetBitmapData(bmp2)
+            };
+
+            Mat result = new Mat();
+            var diff = img1.AbsDiff(img2);
+            CvInvoke.MatchTemplate(img1.Mat, img2.Mat, result, Emgu.CV.CvEnum.TemplateMatchingType.CcoeffNormed);
+
+            var similarity = (float)(result.GetData() as float[,]).GetValue(0, 0);
+
+            return similarity;
+        }
+
+        private static byte[] GetBitmapData(Bitmap bmp)
+        {
+            int width = bmp.Width;
+            int height = bmp.Height;
+            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadWrite, PixelFormat.Format24bppRgb);
+
+            IntPtr ptr = bmpData.Scan0;
+
+            byte[] rgbValues = null;
+            int bytes = Math.Abs(bmpData.Stride) * bmp.Height;
+            rgbValues = new byte[bytes];
+
+            Marshal.Copy(ptr, rgbValues, 0, bytes);
+            bmp.UnlockBits(bmpData);
+
+            return rgbValues;
+        }
         /// <summary>
         /// Gets the predict noise command.
         /// </summary>
@@ -486,130 +537,176 @@
             App.ViewModel.MediaElement.MediaReady -= PredictOnReady;
             PredictNoiseInWholeVideoCommand.Execute();
         }
+        private async Task<System.Drawing.Bitmap> TryLoadBitmap()
+        {
+            var bitmap = await Task<System.Drawing.Bitmap>.Run(async () =>
+            {
+
+                System.Drawing.Bitmap bm = null;
+                for (int i = 0; i < 30; i++)
+                {
+                    bm = await App.ViewModel.MediaElement.CaptureBitmapAsync();
+                    if (bm != null) break;
+                    if (i % 10 == 0 && bm == null)
+                    {
+                        App.ViewModel.NotificationMessage = $"File didn't load correctly. Reloading file.";
+                        await this.OpenCommand.ExecuteAsync(App.ViewModel.Playlist.OpenMediaSource);
+                    }
+                    Thread.Sleep(100);
+                }
+                return bm;
+            });
+            if (bitmap == null)
+                throw new Exception("couldn't read file/bitmap in 30 tries and 3 reloads");
+            return bitmap;
+        }
+
+        private async Task PredictNoiseInVideo()
+        {
+            App.ViewModel.IsPredicting = true;
+            App.ViewModel.ShouldStopPredicting = false;
+
+            var dict = new Dictionary<TimeSpan, bool>();
+            var position = TimeSpan.Zero;
+            var normalStep = App.ViewModel.Controller.PredictionPrecision * 1000;
+            var minStep = App.ViewModel.MediaElement.PositionStep.Milliseconds == 0 ? 20 : App.ViewModel.MediaElement.PositionStep.Milliseconds;
+            var step = normalStep;
+            var start = DateTime.Now;
+            var hitTheEnd = false;
+
+            TimeLine good = new()
+            {
+                Duration = App.ViewModel.MediaElement.NaturalDuration.Value
+            };
+
+            App.ViewModel.NoiseTimeLine = good;
+
+            TimeLineEvent lastEvent = null;
+            if (predictionModelLoaded) App.ViewModel.NotificationMessage = "Detecting noise...";
+            else App.ViewModel.NotificationMessage = "Loading prediction model. It can take a few seconds...";
+            do
+            {
+                await App.ViewModel.MediaElement.Seek(position);
+                var bitmap = await TryLoadBitmap();
+                var isNoise = false;
+                if (App.ViewModel.UseSimilarityForPrediction)
+                {
+                    if (position == TimeSpan.Zero)
+                        await App.ViewModel.MediaElement.StepForward();
+                    else
+                        await App.ViewModel.MediaElement.StepBackward();
+
+                    var bitmap2 = await TryLoadBitmap();
+                    isNoise = CompareBitmaps(bitmap, bitmap2) < 0.15;
+                }
+                else
+                    isNoise = await PredictionHelper.IsNoiseAsync(bitmap);
+
+                if (!predictionModelLoaded) App.ViewModel.NotificationMessage = "Detecting noise...";
+                predictionModelLoaded = true;
+                if (dict.Count == 0 || dict.Last().Value == isNoise)
+                {
+                    if (dict.Count == 0 && !isNoise)
+                        lastEvent = new TimeLineEvent { Start = TimeSpan.Zero };
+
+                    dict[App.ViewModel.MediaElement.FramePosition] = isNoise;
+                }
+                else if (step < minStep)
+                {
+                    if (lastEvent == null)
+                    {
+                        lastEvent = new TimeLineEvent { Start = position };
+                    }
+                    else
+                    {
+                        lastEvent.Duration = position - lastEvent.Start;
+                        good.Events.Add(lastEvent);
+                        lastEvent = null;
+
+                        App.ViewModel.NotificationMessage = $"Found a no noise video part";
+                    }
+
+                    dict[App.ViewModel.MediaElement.FramePosition] = isNoise;
+                    step = normalStep;
+                }
+                else
+                {
+                    position -= TimeSpan.FromMilliseconds(step);
+                    step /= 2;
+                }
+
+                position += TimeSpan.FromMilliseconds(step);
+                if (App.ViewModel.MediaElement.NaturalDuration < position && !hitTheEnd)
+                {
+                    position = App.ViewModel.MediaElement.NaturalDuration.Value;
+                    hitTheEnd = true;
+                }
+
+                if (App.ViewModel.MediaElement.NaturalDuration.Value < position && hitTheEnd)
+                {
+                    if (lastEvent != null)
+                    {
+                        lastEvent.Duration = App.ViewModel.MediaElement.NaturalDuration.Value - lastEvent.Start;
+                        good.Events.Add(lastEvent);
+                    }
+                }
+            }
+            while (App.ViewModel.MediaElement.NaturalDuration.Value >= position && !App.ViewModel.ShouldStopPredicting);
+
+            var done = DateTime.Now - start;
+            if (App.ViewModel.ShouldStopPredicting)
+            {
+                App.ViewModel.NoiseTimeLine = new TimeLine();
+                App.ViewModel.NotificationMessage = $"Prediction cancelled after {done.TotalSeconds.ToString("0.00")}s";
+            }
+            else
+            {
+                App.ViewModel.NotificationMessage = $"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s";
+                Debug.WriteLine($"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s");
+
+                App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
+                App.ViewModel.Playlist.Entries.SaveEntries();
+            }
+
+            App.ViewModel.IsPredicting = false;
+        }
+
         bool predictionModelLoaded = false;
+        private async Task CompareNextFrames()
+        {
+            App.ViewModel.IsPredicting = true;
+            App.ViewModel.ShouldStopPredicting = false;
+            var step = App.ViewModel.MediaElement.PositionStep.Milliseconds == 0 ? 20 : App.ViewModel.MediaElement.PositionStep.Milliseconds;
+            var position = App.ViewModel.MediaElement.Position;
+            await App.ViewModel.MediaElement.Seek(position);
+            System.Drawing.Bitmap prevBitmap = await TryLoadBitmap();
+            while (position <= App.ViewModel.MediaElement.NaturalDuration.Value && !App.ViewModel.ShouldStopPredicting)
+            //while (await App.ViewModel.MediaElement.StepForward() && !App.ViewModel.ShouldStopPredicting)
+            {
+                //position += TimeSpan.FromMilliseconds(step);
+                await App.ViewModel.MediaElement.Seek(position += TimeSpan.FromMilliseconds(step));
+
+                //await App.ViewModel.MediaElement.StepForward();
+                var bm = await TryLoadBitmap();
+                var similarity = CompareBitmaps(prevBitmap, bm);
+
+                App.ViewModel.NotificationMessage = $"Similarity: {similarity}";
+                prevBitmap = bm;
+            }
+            App.ViewModel.IsPredicting = App.ViewModel.ShouldStopPredicting = false;
+        }
         /// <summary>
         /// Gets the predict noise command.
         /// </summary>
         /// <value>
-        /// The stop command.
+        /// The predict noise command.
         /// </value>
         public DelegateCommand PredictNoiseInWholeVideoCommand => m_PredictNoiseInWholeVideoCommand ??
             (m_PredictNoiseInWholeVideoCommand = new DelegateCommand(async o =>
             {
-                App.ViewModel.IsPredicting = true;
-                App.ViewModel.ShouldStopPredicting = false;
-
-                var dict = new Dictionary<TimeSpan, bool>();
-                var position = TimeSpan.Zero;
-                var normalStep = 20000;
-                var minStep = 50;
-                var step = normalStep;
-                var start = DateTime.Now;
-                var hitTheEnd = false;
-
-                TimeLine good = new()
-                {
-                    Duration = App.ViewModel.MediaElement.NaturalDuration.Value
-                };
-
-                App.ViewModel.NoiseTimeLine = good;
-
-                TimeLineEvent lastEvent = null;
-                if (predictionModelLoaded) App.ViewModel.NotificationMessage = "Detecting noise...";
-                else App.ViewModel.NotificationMessage = "Loading prediction model. It can take a few seconds...";
-                do
-                {
-                    await App.ViewModel.MediaElement.Seek(position);
-                    var bitmap = await Task<System.Drawing.Bitmap>.Run(async () =>
-                    {
-
-                        System.Drawing.Bitmap bm = null;
-                        for (int i = 0; i < 10; i++)
-                        {
-                            bm = await App.ViewModel.MediaElement.CaptureBitmapAsync();
-                            if (bm != null) break;
-                            Thread.Sleep(100);
-                        }
-                        return bm;
-                    });
-
-                    if (bitmap == null)
-                    {
-                        App.ViewModel.NotificationMessage = $"File didn't load correctly. Reloading file.";
-
-                        await this.OpenCommand.ExecuteAsync(App.ViewModel.Playlist.OpenMediaSource);
-                        continue;
-                    }
-                    var isNoise = await PredictionHelper.IsNoiseAsync(bitmap);
-                    if (!predictionModelLoaded) App.ViewModel.NotificationMessage = "Detecting noise...";
-                    predictionModelLoaded = true;
-                    if (dict.Count == 0 || dict.Last().Value == isNoise)
-                    {
-                        if (dict.Count == 0 && !isNoise)
-                            lastEvent = new TimeLineEvent { Start = TimeSpan.Zero };
-
-                        dict[App.ViewModel.MediaElement.FramePosition] = isNoise;
-                    }
-                    else if (step < minStep)
-                    {
-                        if (lastEvent == null)
-                        {
-                            lastEvent = new TimeLineEvent { Start = position };
-                        }
-                        else
-                        {
-                            lastEvent.Duration = position - lastEvent.Start;
-                            good.Events.Add(lastEvent);
-                            lastEvent = null;
-
-                            App.ViewModel.NotificationMessage = $"Found a no noise video part";
-                        }
-
-                        dict[App.ViewModel.MediaElement.FramePosition] = isNoise;
-                        step = normalStep;
-                    }
-                    else
-                    {
-                        position -= TimeSpan.FromMilliseconds(step);
-                        step /= 2;
-                    }
-
-                    position += TimeSpan.FromMilliseconds(step);
-                    if (App.ViewModel.MediaElement.NaturalDuration < position && !hitTheEnd)
-                    {
-                        position = App.ViewModel.MediaElement.NaturalDuration.Value;
-                        hitTheEnd = true;
-                    }
-
-                    if (App.ViewModel.MediaElement.NaturalDuration.Value < position && hitTheEnd)
-                    {
-                        if (lastEvent != null)
-                        {
-                            lastEvent.Duration = App.ViewModel.MediaElement.NaturalDuration.Value - lastEvent.Start;
-                            good.Events.Add(lastEvent);
-                        }
-                    }
-                }
-                while (App.ViewModel.MediaElement.NaturalDuration.Value >= position && !App.ViewModel.ShouldStopPredicting);
-
-                var done = DateTime.Now - start;
-                if (App.ViewModel.ShouldStopPredicting)
-                {
-                    App.ViewModel.NoiseTimeLine = new TimeLine();
-                    App.ViewModel.NotificationMessage = $"Prediction cancelled after {done.TotalSeconds.ToString("0.00")}s";
-                }
-                else
-                {
-                    App.ViewModel.NotificationMessage = $"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s";
-                    Debug.WriteLine($"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s");
-
-                    App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
-                    App.ViewModel.Playlist.Entries.SaveEntries();
-                }
-
-                App.ViewModel.IsPredicting = false;
+                //await CompareNextFrames();
+                await PredictNoiseInVideo();
             }));
-
 
         /// <summary>
         /// Saves the playlist entries.

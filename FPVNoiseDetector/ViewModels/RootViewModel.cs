@@ -21,7 +21,8 @@
         private bool m_IsPredicting = false; 
         private bool m_ShouldStopPredicting = false; 
         private bool m_IsEncoding = false;
-        private TimeLine m_NoiseTimeLine;
+        private bool m_UseSimilarityForPrediction = false;
+        private TimeLine m_NoiseTimeLine;        
         private double m_PlaybackProgress;
         private TaskbarItemProgressState m_PlaybackProgressState;
         private bool m_IsPlaylistPanelOpen = App.IsInDesignMode;
@@ -175,12 +176,20 @@
             set => SetProperty(ref m_IsPropertiesPanelOpen, value);
         }
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is properties panel open.
+        /// Gets or sets a value indicating whether whether the prediction should stop in next cycle.
         /// </summary>
         public bool ShouldStopPredicting
         {
             get => m_ShouldStopPredicting;
             set => SetProperty(ref m_ShouldStopPredicting, value);
+        }
+        /// <summary>
+        /// Gets or sets a value indicating which method to use for prediction.
+        /// </summary>
+        public bool UseSimilarityForPrediction
+        {
+            get => m_UseSimilarityForPrediction;
+            set => SetProperty(ref m_UseSimilarityForPrediction, value);
         }
         /// <summary>
         /// Gets or sets a value indicating whether this instance is properties panel open.

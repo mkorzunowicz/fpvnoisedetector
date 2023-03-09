@@ -20,6 +20,7 @@
         private Visibility m_IsMediaOpenVisibility = Visibility.Visible;
         private bool m_IsAudioControlEnabled = true;
         private bool m_IsSpeedRatioEnabled = true;
+        private int m_PredictionPrecision = 10;
         private Visibility m_ClosedCaptionsVisibility = Visibility.Visible;
         private Visibility m_AudioControlVisibility = Visibility.Visible;
         private Visibility m_PauseButtonVisibility = Visibility.Visible;
@@ -41,6 +42,21 @@
             // placeholder
         }
 
+        /// <summary>
+        /// Gets or sets the playback progress.
+        /// </summary>
+        public int PredictionPrecision
+        {
+            get
+            {
+                return m_PredictionPrecision;
+            }
+            set
+            {
+                m_PredictionPrecision = value;
+                NotifyPropertyChanged(nameof(PredictionPrecision));
+            }
+        }
         /// <summary>
         /// Gets or sets the video contrast.
         /// </summary>
