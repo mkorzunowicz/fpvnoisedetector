@@ -13,11 +13,13 @@
     using System.Threading;
     using System.Threading.Tasks;
     using System.Windows;
-    using System.Windows.Controls;
     using Emgu.CV.Structure;
     using Emgu.CV;
     using System.Drawing.Imaging;
     using System.Runtime.InteropServices;
+    using Unosquare.FFME;
+    using System.Text.RegularExpressions;
+    using System.Security.Policy;
 
     /// <summary>
     /// Represents the Application-Wide Commands.
@@ -444,18 +446,75 @@
         /// The merge at end command.
         /// </value>
         public DelegateCommand MergeEndFileCommand => m_MergeEndFileCommand ??
-            (m_MergeEndFileCommand = new DelegateCommand(o =>
+            (m_MergeEndFileCommand = new DelegateCommand(async o =>
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                if (openFileDialog.ShowDialog() == true)
-                {
-                    App.ViewModel.NoiseTimeLine.EndFile = openFileDialog.FileName;
-                    OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
-                    SaveEntriesCommand.Execute();
-                    App.ViewModel.NotificationMessage = $"Set merge file at end to{App.ViewModel.NoiseTimeLine.EndFile}";
-                }
+                await MergeNextFile();
+
+                //OpenFileDialog openFileDialog = new OpenFileDialog();
+                //if (openFileDialog.ShowDialog() == true)
+                //{
+                //    App.ViewModel.NoiseTimeLine.EndFile = openFileDialog.FileName;
+                //    OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
+                //    SaveEntriesCommand.Execute();
+                //    App.ViewModel.NotificationMessage = $"Set merge file at end to: {App.ViewModel.NoiseTimeLine.EndFile}";
+                //}
             }));
 
+        private async Task MergeNextFile(string sourcePath = null)
+        {
+            sourcePath = App.ViewModel.MediaElement.Source.AbsolutePath;
+
+            // read the directory where the file is.. look up the name - check if it's a next in line file
+            var dir = Path.GetDirectoryName(sourcePath);
+            //var files = Directory.GetFiles(dir).ToList();
+            var fileNames = Directory.GetFiles(dir).Select(f => Path.GetFileName(f)).ToList();
+            fileNames.Sort();
+            var thisFileName = Path.GetFileName(sourcePath);
+            //var i = thisFileName.IndexOf(sourcePath);
+            var i = fileNames.IndexOf(thisFileName);
+            if (i == -1) return;
+            else if (fileNames.Count >= i + 1)
+            {
+                var nextName = fileNames[i + 1];
+                if (IsNumericalSuccessor(Path.GetFileName(thisFileName), Path.GetFileName(nextName)))
+                //if (IsNumericalSuccessor(thisFileName, next))
+                {
+                    var next = Path.Combine(dir, nextName);
+                    using var me = new Unosquare.FFME.MediaElement();
+                    await me.Open(new Uri(next));
+                    await me.Seek(TimeSpan.Zero);
+
+                    var nextBitmap = await TryLoadBitmap(me);
+
+                    await App.ViewModel.MediaElement.Seek(App.ViewModel.MediaElement.NaturalDuration.Value);
+                    var prevBitmap = await TryLoadBitmap(App.ViewModel.MediaElement);
+                    var diff = CompareBitmaps(prevBitmap, nextBitmap);
+                    // if less than 0.7 then it's probably not similar enough, if it's 1, one of the frames was (so far discovered) black.
+                    if (diff > 0.7 && diff < 1 && App.ViewModel.NoiseTimeLine != null)
+                    {
+                        App.ViewModel.NoiseTimeLine.EndFile = next;
+                        App.ViewModel.NotificationMessage = $"Detected next file as continuation: {nextName}";
+                        return;
+                    }
+                }
+            }
+            App.ViewModel.NotificationMessage = $"Didn't find file continuation";
+        }
+        private static bool IsNumericalSuccessor(string firstFileName, string secondFileName)
+        {
+            Regex regex = new Regex(@"\d+");
+
+            Match match = regex.Match(firstFileName);
+            Match match2 = regex.Match(secondFileName);
+
+            if (match.Success && match2.Success)
+            {
+                var first = int.Parse(match.Value);
+                var second = int.Parse(match2.Value);
+                return second == first + 1;
+            }
+            else return false;
+        }
         /// <summary>
         /// Compare two Bitmaps
         /// </summary>
@@ -537,20 +596,22 @@
             App.ViewModel.MediaElement.MediaReady -= PredictOnReady;
             PredictNoiseInWholeVideoCommand.Execute();
         }
-        private async Task<System.Drawing.Bitmap> TryLoadBitmap()
+        private async Task<System.Drawing.Bitmap> TryLoadBitmap(MediaElement me)
         {
+            var seekTo = me.Position;
             var bitmap = await Task<System.Drawing.Bitmap>.Run(async () =>
             {
-
                 System.Drawing.Bitmap bm = null;
                 for (int i = 0; i < 30; i++)
                 {
-                    bm = await App.ViewModel.MediaElement.CaptureBitmapAsync();
+                    bm = await me.CaptureBitmapAsync();
                     if (bm != null) break;
                     if (i % 10 == 0 && bm == null)
                     {
                         App.ViewModel.NotificationMessage = $"File didn't load correctly. Reloading file.";
-                        await this.OpenCommand.ExecuteAsync(App.ViewModel.Playlist.OpenMediaSource);
+                        await me.Open(me.Source);
+                        await me.Seek(seekTo);
+                        //await me.Open(new Uri(App.ViewModel.Playlist.OpenMediaSource));
                     }
                     Thread.Sleep(100);
                 }
@@ -587,7 +648,7 @@
             do
             {
                 await App.ViewModel.MediaElement.Seek(position);
-                var bitmap = await TryLoadBitmap();
+                var bitmap = await TryLoadBitmap(App.ViewModel.MediaElement);
                 var isNoise = false;
                 if (App.ViewModel.UseSimilarityForPrediction)
                 {
@@ -596,7 +657,7 @@
                     else
                         await App.ViewModel.MediaElement.StepBackward();
 
-                    var bitmap2 = await TryLoadBitmap();
+                    var bitmap2 = await TryLoadBitmap(App.ViewModel.MediaElement);
                     isNoise = CompareBitmaps(bitmap, bitmap2) < 0.15;
                 }
                 else
@@ -679,7 +740,7 @@
             var step = App.ViewModel.MediaElement.PositionStep.Milliseconds == 0 ? 20 : App.ViewModel.MediaElement.PositionStep.Milliseconds;
             var position = App.ViewModel.MediaElement.Position;
             await App.ViewModel.MediaElement.Seek(position);
-            System.Drawing.Bitmap prevBitmap = await TryLoadBitmap();
+            System.Drawing.Bitmap prevBitmap = await TryLoadBitmap(App.ViewModel.MediaElement);
             while (position <= App.ViewModel.MediaElement.NaturalDuration.Value && !App.ViewModel.ShouldStopPredicting)
             //while (await App.ViewModel.MediaElement.StepForward() && !App.ViewModel.ShouldStopPredicting)
             {
@@ -687,7 +748,7 @@
                 await App.ViewModel.MediaElement.Seek(position += TimeSpan.FromMilliseconds(step));
 
                 //await App.ViewModel.MediaElement.StepForward();
-                var bm = await TryLoadBitmap();
+                var bm = await TryLoadBitmap(App.ViewModel.MediaElement);
                 var similarity = CompareBitmaps(prevBitmap, bm);
 
                 App.ViewModel.NotificationMessage = $"Similarity: {similarity}";

@@ -21,6 +21,7 @@
         private bool m_IsAudioControlEnabled = true;
         private bool m_IsSpeedRatioEnabled = true;
         private int m_PredictionPrecision = 10;
+        private int m_AddTimeToCutVideo = 0;
         private Visibility m_ClosedCaptionsVisibility = Visibility.Visible;
         private Visibility m_AudioControlVisibility = Visibility.Visible;
         private Visibility m_PauseButtonVisibility = Visibility.Visible;
@@ -43,7 +44,7 @@
         }
 
         /// <summary>
-        /// Gets or sets the playback progress.
+        /// Gets or sets prediction precision in seconds (hop time when seeking) increases the overall prediction time
         /// </summary>
         public int PredictionPrecision
         {
@@ -55,6 +56,21 @@
             {
                 m_PredictionPrecision = value;
                 NotifyPropertyChanged(nameof(PredictionPrecision));
+            }
+        }
+        /// <summary>
+        /// Gets or sets prediction precision in seconds
+        /// </summary>
+        public int AddTimeToCutVideo
+        {
+            get
+            {
+                return m_AddTimeToCutVideo;
+            }
+            set
+            {
+                m_AddTimeToCutVideo = value;
+                NotifyPropertyChanged(nameof(AddTimeToCutVideo));
             }
         }
         /// <summary>

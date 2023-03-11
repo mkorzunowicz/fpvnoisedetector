@@ -101,8 +101,9 @@
                             Background="#FF1F1F1F"
                             BorderBrush="#FF767676"
                             BorderThickness="1">
-                            <Grid Width="364" Height="160">
+                            <Grid Width="364" Height="180">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
@@ -213,6 +214,24 @@
                                     Grid.Column="2"
                                     Text="{Binding Controller.PredictionPrecision}" />
 
+                                <!--  Add seconds to cutout  -->
+                                <TextBlock Grid.Row="4" Grid.Column="0">Add seconds to cuts</TextBlock>
+                                <Slider
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    IsEnabled="True"
+                                    IsSnapToTickEnabled="True"
+                                    LargeChange="1"
+                                    Maximum="5"
+                                    Minimum="0"
+                                    SmallChange="1"
+                                    Style="{DynamicResource CustomSliderStyle}"
+                                    TickFrequency="1"
+                                    Value="{Binding Controller.AddTimeToCutVideo}" />
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Grid.Column="2"
+                                    Text="{Binding Controller.AddTimeToCutVideo}" />
                             </Grid>
                         </Border>
                     </Popup>
