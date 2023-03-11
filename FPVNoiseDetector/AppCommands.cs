@@ -19,7 +19,7 @@
     using System.Runtime.InteropServices;
     using Unosquare.FFME;
     using System.Text.RegularExpressions;
-    using System.Security.Policy;
+    using System.Web;
 
     /// <summary>
     /// Represents the Application-Wide Commands.
@@ -226,24 +226,35 @@
             {
                 App.ViewModel.MediaEncoder.ShouldStopEncoding = false;
                 App.ViewModel.IsEncoding = true;
-                App.ViewModel.NotificationMessage = $"Single file encoding started";
 
-                // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
-                for (int i = 0; i < App.ViewModel.NoiseTimeLine.Events.Count; i++)
+                var entry = App.ViewModel.Playlist.Entries.First(e => e.MediaSource == App.ViewModel.Playlist.OpenMediaSource);
+                var continued = await SplitEntry(entry);
+                if (continued != null)
                 {
-                    if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
-                    var eve = App.ViewModel.NoiseTimeLine.Events[i];
-                    var sourcePath = App.ViewModel.MediaElement.Source.AbsolutePath;
-
-                    var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
-                    var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
-                    await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideo(sourcePath, destPath, eve.Start, eve.Duration));
+                    await SplitEntry(entry, continued);
                 }
+
                 App.ViewModel.IsEncoding = false;
                 if (App.ViewModel.MediaEncoder.ShouldStopEncoding)
                     App.ViewModel.NotificationMessage = $"Encoding cancelled";
             }));
+        private async Task EncodeVideo()
+        {
+            App.ViewModel.NotificationMessage = $"Single file encoding started";
 
+            // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
+            for (int i = 0; i < App.ViewModel.NoiseTimeLine.Events.Count; i++)
+            {
+                if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
+                var eve = App.ViewModel.NoiseTimeLine.Events[i];
+
+                var sourcePath = App.ViewModel.MediaElement.Source.AbsolutePath;
+
+                var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
+                var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
+                await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideo(sourcePath, destPath, eve.Start, eve.Duration));
+            }
+        }
         /// <summary>
         /// Gets the encode playlist command.
         /// </summary>
@@ -303,16 +314,13 @@
         /// </summary>
         /// <param name="entry"></param>
         /// <param name="continuedVideo"></param>
-        public async Task<string> SplitEntry(CustomPlaylistEntry entry, string continuedVideo)
+        public async Task<string> SplitEntry(CustomPlaylistEntry entry, string continuedVideo = null)
         {
             await this.OpenCommand.ExecuteAsync(entry);
             App.ViewModel.MediaElement.MediaReady += MediaElement_MediaReady;
 
-            //App.ViewModel.MediaElement.Stop();
-
             var timeline = entry.NoiseTimeLine;
             var sourcePath = entry.MediaSource;
-
             int i = 0;
 
             var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
@@ -446,38 +454,33 @@
         /// The merge at end command.
         /// </value>
         public DelegateCommand MergeEndFileCommand => m_MergeEndFileCommand ??
-            (m_MergeEndFileCommand = new DelegateCommand(async o =>
+            (m_MergeEndFileCommand = new DelegateCommand(o =>
             {
-                await MergeNextFile();
-
-                //OpenFileDialog openFileDialog = new OpenFileDialog();
-                //if (openFileDialog.ShowDialog() == true)
-                //{
-                //    App.ViewModel.NoiseTimeLine.EndFile = openFileDialog.FileName;
-                //    OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
-                //    SaveEntriesCommand.Execute();
-                //    App.ViewModel.NotificationMessage = $"Set merge file at end to: {App.ViewModel.NoiseTimeLine.EndFile}";
-                //}
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    App.ViewModel.NoiseTimeLine.EndFile = openFileDialog.FileName;
+                    OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
+                    SaveEntriesCommand.Execute();
+                    App.ViewModel.NotificationMessage = $"File continuation set to: {Path.GetFileName(App.ViewModel.NoiseTimeLine.EndFile)}";
+                }
             }));
 
-        private async Task MergeNextFile(string sourcePath = null)
+        private async Task<string> DetectVideoContinuation(string sourcePath = null)
         {
             sourcePath = App.ViewModel.MediaElement.Source.AbsolutePath;
-
+            sourcePath = HttpUtility.UrlDecode(sourcePath);
             // read the directory where the file is.. look up the name - check if it's a next in line file
             var dir = Path.GetDirectoryName(sourcePath);
-            //var files = Directory.GetFiles(dir).ToList();
             var fileNames = Directory.GetFiles(dir).Select(f => Path.GetFileName(f)).ToList();
             fileNames.Sort();
             var thisFileName = Path.GetFileName(sourcePath);
-            //var i = thisFileName.IndexOf(sourcePath);
             var i = fileNames.IndexOf(thisFileName);
-            if (i == -1) return;
+            if (i == -1) return null;
             else if (fileNames.Count >= i + 1)
             {
                 var nextName = fileNames[i + 1];
                 if (IsNumericalSuccessor(Path.GetFileName(thisFileName), Path.GetFileName(nextName)))
-                //if (IsNumericalSuccessor(thisFileName, next))
                 {
                     var next = Path.Combine(dir, nextName);
                     using var me = new Unosquare.FFME.MediaElement();
@@ -490,15 +493,17 @@
                     var prevBitmap = await TryLoadBitmap(App.ViewModel.MediaElement);
                     var diff = CompareBitmaps(prevBitmap, nextBitmap);
                     // if less than 0.7 then it's probably not similar enough, if it's 1, one of the frames was (so far discovered) black.
-                    if (diff > 0.7 && diff < 1 && App.ViewModel.NoiseTimeLine != null)
+                    // but if they are really the same then this won't work :/
+                    // TODO: validate
+                    if (diff > 0.7 && diff < 1)
                     {
                         App.ViewModel.NoiseTimeLine.EndFile = next;
-                        App.ViewModel.NotificationMessage = $"Detected next file as continuation: {nextName}";
-                        return;
+                        await OpenFilesCommand.ExecuteAsync(new[] { next });
+                        return nextName;
                     }
                 }
             }
-            App.ViewModel.NotificationMessage = $"Didn't find file continuation";
+            return null;
         }
         private static bool IsNumericalSuccessor(string firstFileName, string secondFileName)
         {
@@ -713,7 +718,6 @@
                 }
             }
             while (App.ViewModel.MediaElement.NaturalDuration.Value >= position && !App.ViewModel.ShouldStopPredicting);
-
             var done = DateTime.Now - start;
             if (App.ViewModel.ShouldStopPredicting)
             {
@@ -722,17 +726,22 @@
             }
             else
             {
-                App.ViewModel.NotificationMessage = $"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s";
-                Debug.WriteLine($"Noise detected in a {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s long video in: {done.TotalSeconds.ToString("0.00")}s");
+                var foundNext = await DetectVideoContinuation();
+                var message = $"Noise detected in: {done.TotalSeconds.ToString("0.00")}s.";
+                if (foundNext != null) message += $" Continuation detected in {foundNext}";
+                App.ViewModel.NotificationMessage = message;
+                Debug.WriteLine($"Video length: {App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds}s. {message}");
 
                 App.ViewModel.Playlist.Entries.AddOrUpdateEntry(App.ViewModel.MediaElement.Source, App.ViewModel.MediaElement.MediaInfo, App.ViewModel.NoiseTimeLine);
                 App.ViewModel.Playlist.Entries.SaveEntries();
             }
-
-            App.ViewModel.IsPredicting = false;
+            await App.ViewModel.MediaElement.Stop();
+            App.ViewModel.IsPredicting = App.ViewModel.ShouldStopPredicting = false;
         }
 
         bool predictionModelLoaded = false;
+
+        // For testing of similarity
         private async Task CompareNextFrames()
         {
             App.ViewModel.IsPredicting = true;
