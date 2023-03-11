@@ -289,7 +289,7 @@
         private void UpdateWindowTitle()
         {
             var m = MediaElement;
-            var title = m?.Source?.AbsolutePath ?? m?.Source?.ToString() ?? "(No media loaded)";
+            var title = System.Web.HttpUtility.UrlDecode(m?.Source?.AbsolutePath ?? m?.Source?.ToString() ?? "(No media loaded)");
             var state = m?.MediaState.ToString();
 
             if (m?.IsOpen ?? false)
