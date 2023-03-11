@@ -15,6 +15,7 @@
         <conv:ZeroTimeSpanToVisibilityConverter x:Key="mZeroTimeSpanToVisConverter" />
         <conv:ZeroTimeSpanToBooleanConverter x:Key="mZeroTimeSpanToBooleanConverter" />
         <conv:BoolToBrushConverter x:Key="mBoolToBrushConverter" />
+        <conv:NullToBrushConverter x:Key="mNullToBrushConverter" />
     </UserControl.Resources>
     <Grid
         x:Name="host"
@@ -95,7 +96,7 @@
             Margin="0,-30,0,30"
             Padding="0"
             HorizontalAlignment="Right"
-            Background="Gray"
+            Background="{Binding EndFile, Converter={StaticResource mNullToBrushConverter}}"
             BorderThickness="1"
             Command="{Binding MergeEndFile, ElementName=thisTimeLine}"
             ToolTip="Select file to merge to the end">

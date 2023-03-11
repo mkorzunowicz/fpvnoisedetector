@@ -456,9 +456,19 @@
         public DelegateCommand MergeEndFileCommand => m_MergeEndFileCommand ??
             (m_MergeEndFileCommand = new DelegateCommand(o =>
             {
+                if (!string.IsNullOrWhiteSpace(App.ViewModel.NoiseTimeLine.EndFile))
+                {
+                    App.ViewModel.NoiseTimeLine.EndFile = null;
+                    return;
+                }
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 if (openFileDialog.ShowDialog() == true)
                 {
+                    if (Path.GetFullPath(openFileDialog.FileName) == Path.GetFullPath(App.ViewModel.Playlist.OpenMediaSource))
+                    {
+                        App.ViewModel.NotificationMessage = $"Cannot be the same file as current";
+                        return;
+                    }
                     App.ViewModel.NoiseTimeLine.EndFile = openFileDialog.FileName;
                     OpenFilesCommand.Execute(new string[] { openFileDialog.FileName });
                     SaveEntriesCommand.Execute();
