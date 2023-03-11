@@ -190,6 +190,8 @@ public class MediaEncoder : ObservableObject
     /// <param name="duration"></param>
     public void CutVideo(string source, string output, TimeSpan start, TimeSpan duration)
     {
+        if (File.Exists(output)) { File.Delete(output); }
+
         var processInfo = new ProcessStartInfo($"{Library.FFmpegDirectory}\\ffmpeg")
         {
             Arguments = $"-i \"{source}\" -c copy -copyts -ss {start.ToString(@"hh\:mm\:ss")} -to {(start + duration).ToString(@"hh\:mm\:ss")} \"{output}\"",
