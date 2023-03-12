@@ -235,6 +235,131 @@
                             </Grid>
                         </Border>
                     </Popup>
+
+                    <ToggleButton
+                        Name="HelpMenuButton"
+                        Style="{DynamicResource ModernToggleButtonStyle}"
+                        ToolTip="Show help"
+                        Visibility="{Binding Controller.IsMediaOpenVisibility}">
+                        <TextBlock
+                            VerticalAlignment="Stretch"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="20"
+                            Text="&#xE897;" />
+                    </ToggleButton>
+                    <Popup
+                        Name="HelpMenuPopup"
+                        HorizontalOffset="-18"
+                        IsOpen="{Binding IsChecked, ElementName=HelpMenuButton, Mode=TwoWay}"
+                        Placement="Top"
+                        PlacementTarget="{Binding ElementName=HelpMenuButton}"
+                        PopupAnimation="Fade"
+                        StaysOpen="False"
+                        VerticalOffset="2">
+                        <Popup.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource CustomSliderHighlightBrush}" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextAlignment" Value="Center" />
+                            </Style>
+                        </Popup.Resources>
+                        <Border
+                            Background="#FF1F1F1F"
+                            BorderBrush="#FF767676"
+                            BorderThickness="1">
+                            <Grid Width="260" Height="260">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="20" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="60" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.ColumnSpan="2">Made by Michał Korzunowicz</TextBlock>
+
+                                <TextBlock Grid.Row="1">Report an issue</TextBlock>
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.ReportIssueCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Report an issue!">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xED15;" />
+                                </Button>
+
+                                <TextBlock Grid.Row="2">Open project's homepage</TextBlock>
+                                <Button
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Open project's homepage">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xE80F;" />
+                                </Button>
+                                <TextBlock Grid.Row="3">Read licences</TextBlock>
+                                <Button
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Read licences">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xE82D;" />
+                                </Button>
+                                <TextBlock Grid.Row="4">Show tutorial</TextBlock>
+                                <Button
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Show tutorial">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Foreground="Yellow"
+                                        Text="&#xEA80;" />
+                                </Button>
+                                <TextBlock Grid.Row="5">Consider donating</TextBlock>
+                                <Button
+                                    Grid.Row="5"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Consider donating">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                    Foreground="Red"
+                                        FontSize="20"
+                                        Text="&#xEB51;" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Popup>
                     <ToggleButton
                         Name="MuteUnmuteButton"
                         IsChecked="{Binding MediaElement.IsMuted, Mode=TwoWay}"

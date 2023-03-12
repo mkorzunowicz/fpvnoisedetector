@@ -31,7 +31,9 @@
         private readonly WindowStatus PreviousWindowStatus = new WindowStatus();
         private DelegateCommand m_OpenCommand;
         private DelegateCommand m_OpenFilesCommand;
+        private DelegateCommand m_OpenHomePageCommand;
         private DelegateCommand m_PauseCommand;
+        private DelegateCommand m_ReportIssueCommand;
         private DelegateCommand m_PlayCommand;
         private DelegateCommand m_StopCommand;
         private DelegateCommand m_EncodeCommand;
@@ -105,6 +107,41 @@
                 }
             }));
 
+        /// <summary>
+        /// Gets the report issue command.
+        /// </summary>
+        /// <value>
+        /// The open command.
+        /// </value>
+        public DelegateCommand ReportIssueCommand => m_ReportIssueCommand ??
+        (m_ReportIssueCommand = new DelegateCommand(a =>
+        {
+            var issueUrl = $"https://github.com/mkorzunowicz/fpvnoisedetector/issues/new?title=&body=%23%20Description%0A%0A%2APlease%20enter%20a%20general%20description%20for%20the%20issue%20here.%20Delete%20sections%20that%20are%20not%20relevant%20and%20provide%20additional%20sections%20if%20necessary.%2A%0A%2AProvide%20as%20much%20information%20as%20possible%2A%0A%0A%2A%2AIf%20prediction%20doesn%27t%20recognize%20your%20noisy%20video%20parts%2C%20send%20me%20a%20sample%20video%20with%20a%20name%20of%20your%20DVR%20recorder%2Fgoggles%20to%20improve%20the%20Prediction%20model%2A%2A%0A%0A%23%23%20Issue%20Categories%0A%0A%20-%20%5Bx%5D%20Bug%0A%20-%20%5B%20%5D%20Feature%20Request%0A%20-%20%5B%20%5D%20Prediction%20not%20recognizing%20my%20noise%0A%20-%20Question%20-%20please%20ask%20questions%20in%20the%20%28%5BDiscussions%20Section%5D%28https%3A%2F%2Fgithub.com%2Fmkorzunowicz%2Ffpvnoisedetector%2Fdiscussions%29%29%0A%0A%23%23%20Steps%20to%20Reproduce%0A%0A%201.%20Step%201%0A%202.%20Step%202%0A%203.%20Step%203%0A%0A%23%23%20Expected%20Results%0A%0A%20-%20Result%201%0A%20-%20Result%202%0A%0A%23%23%20Version%20Information%20-%20don%27t%20delete%0A%0A{App.ViewModel.AppVersion}%0A%0A%23%23%20Delete%20This%20Section%0A%0A-%20I%20work%20on%20this%20project%20for%20fun%20and%20on%20my%20free%20time.%0A-%20Please%20consider%20a%20donation%20here%3A%20https%3A%2F%2Fwww.paypal.me%2Fmkorzunowicz%2F10eur";
+            var psi = new ProcessStartInfo
+            {
+                FileName = issueUrl,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }));
+
+        /// <summary>
+        /// Gets the open home page command.
+        /// </summary>
+        /// <value>
+        /// The open command.
+        /// </value>
+        public DelegateCommand OpenHomePageCommand => m_OpenHomePageCommand ??
+        (m_OpenHomePageCommand = new DelegateCommand(a =>
+        {
+            var issueUrl = $"https://github.com/mkorzunowicz/fpvnoisedetector";
+            var psi = new ProcessStartInfo
+            {
+                FileName = issueUrl,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }));
         /// <summary>
         /// Gets the open command.
         /// </summary>
@@ -229,10 +266,11 @@
 
                 var entry = App.ViewModel.Playlist.Entries.First(e => e.MediaSource == App.ViewModel.Playlist.OpenMediaSource);
                 var continued = await SplitEntry(entry);
-                if (continued != null)
-                {
-                    await SplitEntry(entry, continued);
-                }
+                // TODO: figure out how to split this with just one file
+                //if (continued != null)
+                //{
+                //    await SplitEntry(entry, continued);
+                //}
 
                 App.ViewModel.IsEncoding = false;
                 if (App.ViewModel.MediaEncoder.ShouldStopEncoding)
@@ -322,12 +360,11 @@
             var timeline = entry.NoiseTimeLine;
             var sourcePath = entry.MediaSource;
             int i = 0;
-
             var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
             // what if the continued video should go through the whole video (one TimeLineEvent) and should continue on?
             if (continuedVideo != null)
             {
-                var eve = timeline.Events[i];
+                var eve = timeline.OrderedEvents[i];
 
                 var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_merged{Path.GetExtension(sourcePath)}");
                 await Task.Run(() => App.ViewModel.MediaEncoder.CutVideo(sourcePath, destPath, eve.Start, eve.Duration));
@@ -340,20 +377,20 @@
                     File.Delete(destPath);
                 }
                 i++;
-                if (timeline.Events.Count == i && !string.IsNullOrEmpty(timeline.EndFile))
+                if (timeline.OrderedEvents.Count == i && !string.IsNullOrEmpty(timeline.EndFile))
                     return continuedVideo;
             }
             // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
-            for (; i < timeline.Events.Count; i++)
+            for (; i < timeline.OrderedEvents.Count; i++)
             {
                 //var startEncoding = DateTime.Now;
                 if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
-                var eve = timeline.Events[i];
+                var eve = timeline.OrderedEvents[i];
 
                 var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
                 await Task.Run(() => App.ViewModel.MediaEncoder.CutVideo(sourcePath, destPath, eve.Start, eve.Duration));
 
-                if (timeline.Events.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
+                if (timeline.OrderedEvents.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
                     return destPath;
             }
 
@@ -418,19 +455,19 @@
             // what if the continued video should go through the whole video (one TimeLineEvent) and should continue on?
             if (continuedVideo != null)
             {
-                var eve = timeline.Events[i];
+                var eve = timeline.OrderedEvents[i];
                 await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideoPart(sourceVideo, continuedVideo, eve.Start, eve.Duration));
                 i++;
-                if (timeline.Events.Count == i && !string.IsNullOrEmpty(timeline.EndFile))
+                if (timeline.OrderedEvents.Count == i && !string.IsNullOrEmpty(timeline.EndFile))
                     return continuedVideo;
                 else continuedVideo.Dispose();
             }
             // for each Event in the Timeline, seek to start and capture bitmaps through the duration.
-            for (; i < timeline.Events.Count; i++)
+            for (; i < timeline.OrderedEvents.Count; i++)
             {
                 //var startEncoding = DateTime.Now;
                 if (App.ViewModel.MediaEncoder.ShouldStopEncoding) break;
-                var eve = timeline.Events[i];
+                var eve = timeline.OrderedEvents[i];
 
                 var dir = Directory.CreateDirectory($@"{Path.GetDirectoryName(sourcePath)}\split");
                 var destPath = Path.Combine(dir.FullName, $"{Path.GetFileNameWithoutExtension(sourcePath)}_{i}{Path.GetExtension(sourcePath)}");
@@ -439,14 +476,18 @@
 
                 await Task.Run(() => App.ViewModel.MediaEncoder.CopyVideoPart(sourceVideo, destVideo, eve.Start, eve.Duration));
 
-                if (timeline.Events.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
+                if (timeline.OrderedEvents.Count - 1 == i && !string.IsNullOrEmpty(timeline.EndFile))
                     return destVideo;
                 else destVideo.Dispose();
             }
 
             return null;
         }
-
+        private void VerifyPlaylistConsistency()
+        {
+            // either we check if the whole playlist has noise detected
+            // or we assume that if a video has no noise timeline, we take it whole
+        }
         /// <summary>
         /// Adds a merge link to end of file.
         /// </summary>

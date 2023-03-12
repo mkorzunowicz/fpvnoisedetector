@@ -1,19 +1,14 @@
-# Issue Title (*change this title!*)
+*Please enter a general description for the issue here. Delete sections that are not relevant and provide additional sections if necessary.*
+*Provide as much information as possible*
 
-*Please enter a general description for the issue. Delete sections that are not relevant and provide additional sections if necessary.*
+**If prediction doesn't recognize your noisy video parts, send me a sample video with a name of your DVR recorder/goggles to improve the Prediction model**
 
 ## Issue Categories
 
- - [ ] Bug
+ - [x] Bug
  - [ ] Feature Request
- - [ ] Question
- - [ ] Not sure
-
-## Version Information
-
- - [ ] NuGet Package *Enter Version Number Here*
- - [ ] Build From *Master* branch, Commit *Enter commit id. Example: 704c482*
- - [ ] Build from *Branch Name*, Commit *Enter commit id. Example: 704c482*
+ - [ ] Prediction not recognizing my noise
+ - Question - please ask questions in the ([Discussions Section](https://github.com/mkorzunowicz/fpvnoisedetector/discussions))
 
 ## Steps to Reproduce
 
@@ -25,25 +20,12 @@
 
  - Result 1
  - Result 2
- 
-## Sample Code
 
-### XAML
-```xml
-<MainWindow>
-</MainWindow>
-```
+## Version Information - don't delete
 
-### C#
-```csharp
-System.Console.WriteLine("Change Me Please!");
-```
+placeholder
 
-### Command line ffplay
-```batch
-ffplay "hello.mp4"
-```
 ## Delete This Section
-- Please consider a donation here: https://www.paypal.me/mariodivece/50usd 
+
 - I work on this project for fun and on my free time.
-- Provide as much information as possible and any sample files
+- Please consider a donation here: https://www.paypal.me/mkorzunowicz/10eur
