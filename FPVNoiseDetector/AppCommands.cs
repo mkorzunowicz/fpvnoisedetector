@@ -32,6 +32,7 @@
         private DelegateCommand m_OpenCommand;
         private DelegateCommand m_OpenFilesCommand;
         private DelegateCommand m_OpenHomePageCommand;
+        private DelegateCommand m_OpenDonateCommand;
         private DelegateCommand m_PauseCommand;
         private DelegateCommand m_ReportIssueCommand;
         private DelegateCommand m_PlayCommand;
@@ -135,6 +136,23 @@
         (m_OpenHomePageCommand = new DelegateCommand(a =>
         {
             var issueUrl = $"https://github.com/mkorzunowicz/fpvnoisedetector";
+            var psi = new ProcessStartInfo
+            {
+                FileName = issueUrl,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
+        }));
+        /// <summary>
+        /// Gets the open home page command.
+        /// </summary>
+        /// <value>
+        /// The open command.
+        /// </value>
+        public DelegateCommand OpenDonateCommand => m_OpenDonateCommand ??
+        (m_OpenDonateCommand = new DelegateCommand(a =>
+        {
+            var issueUrl = $"https://www.paypal.com/paypalme/mkorzunowicz/10eur";
             var psi = new ProcessStartInfo
             {
                 FileName = issueUrl,

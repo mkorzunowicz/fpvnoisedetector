@@ -70,6 +70,8 @@
                     Name="LeftControls"
                     Grid.Column="0"
                     HorizontalAlignment="Stretch">
+
+                    <!--  Config popup  -->
                     <ToggleButton
                         Name="ConfigMenuButton"
                         Style="{DynamicResource ModernToggleButtonStyle}"
@@ -236,6 +238,7 @@
                         </Border>
                     </Popup>
 
+                    <!--  Info popup  -->
                     <ToggleButton
                         Name="HelpMenuButton"
                         Style="{DynamicResource ModernToggleButtonStyle}"
@@ -284,6 +287,7 @@
 
                                 <TextBlock Grid.Row="0" Grid.ColumnSpan="2">Made by Michał Korzunowicz</TextBlock>
 
+                                <!--  Issue  -->
                                 <TextBlock Grid.Row="1">Report an issue</TextBlock>
                                 <Button
                                     Grid.Row="1"
@@ -299,6 +303,7 @@
                                         Text="&#xED15;" />
                                 </Button>
 
+                                <!--  Homepage  -->
                                 <TextBlock Grid.Row="2">Open project's homepage</TextBlock>
                                 <Button
                                     Grid.Row="2"
@@ -313,12 +318,14 @@
                                         FontSize="20"
                                         Text="&#xE80F;" />
                                 </Button>
+
+                                <!--  License  -->
                                 <TextBlock Grid.Row="3">Read licences</TextBlock>
-                                <Button
+                                <!--<Button
                                     Grid.Row="3"
                                     Grid.Column="1"
                                     Padding="0"
-                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Command="{Binding Commands.ShowLicenseCommand}"
                                     Style="{DynamicResource ModernButtonStyle}"
                                     ToolTip="Read licences">
                                     <TextBlock
@@ -326,13 +333,50 @@
                                         FontFamily="Segoe MDL2 Assets"
                                         FontSize="20"
                                         Text="&#xE82D;" />
-                                </Button>
+                                </Button>-->
+
+                                <ToggleButton
+                                    Name="LicensePopupButton"
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Style="{DynamicResource ModernToggleButtonStyle}"
+                                    ToolTip="Show license">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xE82D;" />
+                                </ToggleButton>
+                                <Popup
+                                    Name="LicensePopup"
+                                    Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                    Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                    IsOpen="{Binding IsChecked, ElementName=LicensePopupButton, Mode=TwoWay}"
+                                    Placement="Center"
+                                    PlacementTarget="{Binding ElementName=LicensePopupButton}"
+                                    PopupAnimation="Fade"
+                                    StaysOpen="False"
+                                    VerticalOffset="2">
+
+                                    <Border
+                                        Background="#FF1F1F1F"
+                                        BorderBrush="#FF767676"
+                                        BorderThickness="1">
+                                        <!--  put it in the center of window and align with width, height  -->
+                                        <ScrollViewer>
+                                            <TextBlock Text="{Binding Controller.LicenseText}" TextWrapping="Wrap" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+
+                                <!--  Tutorial  -->
                                 <TextBlock Grid.Row="4">Show tutorial</TextBlock>
-                                <Button
+                                <!--<Button
                                     Grid.Row="4"
                                     Grid.Column="1"
                                     Padding="0"
-                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Command="{Binding Commands.ShowTutorialCommand}"
                                     Style="{DynamicResource ModernButtonStyle}"
                                     ToolTip="Show tutorial">
                                     <TextBlock
@@ -341,25 +385,93 @@
                                         FontSize="20"
                                         Foreground="Yellow"
                                         Text="&#xEA80;" />
-                                </Button>
+                                </Button>-->
+
+                                <ToggleButton
+                                    Name="TutorialOverlayButton"
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Style="{DynamicResource ModernToggleButtonStyle}"
+                                    ToolTip="Show tutorial">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Foreground="Yellow"
+                                        Text="&#xEA80;" />
+                                </ToggleButton>
+                                <Popup
+                                    Name="TutorialPopup"
+                                    IsOpen="{Binding IsChecked, ElementName=TutorialOverlayButton, Mode=TwoWay}"
+                                    Placement="Top"
+                                    PlacementTarget="{Binding ElementName=TutorialOverlayButton}"
+                                    PopupAnimation="Fade"
+                                    StaysOpen="False"
+                                    VerticalOffset="2">
+                                    <!--  again windows size and overlay over all the controls  -->
+                                    <Border Background="#FF1F1F1F" BorderBrush="#FF767676">
+                                        <Grid Width="300" Height="300">
+
+                                            <TextBlock>
+                                                Press here to find noise in just this video.
+                                            </TextBlock>
+
+                                            <!--<Image>
+
+                                        </Image>-->
+                                            <!--  How about I make a single Popup which would contain different text and set placement to target it's meant for.  -->
+                                            <!--  Would be best to hold some int and show the next info text when someone presses the next tip button  -->
+                                            <!--<Popup
+                                                Name="PredictSingleButtonPopup"
+                                                IsOpen="{Binding IsChecked, ElementName=TutorialOverlayButton, Mode=TwoWay}"
+                                                Placement="Center"
+                                                PlacementTarget="{Binding ElementName=PredictSingleButton}"
+                                                PopupAnimation="Fade"
+                                                StaysOpen="False"
+                                                VerticalOffset="2">
+                                                <Border
+                                                    Width="100"
+                                                    Height="100"
+                                                    Background="#FF1F1F1F"
+                                                    BorderBrush="#AA767676">
+                                                    <TextBlock>
+                                                        Press here to find noise in just this video.
+                                                    </TextBlock>
+
+                                            -->
+                                            <!--<Image>
+
+                                        </Image>-->
+                                            <!--
+
+                                                </Border>
+                                            </Popup>-->
+
+                                        </Grid>
+                                    </Border>
+                                </Popup>
+
+                                <!--  Donate  -->
                                 <TextBlock Grid.Row="5">Consider donating</TextBlock>
                                 <Button
                                     Grid.Row="5"
                                     Grid.Column="1"
                                     Padding="0"
-                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Command="{Binding Commands.OpenDonateCommand}"
                                     Style="{DynamicResource ModernButtonStyle}"
-                                    ToolTip="Consider donating">
+                                    ToolTip="Donate!">
                                     <TextBlock
                                         VerticalAlignment="Stretch"
                                         FontFamily="Segoe MDL2 Assets"
-                                    Foreground="Red"
                                         FontSize="20"
+                                        Foreground="Red"
                                         Text="&#xEB51;" />
                                 </Button>
                             </Grid>
                         </Border>
                     </Popup>
+
                     <ToggleButton
                         Name="MuteUnmuteButton"
                         IsChecked="{Binding MediaElement.IsMuted, Mode=TwoWay}"
@@ -488,6 +600,7 @@
                     Grid.Column="2"
                     HorizontalAlignment="Center">
                     <Button
+                        Name="PredictSingleButton"
                         Padding="0"
                         Command="{Binding Commands.PredictNoiseInWholeVideoCommand}"
                         Foreground="White"
