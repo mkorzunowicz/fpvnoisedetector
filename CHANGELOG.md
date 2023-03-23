@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/mkorzunowicz/fpvnoisedetector/compare/1.0.0...1.1.0) (2023-03-23)
+
+
+### Features
+
+* Predictor changes ([#12](https://github.com/mkorzunowicz/fpvnoisedetector/issues/12)) ([7ac3f95](https://github.com/mkorzunowicz/fpvnoisedetector/commit/7ac3f95b4ddc2f6304faabc3759dba98dc1fa2aa))
+
 # 1.0.0 (2023-02-27)
 
 
