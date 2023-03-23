@@ -345,14 +345,14 @@
             // Increase speed
             if (e.Key == Key.Up)
             {
-                Media.SpeedRatio += 0.05;
+                Media.SpeedRatio += 0.10;
                 return;
             }
 
             // Decrease speed
             if (e.Key == Key.Down)
             {
-                Media.SpeedRatio -= 0.05;
+                Media.SpeedRatio -= 0.10;
                 return;
             }
 
