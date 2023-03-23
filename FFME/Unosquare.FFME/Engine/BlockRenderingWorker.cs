@@ -598,7 +598,11 @@ namespace Unosquare.FFME.Engine
                     {
                         var componentStartTime = Container.Components[main].StartTime;
                         var actualComponentDuration = TimeSpan.FromTicks(playbackEndClock.Ticks - componentStartTime.Ticks);
-                        Container.Components[main].Duration = actualComponentDuration;
+
+                        // this code seems to adjust the duration of the media if it hits the end of the stream (or at least it thinks it did)
+                        // but it's often wrong, the if is added to check if we are indeed at the end of the media end
+                        if (Container.StreamPosition >= Container.MediaStreamSize)
+                            Container.Components[main].Duration = actualComponentDuration;
                     }
 
                     MediaCore.PausePlayback();

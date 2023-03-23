@@ -13,17 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Support", "Support", "{8BF2
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		Analyzers.ruleset = Analyzers.ruleset
-		appveyor.yml = appveyor.yml
-		docfx.json = docfx.json
-		Support\ffme.png = Support\ffme.png
-		Support\ffmeplay.png = Support\ffmeplay.png
 		.github\ISSUE_TEMPLATE.md = .github\ISSUE_TEMPLATE.md
 		LICENSE = LICENSE
-		Support\nugetdoc.md = Support\nugetdoc.md
 		README.md = README.md
-		Support\readme.txt = Support\readme.txt
 		.github\stale.yml = .github\stale.yml
-		toc.yml = toc.yml
 	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Unosquare.FFME.MediaElement", "FFME\Unosquare.FFME.MediaElement\Unosquare.FFME.MediaElement.shproj", "{4F84C6A1-BA3A-4A1E-84EE-7A7AA214F317}"

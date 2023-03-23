@@ -70,41 +70,25 @@
                     Name="LeftControls"
                     Grid.Column="0"
                     HorizontalAlignment="Stretch">
+
+                    <!--  Config popup  -->
                     <ToggleButton
-                        IsChecked="{Binding MediaElement.VerticalSyncEnabled, Mode=TwoWay}"
+                        Name="ConfigMenuButton"
                         Style="{DynamicResource ModernToggleButtonStyle}"
-                        ToolTip="Enable Vertical Sync"
-                        Visibility="{Binding Controller.CloseButtonVisibility}">
-                        <Path
-                            Data="{Binding Source={StaticResource VerticalSyncIcon}, Path=Data}"
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
-                            Stretch="Uniform" />
-                    </ToggleButton>
-                    <ToggleButton
-                        IsChecked="{Binding MediaElement.ScrubbingEnabled, Mode=TwoWay}"
-                        Style="{DynamicResource ModernToggleButtonStyle}"
-                        ToolTip="Enable Seek Scrubbing"
-                        Visibility="{Binding Controller.SeekBarVisibility}">
-                        <Path
-                            Data="{Binding Source={StaticResource ScrubbingIcon}, Path=Data}"
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
-                            Stretch="Uniform" />
-                    </ToggleButton>
-                    <ToggleButton
-                        Name="SoundMenuButton"
-                        Style="{DynamicResource ModernToggleButtonStyle}"
+                        ToolTip="Show config"
                         Visibility="{Binding Controller.IsMediaOpenVisibility}">
-                        <Path
-                            Data="{Binding Source={StaticResource AudioMenuIcon}, Path=Data}"
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
-                            Stretch="Uniform" />
+                        <TextBlock
+                            VerticalAlignment="Stretch"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="20"
+                            Text="&#xE713;" />
                     </ToggleButton>
                     <Popup
-                        Name="SoundMenuPopup"
+                        Name="ConfigMenuPopup"
                         HorizontalOffset="-18"
-                        IsOpen="{Binding IsChecked, ElementName=SoundMenuButton, Mode=TwoWay}"
+                        IsOpen="{Binding IsChecked, ElementName=ConfigMenuButton, Mode=TwoWay}"
                         Placement="Top"
-                        PlacementTarget="{Binding ElementName=SoundMenuButton}"
+                        PlacementTarget="{Binding ElementName=ConfigMenuButton}"
                         PopupAnimation="Fade"
                         StaysOpen="False"
                         VerticalOffset="2">
@@ -119,8 +103,11 @@
                             Background="#FF1F1F1F"
                             BorderBrush="#FF767676"
                             BorderThickness="1">
-                            <Grid Width="364" Height="100">
+                            <Grid Width="364" Height="180">
                                 <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
@@ -129,44 +116,367 @@
                                     <ColumnDefinition />
                                     <ColumnDefinition Width="60" />
                                 </Grid.ColumnDefinitions>
+                                <StackPanel Grid.ColumnSpan="3" Orientation="Horizontal">
 
+                                    <!--<ToggleButton
+                                        IsChecked="{Binding MediaElement.VerticalSyncEnabled, Mode=TwoWay}"
+                                        Style="{DynamicResource ModernToggleButtonStyle}"
+                                        ToolTip="Enable Vertical Sync"
+                                        Visibility="{Binding Controller.CloseButtonVisibility}">
+                                        <Path
+                                            Data="{Binding Source={StaticResource VerticalSyncIcon}, Path=Data}"
+                                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
+                                            Stretch="Uniform" />
+                                    </ToggleButton>
+                                    <ToggleButton
+                                        IsChecked="{Binding MediaElement.ScrubbingEnabled, Mode=TwoWay}"
+                                        Style="{DynamicResource ModernToggleButtonStyle}"
+                                        ToolTip="Enable Seek Scrubbing"
+                                        Visibility="{Binding Controller.SeekBarVisibility}">
+                                        <Path
+                                            Data="{Binding Source={StaticResource ScrubbingIcon}, Path=Data}"
+                                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
+                                            Stretch="Uniform" />
+                                    </ToggleButton>-->
+                                    <ToggleButton
+                                        Name="OpenDebugButton"
+                                        IsChecked="{Binding IsPropertiesPanelOpen}"
+                                        Style="{DynamicResource ModernToggleButtonStyle}"
+                                        ToolTip="Show file information">
+                                        <Path
+                                            Data="{Binding Source={StaticResource OpenDebugIcon}, Path=Data}"
+                                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
+                                            Stretch="Uniform" />
+                                    </ToggleButton>
+
+                                    <ToggleButton
+                                        Name="UseSimilarityButton"
+                                        IsChecked="{Binding UseSimilarityForPrediction}"
+                                        Style="{DynamicResource ModernToggleButtonStyle}"
+                                        ToolTip="Use similarity for noise prediction">
+                                        <TextBlock
+                                            VerticalAlignment="Stretch"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="20"
+                                            Text="&#xE716;" />
+                                    </ToggleButton>
+                                </StackPanel>
                                 <!--  Balance Slider  -->
-                                <TextBlock Grid.Row="0" Grid.Column="0">Balance</TextBlock>
+                                <TextBlock Grid.Row="1" Grid.Column="0">Balance</TextBlock>
                                 <Slider
-                                    Grid.Row="0"
+                                    Grid.Row="1"
                                     Grid.Column="1"
                                     IsEnabled="{Binding Controller.IsAudioControlEnabled}"
+                                    IsSnapToTickEnabled="True"
                                     Maximum="1.0"
                                     Minimum="-1.0"
                                     Style="{DynamicResource CustomSliderStyle}"
+                                    TickFrequency="0.05"
                                     Value="{Binding MediaElement.Balance}" />
                                 <TextBlock
-                                    Grid.Row="0"
+                                    Grid.Row="1"
                                     Grid.Column="2"
                                     Text="{Binding MediaElement.Balance, Mode=OneWay, Converter={StaticResource PercentageFormatter}, ConverterParameter=1}" />
 
                                 <!--  Speed Ratio Slider  -->
-                                <TextBlock Grid.Row="1" Grid.Column="0">Speed</TextBlock>
+                                <TextBlock Grid.Row="2" Grid.Column="0">Speed</TextBlock>
                                 <Slider
-                                    Grid.Row="1"
+                                    Grid.Row="2"
                                     Grid.Column="1"
                                     IsEnabled="{Binding Controller.IsSpeedRatioEnabled}"
+                                    IsSnapToTickEnabled="True"
+                                    LargeChange="0.10"
                                     Maximum="8.0"
                                     Minimum="0.0"
+                                    SmallChange="0.10"
                                     Style="{DynamicResource CustomSliderStyle}"
+                                    TickFrequency="0.1"
                                     Value="{Binding MediaElement.SpeedRatio}" />
                                 <TextBlock
-                                    Grid.Row="1"
+                                    Grid.Row="2"
                                     Grid.Column="2"
                                     Text="{Binding MediaElement.SpeedRatio, Mode=OneWay, Converter={StaticResource PercentageFormatter}}" />
 
+                                <!--  Prediction precision  -->
+                                <TextBlock Grid.Row="3" Grid.Column="0">Prediction precision in seconds</TextBlock>
+                                <Slider
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    IsEnabled="True"
+                                    IsSnapToTickEnabled="True"
+                                    LargeChange="1"
+                                    Maximum="20"
+                                    Minimum="1"
+                                    SmallChange="1"
+                                    Style="{DynamicResource CustomSliderStyle}"
+                                    TickFrequency="1"
+                                    Value="{Binding Controller.PredictionPrecision}" />
+                                <TextBlock
+                                    Grid.Row="3"
+                                    Grid.Column="2"
+                                    Text="{Binding Controller.PredictionPrecision}" />
+
+                                <!--  Add seconds to cutout  -->
+                                <TextBlock Grid.Row="4" Grid.Column="0">Add seconds to cuts</TextBlock>
+                                <Slider
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    IsEnabled="True"
+                                    IsSnapToTickEnabled="True"
+                                    LargeChange="1"
+                                    Maximum="5"
+                                    Minimum="0"
+                                    SmallChange="1"
+                                    Style="{DynamicResource CustomSliderStyle}"
+                                    TickFrequency="1"
+                                    Value="{Binding Controller.AddTimeToCutVideo}" />
+                                <TextBlock
+                                    Grid.Row="4"
+                                    Grid.Column="2"
+                                    Text="{Binding Controller.AddTimeToCutVideo}" />
                             </Grid>
                         </Border>
                     </Popup>
+
+                    <!--  Info popup  -->
+                    <ToggleButton
+                        Name="HelpMenuButton"
+                        Style="{DynamicResource ModernToggleButtonStyle}"
+                        ToolTip="Show help"
+                        Visibility="{Binding Controller.IsMediaOpenVisibility}">
+                        <TextBlock
+                            VerticalAlignment="Stretch"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="20"
+                            Text="&#xE897;" />
+                    </ToggleButton>
+                    <Popup
+                        Name="HelpMenuPopup"
+                        HorizontalOffset="-18"
+                        IsOpen="{Binding IsChecked, ElementName=HelpMenuButton, Mode=TwoWay}"
+                        Placement="Top"
+                        PlacementTarget="{Binding ElementName=HelpMenuButton}"
+                        PopupAnimation="Fade"
+                        StaysOpen="False"
+                        VerticalOffset="2">
+                        <Popup.Resources>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Foreground" Value="{StaticResource CustomSliderHighlightBrush}" />
+                                <Setter Property="VerticalAlignment" Value="Center" />
+                                <Setter Property="TextAlignment" Value="Center" />
+                            </Style>
+                        </Popup.Resources>
+                        <Border
+                            Background="#FF1F1F1F"
+                            BorderBrush="#FF767676"
+                            BorderThickness="1">
+                            <Grid Width="260" Height="260">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="20" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="20" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200" />
+                                    <ColumnDefinition Width="60" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.ColumnSpan="2">Made by Michał Korzunowicz</TextBlock>
+
+                                <!--  Issue  -->
+                                <TextBlock Grid.Row="1">Report an issue</TextBlock>
+                                <Button
+                                    Grid.Row="1"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.ReportIssueCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Report an issue!">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xED15;" />
+                                </Button>
+
+                                <!--  Homepage  -->
+                                <TextBlock Grid.Row="2">Open project's homepage</TextBlock>
+                                <Button
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.OpenHomePageCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Open project's homepage">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xE80F;" />
+                                </Button>
+
+                                <!--  License  -->
+                                <TextBlock Grid.Row="3">Read licences</TextBlock>
+                                <!--<Button
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.ShowLicenseCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Read licences">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xE82D;" />
+                                </Button>-->
+
+                                <ToggleButton
+                                    Name="LicensePopupButton"
+                                    Grid.Row="3"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Style="{DynamicResource ModernToggleButtonStyle}"
+                                    ToolTip="Show license">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Text="&#xE82D;" />
+                                </ToggleButton>
+                                <Popup
+                                    Name="LicensePopup"
+                                    Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                    Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}}"
+                                    IsOpen="{Binding IsChecked, ElementName=LicensePopupButton, Mode=TwoWay}"
+                                    Placement="Center"
+                                    PlacementTarget="{Binding ElementName=LicensePopupButton}"
+                                    PopupAnimation="Fade"
+                                    StaysOpen="False"
+                                    VerticalOffset="2">
+
+                                    <Border
+                                        Background="#FF1F1F1F"
+                                        BorderBrush="#FF767676"
+                                        BorderThickness="1">
+                                        <!--  put it in the center of window and align with width, height  -->
+                                        <ScrollViewer>
+                                            <TextBlock Text="{Binding Controller.LicenseText}" TextWrapping="Wrap" />
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+
+                                <!--  Tutorial  -->
+                                <TextBlock Grid.Row="4">Show tutorial</TextBlock>
+                                <!--<Button
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.ShowTutorialCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Show tutorial">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Foreground="Yellow"
+                                        Text="&#xEA80;" />
+                                </Button>-->
+
+                                <ToggleButton
+                                    Name="TutorialOverlayButton"
+                                    Grid.Row="4"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Style="{DynamicResource ModernToggleButtonStyle}"
+                                    ToolTip="Show tutorial">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Foreground="Yellow"
+                                        Text="&#xEA80;" />
+                                </ToggleButton>
+                                <Popup
+                                    Name="TutorialPopup"
+                                    IsOpen="{Binding IsChecked, ElementName=TutorialOverlayButton, Mode=TwoWay}"
+                                    Placement="Top"
+                                    PlacementTarget="{Binding ElementName=TutorialOverlayButton}"
+                                    PopupAnimation="Fade"
+                                    StaysOpen="False"
+                                    VerticalOffset="2">
+                                    <!--  again windows size and overlay over all the controls  -->
+                                    <Border Background="#FF1F1F1F" BorderBrush="#FF767676">
+                                        <Grid Width="300" Height="300">
+
+                                            <TextBlock>
+                                                Press here to find noise in just this video.
+                                            </TextBlock>
+
+                                            <!--<Image>
+
+                                        </Image>-->
+                                            <!--  How about I make a single Popup which would contain different text and set placement to target it's meant for.  -->
+                                            <!--  Would be best to hold some int and show the next info text when someone presses the next tip button  -->
+                                            <!--<Popup
+                                                Name="PredictSingleButtonPopup"
+                                                IsOpen="{Binding IsChecked, ElementName=TutorialOverlayButton, Mode=TwoWay}"
+                                                Placement="Center"
+                                                PlacementTarget="{Binding ElementName=PredictSingleButton}"
+                                                PopupAnimation="Fade"
+                                                StaysOpen="False"
+                                                VerticalOffset="2">
+                                                <Border
+                                                    Width="100"
+                                                    Height="100"
+                                                    Background="#FF1F1F1F"
+                                                    BorderBrush="#AA767676">
+                                                    <TextBlock>
+                                                        Press here to find noise in just this video.
+                                                    </TextBlock>
+
+                                            -->
+                                            <!--<Image>
+
+                                        </Image>-->
+                                            <!--
+
+                                                </Border>
+                                            </Popup>-->
+
+                                        </Grid>
+                                    </Border>
+                                </Popup>
+
+                                <!--  Donate  -->
+                                <TextBlock Grid.Row="5">Consider donating</TextBlock>
+                                <Button
+                                    Grid.Row="5"
+                                    Grid.Column="1"
+                                    Padding="0"
+                                    Command="{Binding Commands.OpenDonateCommand}"
+                                    Style="{DynamicResource ModernButtonStyle}"
+                                    ToolTip="Donate!">
+                                    <TextBlock
+                                        VerticalAlignment="Stretch"
+                                        FontFamily="Segoe MDL2 Assets"
+                                        FontSize="20"
+                                        Foreground="Red"
+                                        Text="&#xEB51;" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </Popup>
+
                     <ToggleButton
                         Name="MuteUnmuteButton"
                         IsChecked="{Binding MediaElement.IsMuted, Mode=TwoWay}"
                         Style="{DynamicResource ModernToggleButtonStyle}"
+                        ToolTip="Mute"
                         Visibility="{Binding Controller.AudioControlVisibility}">
                         <Path
                             Data="{Binding Source={StaticResource UnmuteIcon}, Path=Data}"
@@ -183,7 +493,7 @@
                             Name="VolumeSlider"
                             Width="{Binding Path=ActualWidth, ElementName=ParentPanel}"
                             MinWidth="40"
-                            MaxWidth="60"
+                            MaxWidth="80"
                             HorizontalAlignment="Stretch"
                             IsEnabled="{Binding MediaElement.IsMuted, Converter={StaticResource InverseBooleanConverter}}"
                             Maximum="1.0"
@@ -237,7 +547,7 @@
 
                     </StackPanel>
 
-                    <ToggleButton
+                    <!--<ToggleButton
                         Name="ClosedCaptionsButton"
                         IsChecked="{Binding MediaElement.ClosedCaptionsChannel, Converter={StaticResource ClosedCaptionsChannelConverter}, Mode=TwoWay}"
                         Style="{DynamicResource ModernToggleButtonStyle}"
@@ -248,7 +558,7 @@
                             FontWeight="Bold"
                             Foreground="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
                             Text="{Binding MediaElement.ClosedCaptionsChannel}" />
-                    </ToggleButton>
+                    </ToggleButton>-->
                 </DockPanel>
                 <DockPanel
                     Name="CenterControls"
@@ -290,6 +600,7 @@
                     Grid.Column="2"
                     HorizontalAlignment="Center">
                     <Button
+                        Name="PredictSingleButton"
                         Padding="0"
                         Command="{Binding Commands.PredictNoiseInWholeVideoCommand}"
                         Foreground="White"
@@ -309,7 +620,7 @@
                         Foreground="Green"
                         IsEnabled="{Binding MediaEncoder.EncodingProgress, Converter={StaticResource mZeroTimeSpanToBooleanConverter}}"
                         Style="{DynamicResource ModernButtonStyle}"
-                        ToolTip="Predict noise in single file"
+                        ToolTip="Predict noise in the whole playlist"
                         Visibility="{Binding Controller.PlayButtonVisibility}">
                         <TextBlock
                             VerticalAlignment="Stretch"
@@ -374,7 +685,7 @@
                     <ToggleButton
                         IsChecked="{Binding Controller.IsLoopingMediaEnabled, Mode=TwoWay}"
                         Style="{DynamicResource ModernToggleButtonStyle}"
-                        ToolTip="Enable Looping"
+                        ToolTip="Loop the video"
                         Visibility="{Binding Controller.SeekBarVisibility}">
                         <Path
                             Data="{Binding Source={StaticResource RepeatIcon}, Path=Data}"
@@ -382,40 +693,35 @@
                             Stretch="Uniform" />
                     </ToggleButton>
 
-                    <Button
+                    <!--<Button
                         Command="{Binding Commands.CloseCommand}"
                         Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Close the media file"
                         Visibility="{Binding Controller.CloseButtonVisibility}">
                         <Path
                             Data="{Binding Source={StaticResource CloseIcon}, Path=Data}"
                             Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                             Stretch="Uniform" />
-                    </Button>
+                    </Button>-->
 
                     <Button
                         Name="ToggleFullscreenButton"
                         Command="{Binding Commands.ToggleFullscreenCommand}"
-                        Style="{DynamicResource ModernButtonStyle}">
+                        Style="{DynamicResource ModernButtonStyle}"
+                        ToolTip="Toggle full screen">
                         <Path
                             Data="{Binding Source={StaticResource ToggleFullscreenIcon}, Path=Data}"
                             Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                             Stretch="Uniform" />
                     </Button>
 
-                    <ToggleButton
-                        Name="OpenDebugButton"
-                        IsChecked="{Binding IsPropertiesPanelOpen}"
-                        Style="{DynamicResource ModernToggleButtonStyle}">
-                        <Path
-                            Data="{Binding Source={StaticResource OpenDebugIcon}, Path=Data}"
-                            Fill="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type ToggleButton}}}"
-                            Stretch="Uniform" />
-                    </ToggleButton>
+
 
                     <ToggleButton
                         Name="OpenMenuButton"
                         IsChecked="{Binding IsPlaylistPanelOpen}"
                         Style="{DynamicResource ModernToggleButtonStyle}"
+                        ToolTip="Show playlist"
                         Visibility="{Binding Controller.OpenButtonVisibility}">
                         <Path
                             Data="{Binding Source={StaticResource OpenMenuIcon}, Path=Data}"

@@ -15,6 +15,7 @@
         <conv:ZeroTimeSpanToVisibilityConverter x:Key="mZeroTimeSpanToVisConverter" />
         <conv:ZeroTimeSpanToBooleanConverter x:Key="mZeroTimeSpanToBooleanConverter" />
         <conv:BoolToBrushConverter x:Key="mBoolToBrushConverter" />
+        <conv:NullToBrushConverter x:Key="mNullToBrushConverter" />
     </UserControl.Resources>
     <Grid
         x:Name="host"
@@ -91,14 +92,20 @@
             </Rectangle.Margin>
         </Rectangle>
         <Button
-            Width="4"
-            Height="25"
-            Margin="-10"
+            Width="27"
+            Margin="0,-30,0,30"
+            Padding="0"
             HorizontalAlignment="Right"
-            VerticalAlignment="Stretch"
-            Background="Orange"
+            Background="{Binding EndFile, Converter={StaticResource mNullToBrushConverter}}"
             BorderThickness="1"
             Command="{Binding MergeEndFile, ElementName=thisTimeLine}"
-            ToolTip="Select file to merge to the end" />
+            ToolTip="Select file to merge to the end">
+            <TextBlock
+                Margin="-2"
+                FontFamily="Segoe MDL2 Assets"
+                FontSize="20"
+                Text="&#xE71B;" />
+
+        </Button>
     </Grid>
 </UserControl>

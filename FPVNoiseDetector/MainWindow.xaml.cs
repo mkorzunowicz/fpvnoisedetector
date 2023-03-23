@@ -167,7 +167,7 @@
             {
                 var elapsedSinceMouseMove = DateTime.UtcNow.Subtract(LastMouseMoveTime);
                 if (elapsedSinceMouseMove.TotalMilliseconds >= 3000 && Media.IsOpen && ControllerPanel.IsMouseOver == false
-                    && PropertiesPanel.Visibility != Visibility.Visible && ControllerPanel.SoundMenuPopup.IsOpen == false)
+                    && PropertiesPanel.Visibility != Visibility.Visible && ControllerPanel.ConfigMenuPopup.IsOpen == false)
                 {
                     if (IsControllerHideCompleted) return;
                     Cursor = Cursors.None;
@@ -345,14 +345,14 @@
             // Increase speed
             if (e.Key == Key.Up)
             {
-                Media.SpeedRatio += 0.05;
+                Media.SpeedRatio += 0.10;
                 return;
             }
 
             // Decrease speed
             if (e.Key == Key.Down)
             {
-                Media.SpeedRatio -= 0.05;
+                Media.SpeedRatio -= 0.10;
                 return;
             }
 

@@ -1,6 +1,7 @@
 ﻿namespace FPVNoiseDetector.Foundation;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 /// <summary>
 /// TimeLine.
@@ -12,7 +13,7 @@ public class TimeLine : ObservableObject
     private string beginFile;
     private ObservableCollection<TimeLineEvent> events = new ObservableCollection<TimeLineEvent>();
 
-
+    // TODO remove:
     /// <summary>
     /// File to merge the beginning of the timeline to.
     /// </summary>
@@ -56,6 +57,16 @@ public class TimeLine : ObservableObject
         }
     }
 
+    /// <summary>
+    /// Events ordered by start.
+    /// </summary>
+    public System.Collections.Generic.List<TimeLineEvent> OrderedEvents
+    {
+        get
+        {
+            return Events.OrderBy(e => e.Start).ToList();
+        }
+    }
     /// <summary>
     /// Events on the Timeline.
     /// </summary>

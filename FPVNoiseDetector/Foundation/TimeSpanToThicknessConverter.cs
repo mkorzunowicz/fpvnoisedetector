@@ -183,3 +183,37 @@ public class BoolToBrushConverter : IValueConverter
         throw new NotImplementedException();
     }
 }
+
+/// <summary>
+/// TimeSpan to boolean for IsEnabled converter.
+/// </summary>
+public class NullToBrushConverter : IValueConverter
+{
+    /// <summary>
+    /// Converts the TimeSpan to a boolean for IsEnabled, to reflect encoding progress -> if encoding (nonzero) then disable control.
+    /// </summary>
+    /// <param name="value">Value to convert.</param>
+    /// <param name="targetType">Types.</param>
+    /// <param name="parameter">Param.</param>
+    /// <param name="culture">Culture.</param>
+    /// <returns>Sie tickness.</returns>
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        var val = value as string;
+        if (val == null) return new SolidColorBrush(Colors.Gray);
+        return new SolidColorBrush(Colors.Green);
+    }
+    /// <summary>
+    /// Converts back, but it's not implemented.
+    /// </summary>
+    /// <param name="value">Value to convert.</param>
+    /// <param name="targetType">Types.</param>
+    /// <param name="parameter">Param.</param>
+    /// <param name="culture">Culture.</param>
+    /// <returns>Nothing.</returns>
+    /// <exception cref="NotImplementedException">It's no implemented.</exception>
+    public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+}

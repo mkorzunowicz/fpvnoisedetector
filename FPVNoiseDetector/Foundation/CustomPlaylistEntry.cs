@@ -47,14 +47,13 @@
         {
             get
             {
-                var currentValue = GetMappedAttributeValue();
-                if (string.IsNullOrEmpty(currentValue)) { 
-                    return null;
-                }
                 var tl = new TimeLine();
+                var currentValue = GetMappedAttributeValue();
+                if (string.IsNullOrEmpty(currentValue)) {
+                    tl.Duration = this.Duration;
+                    return tl;
+                }
                 var split = currentValue.Split('|');
-
-
                 tl.Duration = TimeSpan.FromTicks(Convert.ToInt64(split[0]));
                 foreach(var eve in split[1].Split(';'))
                 {

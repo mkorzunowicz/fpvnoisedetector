@@ -3,6 +3,8 @@
     using Foundation;
     using System;
     using System.Globalization;
+    using System.IO;
+    using System.Reflection;
     using System.Windows;
     using System.Windows.Media;
     using Unosquare.FFME.Common;
@@ -20,6 +22,9 @@
         private Visibility m_IsMediaOpenVisibility = Visibility.Visible;
         private bool m_IsAudioControlEnabled = true;
         private bool m_IsSpeedRatioEnabled = true;
+        private string m_LicenseText;
+        private int m_PredictionPrecision = 10;
+        private int m_AddTimeToCutVideo = 0;
         private Visibility m_ClosedCaptionsVisibility = Visibility.Visible;
         private Visibility m_AudioControlVisibility = Visibility.Visible;
         private Visibility m_PauseButtonVisibility = Visibility.Visible;
@@ -41,6 +46,55 @@
             // placeholder
         }
 
+        /// <summary>
+        /// Gets or sets prediction precision in seconds (hop time when seeking) increases the overall prediction time
+        /// </summary>
+        public int PredictionPrecision
+        {
+            get
+            {
+                return m_PredictionPrecision;
+            }
+            set
+            {
+                m_PredictionPrecision = value;
+                NotifyPropertyChanged(nameof(PredictionPrecision));
+            }
+        }
+        /// <summary>
+        /// Gets or sets prediction precision in seconds
+        /// </summary>
+        public int AddTimeToCutVideo
+        {
+            get
+            {
+                return m_AddTimeToCutVideo;
+            }
+            set
+            {
+                m_AddTimeToCutVideo = value;
+                NotifyPropertyChanged(nameof(AddTimeToCutVideo));
+            }
+        }
+        /// <summary>
+        /// Gets or sets prediction precision in seconds
+        /// </summary>
+        public string LicenseText
+        {
+            get
+            {
+                if (m_LicenseText != null) return m_LicenseText;
+
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "FPVNoiseDetector.LICENSE.txt";
+
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return m_LicenseText = reader.ReadToEnd();
+                }
+            }
+        }
         /// <summary>
         /// Gets or sets the video contrast.
         /// </summary>
@@ -256,7 +310,8 @@
             var m = App.ViewModel.MediaElement;
             var vm = App.ViewModel;
 
-            vm.WhenChanged(() => {
+            vm.WhenChanged(() =>
+            {
                 StopButtonVisibility =
                     m.IsOpen && m.IsChanging == false && m.IsSeeking == false && (m.HasMediaEnded || (m.IsSeekable && m.MediaState != MediaPlaybackState.Stop)) || vm.IsEncoding || vm.IsPredicting ?
                     Visibility.Visible : Visibility.Hidden;
