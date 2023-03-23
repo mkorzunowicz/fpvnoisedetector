@@ -67,16 +67,16 @@ jobs:
           dotnet-version: "7.0.x"
 
       - name: Publish the app with version ${{ steps.latest_release_info.outputs.tag_name }}
-        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
+        run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained true /p:PublishSingleFile=true --configuration Release --framework net7.0-windows
         # run: dotnet publish ./FPVNoiseDetector/FPVNoiseDetector.csproj /p:AssemblyVersion=${{ steps.latest_release_info.outputs.tag_name }} /p:UseAppHost=true --output .out_win --runtime win-x64 --self-contained false --verbosity quiet --configuration Release --framework net7.0-windows
 
-      - name: Zip the necessary release files
-        run: |
-          $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
-          Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+      # - name: Zip the necessary release files
+      #   run: |
+      #     $files = ".out_win/fpvnoise.exe", ".out_win/NoisePredictorModel.zip", ".out_win/tensorflow.dll", ".out_win/LICENSE.txt"
+      #     Compress-Archive -Path $files -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
 
-      # - name: Zip the whole folder
-      #   run: Compress-Archive -Path .out_win/ -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
+      - name: Zip the whole folder
+        run: Compress-Archive -Path .out_win/* -DestinationPath "fpvnoise-${{ steps.latest_release_info.outputs.tag_name }}.zip"
 
       - name: Upload the fpvnoise binary to assets
         id: upload-release-asset

@@ -30,10 +30,7 @@ FFmpeg is used to decode and play the vidoes as well as to split/merge them. It'
 
 ### Installation
 
-1. Download the FPV Noise detector app. It currently supports only Windows as it's a WPF application. (Sorry mac/linux users).
-2. Download the newest 5.1.X FFmpeg **shared** binaries (64 or 32 bit, depending on your app's target architecture). Either from here [FFmpeg Windows Downloads](https://ffmpeg.org/download.html) or here [FFmpeg-Builds](https://github.com/BtbN/FFmpeg-Builds/releases). This [x64 lib](https://github.com/BtbN/FFmpeg-Builds/releases/download/autobuild-2023-02-12-12-35/ffmpeg-n5.1.2-12-g7268323193-win64-gpl-shared-5.1.zip) is guaranteed to work.
-3. Your FFmpeg build should have a `bin` folder with 3 exe files and some dll files. Copy **all those** files to the folder 'c:\ffmpeg\x64' (or 'c:\ffmpeg'). The app uses both the libraries and binaries for now.
-4. The FFmpeg are GPL, I don't want to be forced to use this license, therefore you need to fetch them yourself.
+Download the FPV Noise detector app. It currently supports only Windows as it's a WPF application. (Sorry mac/linux users). All the necessary files are included and it is self contained, so no additional .NET runtimes should be required.
 
 ### Usage
 
@@ -52,39 +49,38 @@ Press the button on the right of the timeline to select a video file which the c
 
 * Automated next file to merge detection and possibly configuration for it, also to speed up the process
 * Better button icons and UI upgrade in general
-* Updater?
 
 ### Since it's based on the ffmeplay Sample Application it supports these shortcuts as well
 
-| Shortcut Key | Function Description |
-| --- | --- |
-| G | Example of toggling subtitle color |
-| Left | Seek 1 frame to the left |
-| Right | Seek 1 frame to the right |
-| + / Volume Up | Increase Audio Volume |
-| - / Volume Down | Decrease Audio Volume |
-| M / Volume Mute | Mute Audio |
-| Up | Increase playback Speed |
-| Down | Decrease playback speed |
-| A | Cycle Through Audio Streams |
-| S | Cycle Through Subtitle Streams |
-| Q | Cycle Through Video Streams |
-| C | Cycle Through Closed Caption Channels |
-| R | Reset Changes |
-| Y / H | Contrast: Increase / Decrease |
-| U / J | Brightness: Increase / Decrease |
-| I / K | Saturation: Increase / Decrease |
-| E | Example of cycling through audio filters |
-| T | Capture Screenshot to `desktop/ffplay` folder |
-| W | Start/Stop recording packets (no transcoding) into a transport stream to `desktop/ffplay` folder. |
-| Double-click | Enter fullscreen |
-| Escape | Exit fullscreen |
-| Mouse Wheel Up / Down | Zoom: In / Out |
+| Shortcut Key          | Function Description                                                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------- |
+| G                     | Example of toggling subtitle color                                                                |
+| Left                  | Seek 1 frame to the left                                                                          |
+| Right                 | Seek 1 frame to the right                                                                         |
+| + / Volume Up         | Increase Audio Volume                                                                             |
+| - / Volume Down       | Decrease Audio Volume                                                                             |
+| M / Volume Mute       | Mute Audio                                                                                        |
+| Up                    | Increase playback Speed                                                                           |
+| Down                  | Decrease playback speed                                                                           |
+| A                     | Cycle Through Audio Streams                                                                       |
+| S                     | Cycle Through Subtitle Streams                                                                    |
+| Q                     | Cycle Through Video Streams                                                                       |
+| C                     | Cycle Through Closed Caption Channels                                                             |
+| R                     | Reset Changes                                                                                     |
+| Y / H                 | Contrast: Increase / Decrease                                                                     |
+| U / J                 | Brightness: Increase / Decrease                                                                   |
+| I / K                 | Saturation: Increase / Decrease                                                                   |
+| E                     | Example of cycling through audio filters                                                          |
+| T                     | Capture Screenshot to `desktop/ffplay` folder                                                     |
+| W                     | Start/Stop recording packets (no transcoding) into a transport stream to `desktop/ffplay` folder. |
+| Double-click          | Enter fullscreen                                                                                  |
+| Escape                | Exit fullscreen                                                                                   |
+| Mouse Wheel Up / Down | Zoom: In / Out                                                                                    |
 
 ## Thanks
 
 * To Mario Divece and the contributors to the FFmpeg powered MediaElement for WPF, which this app is based on, meaning the Unosquare's' [ffmediaelement](https://github.com/unosquare/ffmediaelement).
-* To the <a href="http://ffmpeg.org/">FFmpeg team</a>.
+* To the all the awesome developers of libraries I used. If some license credits are missing. Sorry - let me know.
 
 ## License
 
