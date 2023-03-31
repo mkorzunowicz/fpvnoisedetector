@@ -546,7 +546,7 @@
             var thisFileName = Path.GetFileName(sourcePath);
             var i = fileNames.IndexOf(thisFileName);
             if (i == -1) return null;
-            else if (fileNames.Count >= i + 1)
+            else if (fileNames.Count > i + 1)
             {
                 var nextName = fileNames[i + 1];
                 if (IsNumericalSuccessor(Path.GetFileName(thisFileName), Path.GetFileName(nextName)))
@@ -793,7 +793,7 @@
                 App.ViewModel.NoiseTimeLine = new TimeLine();
                 App.ViewModel.NotificationMessage = $"Prediction cancelled after {done.TotalSeconds.ToString("0.00")}s";
             }
-            else
+            else if (App.ViewModel.UseLinkingAfterPrediction)
             {
                 var foundNext = await DetectVideoContinuation();
                 var message = $"Noise detected in: {done.TotalSeconds.ToString("0.00")}s.";

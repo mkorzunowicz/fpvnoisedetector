@@ -197,6 +197,7 @@
 
             // MediaElement event bindings
             Media.PreviewMouseDoubleClick += OnMediaDoubleClick;
+            Media.MouseDown += OnMediaMouseDown;
             Media.MediaInitializing += OnMediaInitializing;
             Media.MediaOpening += OnMediaOpening;
             Media.MediaOpened += OnMediaOpened;
@@ -562,6 +563,27 @@
         }
 
         /// <summary>
+        /// Handles the MouseDown event of the Media control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
+        private async void OnMediaMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+            { this.DragMove(); return; }
+            if (Media.IsOpen == false || Media.IsOpening || Media.IsChanging)
+                return;
+            if (e.MiddleButton == MouseButtonState.Pressed)
+            {
+                if (Media.IsPaused)
+                    await App.ViewModel.Commands.PlayCommand.ExecuteAsync();
+                else
+                    await App.ViewModel.Commands.PauseCommand.ExecuteAsync();
+                return;
+            }
+        }
+
+        /// <summary>
         /// Handles the MouseWheel event of the MainWindow control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
@@ -570,7 +592,6 @@
         {
             if (Media.IsOpen == false || Media.IsOpening || Media.IsChanging)
                 return;
-
             var delta = (e.Delta / 2000d).ToMultipleOf(0.05d);
             ViewModel.Controller.MediaElementZoom = Math.Round(App.ViewModel.Controller.MediaElementZoom + delta, 2);
         }
