@@ -19,7 +19,18 @@
         /// <param name="action">The action.</param>
         private DeferredAction(Action<DeferredAction> action)
         {
-            DeferTimer = new Timer(s => Application.Current?.Dispatcher?.Invoke(() => action(this)));
+            DeferTimer = new Timer(s => Application.Current?.Dispatcher?.Invoke(() =>
+            {
+                try
+                {
+                    action(this);
+                }
+                catch (System.Threading.Tasks.TaskCanceledException ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    // Ignore.
+                }
+            }));
         }
 
         /// <summary>

@@ -22,6 +22,7 @@
         private bool m_ShouldStopPredicting = false; 
         private bool m_IsEncoding = false;
         private bool m_UseSimilarityForPrediction = false;
+        private bool m_UseLinkingAfterPrediction = true;        
         private TimeLine m_NoiseTimeLine;        
         private double m_PlaybackProgress;
         private TaskbarItemProgressState m_PlaybackProgressState;
@@ -191,6 +192,16 @@
             get => m_UseSimilarityForPrediction;
             set => SetProperty(ref m_UseSimilarityForPrediction, value);
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating which method to use for prediction.
+        /// </summary>
+        public bool UseLinkingAfterPrediction
+        {
+            get => m_UseLinkingAfterPrediction;
+            set => SetProperty(ref m_UseLinkingAfterPrediction, value);
+        }
+        
         /// <summary>
         /// Gets or sets a value indicating whether this instance is properties panel open.
         /// </summary>

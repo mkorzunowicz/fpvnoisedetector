@@ -23,6 +23,7 @@
         private bool m_IsAudioControlEnabled = true;
         private bool m_IsSpeedRatioEnabled = true;
         private string m_LicenseText;
+        private string m_TutorialText;
         private int m_PredictionPrecision = 10;
         private int m_AddTimeToCutVideo = 0;
         private Visibility m_ClosedCaptionsVisibility = Visibility.Visible;
@@ -77,7 +78,7 @@
             }
         }
         /// <summary>
-        /// Gets or sets prediction precision in seconds
+        /// Gets the License Information
         /// </summary>
         public string LicenseText
         {
@@ -93,6 +94,36 @@
                 {
                     return m_LicenseText = reader.ReadToEnd();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets prediction precision in seconds
+        /// </summary>
+        public string TutorialText
+        {
+            get
+            {
+                if (m_TutorialText != null) return m_TutorialText;
+
+                var assembly = Assembly.GetExecutingAssembly();
+                var resourceName = "FPVNoiseDetector.TUTORIAL.md";
+                //var resourceNames = assembly.GetManifestResourceNames();
+                using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    return m_TutorialText = reader.ReadToEnd();
+                }
+            }
+        }
+        /// <summary>
+        /// Gets Markdown Style
+        /// </summary>
+        public Style MdStyle
+        {
+            get
+            {
+                return MdXaml.MarkdownStyle.Sasabune;
             }
         }
         /// <summary>

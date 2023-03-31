@@ -73,6 +73,16 @@ namespace FPVNoiseDetector.ViewModels
             set => SetProperty(ref _oldVersion, value);
         }
         /// <summary>
+        /// Gets Markdown Style
+        /// </summary>
+        public Style MdStyle
+        {
+            get
+            {
+                return MdXaml.MarkdownStyle.Sasabune;
+            }
+        }
+        /// <summary>
         /// Update dialog VM constructor
         /// </summary>
         public UpdateViewModel()

@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 
 namespace FPVNoiseDetector.Properties {
-    using System;
     
     
     /// <summary>
@@ -61,19 +60,37 @@ namespace FPVNoiseDetector.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This file includes the licenses of all code and resources I have used to create this library.
+        ///   Looks up a localized string similar to List of all used libraries and their licenses:
         ///
         ///=================================================================================================
         ///FPV Noise Detector
         ///=================================================================================================
-        ///Microsoft Public License (Ms-PL)
+        ///Copyright (c) 2023 Michał Korzunowicz
         ///
-        ///This license governs use of the accompanying software. If you use the software, you
-        ///accept this license. If you do not accept the license, do not use the softwa [rest of string was truncated]&quot;;.
+        ///                    GNU GENERAL PUBLIC LICENSE
+        ///                       Version 3, 29 June 2007
+        ///
+        /// Copyright (C) 2007 Free Software Foundation, Inc. &lt;http://fsf.org/&gt;
+        /// Everyone is permitted to copy and  [rest of string was truncated]&quot;;.
         /// </summary>
         public static string LICENSE {
             get {
                 return ResourceManager.GetString("LICENSE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to # Tutorial
+        ///
+        ///## Noise specific functionality
+        ///
+        ///| Button                                                             | Functionality                                                                                                                            |
+        ///| ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+        ///| ![detect noise](tutorial/detect_noise_b [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string TUTORIAL {
+            get {
+                return ResourceManager.GetString("TUTORIAL", resourceCulture);
             }
         }
     }

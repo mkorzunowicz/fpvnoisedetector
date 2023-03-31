@@ -2,8 +2,7 @@
 
 [![semantic-release: angular](https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release)](https://github.com/semantic-release/semantic-release)
 
-:star: *Please star this project if you like it and show your appreciation via*
-**[PayPal.Me](https://www.paypal.me/mkorzunowicz/10eur)**
+:star: *Please star this project if you like it and show your appreciation if you like it via* **[PayPal.Me](https://www.paypal.me/mkorzunowicz/10eur)**
 
 ![fpvnoisedetector](https://github.com/mkorzunowicz/fpvnoisedetector/raw/master/Support/fpvnoisedetector.png)
 
@@ -39,46 +38,17 @@ Download the FPV Noise detector app. It currently supports only Windows as it's 
 3. Execute playlist splitting/merging to go through the whole playlist with the green save button. They will end up in '/split' folder under the directory of the split video.
 4. That's it! Your videos are noiseless.
 
-### Advanced usage
+### Tutorial
 
-You can move the timeline sliders around by clicking on and moving the pegs.
-Delete a timeline part, by moving the peg to the start until it turns red, then release the mouse button.
-Press the button on the right of the timeline to select a video file which the currently edited file should be merged with.
+Check out the detailed tutorial here: [tutorial](/FPVNoiseDetector/TUTORIAL.md)
 
 ## TODO's
 
-* Automated next file to merge detection and possibly configuration for it, also to speed up the process
-* Better button icons and UI upgrade in general
-
-### Since it's based on the ffmeplay Sample Application it supports these shortcuts as well
-
-| Shortcut Key          | Function Description                                                                              |
-| --------------------- | ------------------------------------------------------------------------------------------------- |
-| G                     | Example of toggling subtitle color                                                                |
-| Left                  | Seek 1 frame to the left                                                                          |
-| Right                 | Seek 1 frame to the right                                                                         |
-| + / Volume Up         | Increase Audio Volume                                                                             |
-| - / Volume Down       | Decrease Audio Volume                                                                             |
-| M / Volume Mute       | Mute Audio                                                                                        |
-| Up                    | Increase playback Speed                                                                           |
-| Down                  | Decrease playback speed                                                                           |
-| A                     | Cycle Through Audio Streams                                                                       |
-| S                     | Cycle Through Subtitle Streams                                                                    |
-| Q                     | Cycle Through Video Streams                                                                       |
-| C                     | Cycle Through Closed Caption Channels                                                             |
-| R                     | Reset Changes                                                                                     |
-| Y / H                 | Contrast: Increase / Decrease                                                                     |
-| U / J                 | Brightness: Increase / Decrease                                                                   |
-| I / K                 | Saturation: Increase / Decrease                                                                   |
-| E                     | Example of cycling through audio filters                                                          |
-| T                     | Capture Screenshot to `desktop/ffplay` folder                                                     |
-| W                     | Start/Stop recording packets (no transcoding) into a transport stream to `desktop/ffplay` folder. |
-| Double-click          | Enter fullscreen                                                                                  |
-| Escape                | Exit fullscreen                                                                                   |
-| Mouse Wheel Up / Down | Zoom: In / Out                                                                                    |
+* Persistant config
 
 ## Thanks
 
+* My girlfriend for helping me with maintaining the backlog ;)
 * To Mario Divece and the contributors to the FFmpeg powered MediaElement for WPF, which this app is based on, meaning the Unosquare's' [ffmediaelement](https://github.com/unosquare/ffmediaelement).
 * To the all the awesome developers of libraries I used. If some license credits are missing. Sorry - let me know.
 
