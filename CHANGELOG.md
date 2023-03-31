@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/mkorzunowicz/fpvnoisedetector/compare/1.1.0...1.2.0) (2023-03-31)
+
+
+### Features
+
+* tutorial and linking settings ([#13](https://github.com/mkorzunowicz/fpvnoisedetector/issues/13)) ([e75295d](https://github.com/mkorzunowicz/fpvnoisedetector/commit/e75295dc6dc62fb7dd5d7a7425d2ff70c041ebe3))
+
 # [1.1.0](https://github.com/mkorzunowicz/fpvnoisedetector/compare/1.0.0...1.1.0) (2023-03-23)
 
 
