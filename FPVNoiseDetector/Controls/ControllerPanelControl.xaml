@@ -425,6 +425,18 @@
                                             FontSize="20"
                                             Text="&#xE71B;" />
                                     </ToggleButton>
+                                    <ToggleButton
+                                        Name="RedoPredictionButton"
+                                        Margin="5"
+                                        IsChecked="{Binding RedoPrediction}"
+                                        Style="{DynamicResource ModernToggleButtonStyle}"
+                                        ToolTip="Redo prediction in files already predicted">
+                                        <TextBlock
+                                            VerticalAlignment="Stretch"
+                                            FontFamily="Segoe MDL2 Assets"
+                                            FontSize="20"
+                                            Text="&#xE7A6;" />
+                                    </ToggleButton>
                                 </StackPanel>
                                 <!--  Balance Slider  -->
                                 <TextBlock

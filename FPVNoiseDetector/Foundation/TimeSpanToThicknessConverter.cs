@@ -200,7 +200,7 @@ public class NullToBrushConverter : IValueConverter
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         var val = value as string;
-        if (val == null) return new SolidColorBrush(Colors.Gray);
+        if (string.IsNullOrEmpty(val)) return new SolidColorBrush(Colors.Gray);
         return new SolidColorBrush(Colors.Green);
     }
     /// <summary>

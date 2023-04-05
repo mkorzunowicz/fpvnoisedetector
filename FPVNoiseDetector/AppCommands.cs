@@ -260,6 +260,7 @@
             {
                 if (App.ViewModel.IsPredicting)
                 {
+                    // App.ViewModel.Commands.CloseCommand.Execute();
                     App.ViewModel.ShouldStopPredicting = true;
                 }
                 else if (App.ViewModel.IsEncoding)
@@ -648,13 +649,28 @@
 
                 foreach (var entry in sorted)
                 {
+                    if (!File.Exists(entry.MediaSource))
+                    {
+                        App.ViewModel.NotificationMessage = $"File not found: {entry.MediaSource}";
+                        continue;
+                    }
+                    if (!App.ViewModel.RedoPrediction && entry.NoiseTimeLine.Events.Any())
+                        continue;
                     if (App.ViewModel.ShouldStopPredicting)
                     {
                         App.ViewModel.NotificationMessage = "Aborted playlist detection...";
                         break;
                     }
-                    App.ViewModel.MediaElement.MediaReady += PredictOnReady;
-                    await this.OpenCommand.ExecuteAsync(entry);
+                    try
+                    {
+                        App.ViewModel.MediaElement.MediaReady += PredictOnReady;
+                        await this.OpenCommand.ExecuteAsync(entry);
+                    }
+                    catch (Exception ex)
+                    {
+                        App.ViewModel.NotificationMessage = $"Error opening file: {ex.Message}";
+                        continue;
+                    }
                     App.ViewModel.IsPredicting = true;
                     await Task.Run(() => { while (App.ViewModel.IsPredicting) { Thread.Sleep(300); } });
                 }
@@ -704,6 +720,8 @@
             var dict = new Dictionary<TimeSpan, bool>();
             var position = TimeSpan.Zero;
             var normalStep = App.ViewModel.Controller.PredictionPrecision * 1000;
+            if (App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds < App.ViewModel.Controller.PredictionPrecision)
+                normalStep = (int) (App.ViewModel.MediaElement.NaturalDuration.Value.TotalSeconds / 2 * 1000);
             var minStep = App.ViewModel.MediaElement.PositionStep.Milliseconds == 0 ? 20 : App.ViewModel.MediaElement.PositionStep.Milliseconds;
             var step = normalStep;
             var start = DateTime.Now;
@@ -722,6 +740,7 @@
             do
             {
                 await App.ViewModel.MediaElement.Seek(position);
+                //App.ViewModel.MediaElement.Position = position;
                 var bitmap = await TryLoadBitmap(App.ViewModel.MediaElement);
                 var isNoise = false;
                 if (App.ViewModel.UseSimilarityForPrediction)
@@ -773,7 +792,7 @@
                 position += TimeSpan.FromMilliseconds(step);
                 if (App.ViewModel.MediaElement.NaturalDuration < position && !hitTheEnd)
                 {
-                    position = App.ViewModel.MediaElement.NaturalDuration.Value;
+                    position = App.ViewModel.MediaElement.NaturalDuration.Value - App.ViewModel.MediaElement.PositionStep;
                     hitTheEnd = true;
                 }
 

@@ -22,7 +22,8 @@
         private bool m_ShouldStopPredicting = false; 
         private bool m_IsEncoding = false;
         private bool m_UseSimilarityForPrediction = false;
-        private bool m_UseLinkingAfterPrediction = true;        
+        private bool m_RedoPrediction = false;        
+        private bool m_UseLinkingAfterPrediction = true;     
         private TimeLine m_NoiseTimeLine;        
         private double m_PlaybackProgress;
         private TaskbarItemProgressState m_PlaybackProgressState;
@@ -193,6 +194,14 @@
             set => SetProperty(ref m_UseSimilarityForPrediction, value);
         }
 
+        /// <summary>
+        /// Gets or sets a property indicating whether Prediction should be redone on already predicted files.
+        /// </summary>
+        public bool RedoPrediction
+        {
+            get => m_RedoPrediction;
+            set => SetProperty(ref m_RedoPrediction, value);
+        }
         /// <summary>
         /// Gets or sets a value indicating which method to use for prediction.
         /// </summary>
