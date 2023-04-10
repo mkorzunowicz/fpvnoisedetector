@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/mkorzunowicz/fpvnoisedetector/compare/1.2.0...1.2.1) (2023-04-10)
+
+
+### Bug Fixes
+
+* Playlist sorting by name only ([9b3e8a6](https://github.com/mkorzunowicz/fpvnoisedetector/commit/9b3e8a64061a3cbed3aae2a943ffdf6c7c1fc432))
+* Seeking to end of file during prediction. File linked displays properly. Redo prediction setting added. ([5f9c369](https://github.com/mkorzunowicz/fpvnoisedetector/commit/5f9c3699fe746a3c14a064e589a0e2cddf222d30))
+
 # [1.2.0](https://github.com/mkorzunowicz/fpvnoisedetector/compare/1.1.0...1.2.0) (2023-03-31)
 
 
