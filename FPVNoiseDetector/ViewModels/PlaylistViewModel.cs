@@ -26,6 +26,7 @@
 
         // Property Backing
         private bool m_IsInOpenMode = App.IsInDesignMode;
+        private bool m_IsSortingByName = true;
         private bool m_IsPlaylistEnabled = true;
         private string m_OpenMediaSource = string.Empty;
         private string m_PlaylistSearchString = string.Empty;
@@ -55,6 +56,7 @@
 
             Entries = new CustomPlaylistEntryCollection(this);
             EntriesView = CollectionViewSource.GetDefaultView(Entries);
+
             EntriesView.Filter = item =>
             {
                 var searchString = PlaylistSearchString;
@@ -139,6 +141,24 @@
         {
             get => m_IsPlaylistEnabled;
             set => SetProperty(ref m_IsPlaylistEnabled, value);
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is playlist enabled.
+        /// </summary>
+        public bool IsSortingByName
+        {
+            get => m_IsSortingByName;
+            set
+            {
+                SetProperty(ref m_IsSortingByName, false);
+                EntriesView.SortDescriptions.Clear();
+                if (value)
+                    EntriesView.SortDescriptions.Add(new SortDescription(nameof(CustomPlaylistEntry.Title), ListSortDirection.Descending));
+                else
+                    EntriesView.SortDescriptions.Add(new SortDescription(nameof(CustomPlaylistEntry.Title), ListSortDirection.Ascending));
+                SetProperty(ref m_IsSortingByName, value);
+            }
         }
 
         /// <summary>
